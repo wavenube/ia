@@ -1,7 +1,10 @@
+console.log('Comando readqr cargado');
+
 import uploadImage from './lib/uploadImage.js';
 import fetch from 'node-fetch';
 
 const handler = async (m, { conn }) => {
+  console.log('Comando readqr ejecutado');
   const q = m.quoted ? m.quoted : m;
   const mime = (q.msg || q).mimetype || '';
 
