@@ -1,16 +1,21 @@
-let handler = async (m, { conn, usedPrefix, command, text }) => {
+const handler = async (m, { conn, usedPrefix, text }) => {
   let number;
   
   if (isNaN(text) && !text.match(/@/g)) {
-    // Nada que hacer si no es un número o un @tag
+    // Si no es un número ni un @tag
   } else if (isNaN(text)) {
     number = text.split`@`[1];
   } else if (!isNaN(text)) {
     number = text;
   }
 
-  if (!text && !m.quoted) return conn.reply(m.chat, `🛸 Usa el comando de la siguiente manera: \n *${usedPrefix + command}* @tag`, m);
-  if (number.length > 13 || (number.length < 11 && number.length > 0)) return conn.reply(m.chat, `️🛸 Número incorrecto`, m);
+  if (!text && !m.quoted) {
+    return conn.reply(m.chat, `🛸 Usa el comando de la siguiente manera:\n\n*┯┷*\n*┠≽ ${usedPrefix}daradmin @tag*\n*┠≽ ${usedPrefix}darpoder responder a un mensaje*\n*┷┯*`, m);
+  }
+
+  if (number && (number.length > 13 || (number.length < 11 && number.length > 0))) {
+    return conn.reply(m.chat, `⚠️ El número es incorrecto.`, m);
+  }
 
   try {
     let user;
@@ -22,27 +27,18 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
       user = number + '@s.whatsapp.net';
     }
 
-    // Obtener la lista de administradores del grupo
-    const groupMetadata = await conn.groupMetadata(m.chat);
-    const admins = groupMetadata.participants.filter(p => p.admin).map(p => p.id);
+    // Promover a administrador
+    await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
+    conn.reply(m.chat, `✅ El usuario ha sido promovido a administrador.`, m);
 
-    // Verificar si el usuario es administrador
-    if (admins.includes(user)) {
-      return conn.reply(m.chat, `🚫 No puedes degradar a otro administrador.`, m);
-    }
-
-    // Proceder con la degradación si no es administrador
-    await conn.groupParticipantsUpdate(m.chat, [user], 'demote');
-    m.reply(`✅ El usuario ha sido degradado.`);
-    
   } catch (e) {
     console.error(e);
   }
-}
+};
 
-handler.help = ['promote (@tag)'];
+handler.help = ['*593xxx*', '*@usuario*', '*responder chat*'].map(v => 'promote ' + v);
 handler.tags = ['group'];
-handler.command = ['promote', 'daradmin']; 
+handler.command = /^(promote|daradmin|darpoder)$/i;
 handler.group = true;
 handler.admin = true;
 handler.botAdmin = true;
