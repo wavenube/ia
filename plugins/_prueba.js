@@ -31,22 +31,66 @@ const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     const menuText = `
       *Bienvenido al Menú de Comandos*
       
-      *Usuario:* ${name}
-      *Nivel:* ${level}
-      *Experiencia:* ${exp} / ${xp}
-      *Rol:* ${role}
-      *Limite:* ${limit}
-      *Registrados:* ${totalreg} / ${rtotalreg}
+      👤 *Usuario:* ${name}
+      🔢 *Nivel:* ${level}
+      🎓 *Experiencia:* ${exp} / ${xp}
+      🛡️ *Rol:* ${role}
+      📊 *Limite:* ${limit}
+      👥 *Registrados:* ${totalreg} / ${rtotalreg}
       
-      *Fecha:* ${week}, ${date}
-      *Uptime:* ${uptime}
-      
+      📅 *Fecha:* ${week}, ${date}
+      ⏰ *Uptime:* ${uptime}
       ${readMore}
       
       *Comandos Disponibles:*
-      ☆  ${_p}comando1
-      ☆  ${_p}comando2
-      ☆  ${_p}comando3
+      ☆  .blocklist
+      ☆  .owner
+      ☆  .runtime
+      ☆  .script
+      
+      
+      
+      ☆  .enable <option>
+      ☆  .disable <option>
+      
+      
+      
+      ☆  .Setdesc <text>
+      ☆  .setname <text>
+      ☆  .add
+      ☆  .delete
+      ☆  .demote (@tag)
+      ☆  .infogp
+      ☆  .hidetag
+      ☆  .invite <919172x>
+      ☆  .kick @user
+      ☆  .link
+      ☆  .poll question|option|option
+      ☆  .setwelcome <text>
+      
+      
+      
+      ☆  .ban @user
+      ☆  .banchat
+      ☆  .unban @user
+      ☆  .unbanchat
+      ☆  .listban
+      
+      
+      
+      ☆  .reg <name.age>
+      ☆  .mysn
+      ☆  .unreg <Num Serie>
+      
+      
+      
+      ☆  .stiker (caption|reply media)
+      ☆  .stiker <url>
+      ☆  .stikergif (caption|reply media)
+      ☆  .stikergif <url>
+      
+      
+      Made by ♡ Shizo
       
       *Made by ♡ Shizo*
     `.trim();
