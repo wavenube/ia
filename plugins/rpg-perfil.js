@@ -1,7 +1,6 @@
 import { createHash } from 'crypto';
 import PhoneNumber from 'awesome-phonenumber';
 import fetch from 'node-fetch';
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
 const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
   // Configuración de la imagen de perfil por defecto
@@ -36,7 +35,7 @@ Registro: ${registered ? 'Registrado' : 'No registrado'}
 Premium: ${premiumTime > 0 ? 'Sí' : (isPrems ? 'Premium' : 'No premium')}
 Hash: ${sn}`;
     
-    // Enviar el mensaje con la imagen de perfil y la cadena de perfil
+     // Enviar el mensaje con la imagen de perfil y la cadena de perfil
     await sendInteractiveMessage(m, conn, str, usedPrefix);
   }
 };
@@ -63,8 +62,8 @@ async function sendInteractiveMessage(m, conn, mensaje, usedPrefix) {
           type: 1,
         },
         {
-          buttonId: `${usedPrefix}balance`,
-          buttonText: { displayText: 'BALANCE' },
+          buttonId: `${usedPrefix}perfil`,
+          buttonText: { displayText: 'PERFIL' },
           type: 1,
         },
       ],
