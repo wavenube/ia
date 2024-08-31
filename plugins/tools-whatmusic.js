@@ -12,7 +12,7 @@ const handler = async (m, { conn }) => {
     if (/audio|video/.test(mime)) {
       const media = await q.download();
       const ext = mime.split('/')[1];
-      const tmpFilePath = `./tmp/${m.sender}.${ext}`;
+      const tmpFilePath = `./src/tmp/${m.sender}.${ext}`;
       fs.writeFileSync(tmpFilePath, media);
 
       let recognise;
@@ -22,24 +22,35 @@ const handler = async (m, { conn }) => {
         recognise = await shazam.fromVideoFile(tmpFilePath, false, 'en');
       }
 
-      const { title, subtitle, artists, genres, images } = recognise.track;
-      const image = await (await fetch(images.coverart)).buffer();
+      const { title, subtitle, genres, images } = recognise.track;
+      const image = await fetch(images.coverart).then(res => res.buffer());
       const text = `Title: ${title || 'Unknown'}\nSubtitle: ${subtitle || 'Unknown'}\nGenres: ${genres.primary || 'Unknown'}`;
 
-      const apiTitle = `${title} - ${subtitle || ''}`;
+      // Generar el título para la búsqueda
+      const apiTitle = `${title || ''} - ${subtitle || ''}`.trim();
       let url = 'https://github.com/BrunoSobrino'; // URL predeterminada en caso de error
 
       try {
-        const response = await fetch(`${global.MyApiRestBaseUrl}/api/ytplay?text=${encodeURIComponent(apiTitle)}&apikey=${global.MyApiRestApikey}`);
-        const data = await response.json();
-        url = data.resultado.url;
+        if (apiTitle) {
+          const response = await fetch(`${global.MyApiRestBaseUrl}/api/ytplay?text=${encodeURIComponent(apiTitle)}&apikey=${global.MyApiRestApikey}`);
+          const data = await response.json();
+          if (data.resultado && data.resultado.url) {
+            url = data.resultado.url;
+          } else {
+            console.error('No se pudo obtener una URL válida del API');
+          }
+        } else {
+          console.error('Título o subtítulo vacío, no se puede realizar la búsqueda');
+        }
       } catch (error) {
         console.error('Error al obtener la URL del video:', error);
       }
 
+      // Obtener enlace de audio
       const audiolink = `${global.MyApiRestBaseUrl}/api/v1/ytmp3?url=${encodeURIComponent(url)}&apikey=${global.MyApiRestApikey}`;
       const audiobuff = await fetch(audiolink).then(res => res.buffer());
 
+      // Enviar mensaje de texto con información
       await conn.sendMessage(m.chat, {
         text: text.trim(),
         contextInfo: {
@@ -53,19 +64,21 @@ const handler = async (m, { conn }) => {
             "containsAutoReply": true,
             "mediaType": 1,
             "thumbnail": image,
-            "thumbnailUrl": image,
+            "thumbnailUrl": images.coverart,
             "mediaUrl": url,
             "sourceUrl": url
           }
         }
       }, { quoted: m });
 
+      // Enviar el archivo de audio
       await conn.sendMessage(m.chat, {
         audio: audiobuff,
         fileName: `${title}.mp3`,
         mimetype: 'audio/mpeg'
       }, { quoted: m });
 
+      // Eliminar archivo temporal
       fs.unlinkSync(tmpFilePath);
     } else {
       throw new Error('Please send an audio or video file.');
