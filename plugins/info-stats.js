@@ -6,12 +6,14 @@ import moment from 'moment';
 import { generateWAMessageFromContent, jidNormalizedUser } from '@adiwajshing/baileys';
 import { runtime } from './lib/funcs_delirius.js'; // Asegúrate de que esta ruta sea correcta
 
-let mulai = fs.statSync('./proto/src/start.txt');
-let config = JSON.parse(fs.readFileSync('./proto/src/config.json'));
-let { info } = JSON.parse(fs.readFileSync('./db/info.json')); // Asegúrate de que esta ruta sea correcta
-let { stats } = info('stats');
-let usuarios_delirius = JSON.parse(fs.readFileSync('./db/user.json'));
+// Lee archivos de configuración
+const mulai = fs.statSync('./proto/src/start.txt');
+const config = JSON.parse(fs.readFileSync('./proto/src/config.json'));
+const info = JSON.parse(fs.readFileSync('./db/info.json')); // Asegúrate de que esta ruta sea correcta
+const { stats } = info('stats');
+const usuarios_delirius = JSON.parse(fs.readFileSync('./db/user.json'));
 
+// Función para formatear tiempo
 function times(second) {
   const days = Math.floor(second / 60 / 60 / 24);
   const hours = Math.floor(second / 60 / 60);
@@ -20,6 +22,7 @@ function times(second) {
   return `${days} días, ${hours} horas, ${minutes} minutos, ${sec} segundos`;
 }
 
+// Función para formatear tamaño de archivo
 function humanFileSize(bytes, si = true, dp = 1) {
   const thresh = si ? 1000 : 1024;
   if (Math.abs(bytes) < thresh) {
@@ -37,6 +40,7 @@ function humanFileSize(bytes, si = true, dp = 1) {
   return Math.round(bytes * r) / r + ' ' + units[u];
 }
 
+// Manejador del comando
 export const handler = async (m, { conn, command, usedPrefix }) => {
   if (!['ping', 'stat'].includes(command)) return;
 
@@ -118,5 +122,6 @@ export const handler = async (m, { conn, command, usedPrefix }) => {
   }
 };
 
+// Expresión regular para los comandos
 handler.command = /^(ping|stat)$/i;
 export default handler;
