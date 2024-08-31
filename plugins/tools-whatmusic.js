@@ -12,7 +12,7 @@ const handler = async (m, { conn }) => {
     if (/audio|video/.test(mime)) {
       const media = await q.download();
       const ext = mime.split('/')[1];
-      const tmpFilePath = `./src/tmp/${m.sender}.${ext}`;
+      const tmpFilePath = `./tmp/${m.sender}.${ext}`;
       fs.writeFileSync(tmpFilePath, media);
 
       let recognise;
