@@ -1,5 +1,7 @@
 import { Shazam } from 'node-shazam';
 import fetch from 'node-fetch';
+import fs from 'fs';  // Importa el módulo fs
+
 const shazam = new Shazam();
 
 const handler = async (m, { conn }) => {
