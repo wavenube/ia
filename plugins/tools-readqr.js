@@ -1,5 +1,9 @@
+// tools-readqr.js
+
 import uploadImage from '../lib/uploadImage.js';
 import fetch from 'node-fetch';
+
+const lolkeysapi = 'GataDiosV2';  // Define la clave API aquí
 
 const handler = async (m, { conn }) => {
   const q = m.quoted ? m.quoted : m;
@@ -9,6 +13,7 @@ const handler = async (m, { conn }) => {
 
   const img = await q.download?.();
   const url = await uploadImage(img);
+
   const response = await fetch(`https://api.lolhuman.xyz/api/read-qr?apikey=${lolkeysapi}&img=${url}`);
   const json = await response.json();
 
