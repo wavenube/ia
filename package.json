@@ -37,6 +37,7 @@
         "@whiskeysockets/baileys": "^6.5.0",
         "@adiwajshing/keyed-db": "^0.2.4",
         "awesome-phonenumber": "^3.4.0",
+        "@bochilteam/scraper": "^4.2.4",
         "axios": "^1.1.2",
         "form-data": "^4.0.0",
         "cfonts": "^3.1.1",
