@@ -1,4 +1,4 @@
-import { downloadContentFromMessage } from 'baileys';
+import { downloadContentFromMessage } from '@whiskeysockets/baileys';
 
 const handler = async (m, { conn }) => {
   try {
