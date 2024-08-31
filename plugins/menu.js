@@ -88,6 +88,9 @@ ${readMore}
 ☆  .stiker <url>
 ☆  .stikergif (caption|reply media)
 ☆  .stikergif <url>
+
+
+☆  .bot (txt)
       
       
 Made by ♡ ZephyrByte
