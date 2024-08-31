@@ -6,15 +6,14 @@ import fs from 'fs'
 
 //OwnerShip
 global.owner = [
-  ['919172389527', 'Shizo Techie ❤️✨', true],
-  ['919637987574', 'S.AI Bot', true],
-  ['916207142994', 'Mr. Lens Lord 📸']
+  ['5492613619545', 'Shizo Techie ❤️✨', true],
+  ['34682075812', 'S.AI Bot', true],
 ]
 global.mods = []
 global.prems = []
 
-global.author = 'Shizo The Techie'
-global.botname = 'ShizoBot'
+global.author = 'Cyber Bot'
+global.botname = 'CyberBot'
  
  
  //Api's
@@ -29,16 +28,16 @@ global.APIKeys = {
 global.shizokeys = 'shizo'
 
 //Sticker Watermarks
-global.stkpack = 'ShizoBot 🥵'
-global.stkowner = '© Shizo The Techie'
+global.stkpack = 'CyberBot'
+global.stkowner = '© CyberBot'
 
 //management
-global.bug = '*!! Sorry 💢 !!*\nSomething went wrong 🌋'
-global.stop = '*!! 🎭 Unfortunately 💔 !!*\nBot system is not Responding 🙃'
+global.bug = '*!! Lo siento 💢 !!*\nAlgo salio mal 🌋'
+global.stop = '*!! 🎭 Desafortunadamente 💔 !!*\nMi sistema no esta respondiendo 🙃'
 
 //TimeLines
-global.botdate = `*⫹⫺ Date:*  ${moment.tz('Asia/Kolkata').format('DD/MM/YY')}`
-global.bottime = `*⫹⫺ Time:* ${moment.tz('Asia/Kolkata').format('HH:mm:ss')}`
+global.botdate = `*[ 📅 ] Fecha:*  ${moment.tz('Asia/Kolkata').format('DD/MM/YY')}`
+global.bottime = `*[ ⏳ ] Hora:* ${moment.tz('Asia/Kolkata').format('HH:mm:ss')}`
 
 
 
