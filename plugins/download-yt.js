@@ -1,5 +1,6 @@
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
+// Handler para el comando .yt + link
 const handler = async function (m, { conn, args, usedPrefix }) {
     if (!args[0]) throw 'Por favor, proporciona un enlace de YouTube.';
 
@@ -11,10 +12,17 @@ const handler = async function (m, { conn, args, usedPrefix }) {
 
 // Función para enviar el mensaje interactivo con botones
 async function sendInteractiveMessage(m, conn, mensaje, youtubeLink, usedPrefix) {
-    // Generar el mensaje interactivo con botones
     const buttons = [
-        { buttonId: `${usedPrefix}audio ${youtubeLink}`, buttonText: { displayText: 'DESCARGAR AUDIO' }, type: 1 },
-        { buttonId: `${usedPrefix}video ${youtubeLink}`, buttonText: { displayText: 'DESCARGAR VIDEO' }, type: 1 }
+        {
+            buttonId: `${usedPrefix}audio ${youtubeLink}`, // Ejecuta el comando .audio <link>
+            buttonText: { displayText: 'DESCARGAR AUDIO' },
+            type: 1
+        },
+        {
+            buttonId: `${usedPrefix}video ${youtubeLink}`, // Ejecuta el comando .video <link>
+            buttonText: { displayText: 'DESCARGAR VIDEO' },
+            type: 1
+        }
     ];
 
     const buttonMessage = {
@@ -24,7 +32,28 @@ async function sendInteractiveMessage(m, conn, mensaje, youtubeLink, usedPrefix)
         headerType: 1
     };
 
-    await conn.sendMessage(m.chat, buttonMessage, { quoted: m });
+    const msg = generateWAMessageFromContent(m.chat, {
+        viewOnceMessage: {
+            message: {
+                interactiveMessage: {
+                    body: buttonMessage.text,
+                    footer: buttonMessage.footer,
+                    nativeFlowMessage: {
+                        buttons: buttons.map(btn => ({
+                            name: 'quick_reply',
+                            buttonParamsJson: JSON.stringify({
+                                display_text: btn.buttonText.displayText,
+                                id: btn.buttonId
+                            })
+                        })),
+                        messageParamsJson: "",
+                    }
+                }
+            }
+        }
+    }, { userJid: conn.user.jid, quoted: m });
+
+    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
 }
 
 // Configuración del comando
