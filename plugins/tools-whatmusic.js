@@ -13,7 +13,7 @@ const handler = async (m, { conn }) => {
       // Descargar el archivo
       const media = await q.download();
       const ext = mime.split('/')[1];
-      const tmpFilePath = `./src/tmp/${m.sender}.${ext}`;
+      const tmpFilePath = `./tmp/${m.sender}.${ext}`;
       fs.writeFileSync(tmpFilePath, media);
 
       // Reconocimiento de música
