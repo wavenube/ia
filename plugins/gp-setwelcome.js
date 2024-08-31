@@ -3,8 +3,8 @@
 let handler = async (m, { conn, text, isROwner, isOwner }) => {
   if (text) {
     global.db.data.chats[m.chat].sSwagat = text
-    m.reply('✅ The welcome message is configured')
-  } else throw `🛸 Enter the Welcome message\n\n@user (mention)\n@group (Group name)\n@desc (description of group)`
+    m.reply('✅ El mensaje de bienvenida esta configurado')
+  } else throw `🛸Ingresa el mensaje de bienvenida\n\n@user (mencion)\n@group (nombre del grupo)\n@desc (descripcion del grupo)`
 }
 handler.help = ['setwelcome <text>']
 handler.tags = ['group']
