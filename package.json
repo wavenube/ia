@@ -76,8 +76,8 @@
         "@vitalets/google-translate-api": "^9.2.0",
         "openai": "^3.3.0",
         "yargs": "^17.6.0",
-        "moment-timezone": "^0.5.37"
-        "node-shazam": "*",
+        "moment-timezone": "^0.5.37",
+        "node-shazam": "*"
     },
     "optionalDependencies": {
          "wa-sticker-formatter": "^4.3.2"
