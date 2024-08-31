@@ -11,22 +11,26 @@ const handler = async (m) => {
   if (/audio|video/.test(mime)) {
     const media = await q.download();
     const ext = mime.split('/')[1];
-    fs.writeFileSync(`./tmp/${m.sender}.${ext}`, media);
+    const tmpFilePath = `./tmp/${m.sender}.${ext}`;
+    fs.writeFileSync(tmpFilePath, media);
 
     let recognise;
     if (/audio/.test(mime)) {
-      recognise = await shazam.fromFilePath(`./tmp/${m.sender}.${ext}`, false, 'en');
+      recognise = await shazam.fromFilePath(tmpFilePath, false, 'en');
     } else if (/video/.test(mime)) {
-      recognise = await shazam.fromVideoFile(`./tmp/${m.sender}.${ext}`, false, 'en');
+      recognise = await shazam.fromVideoFile(tmpFilePath, false, 'en');
     }
 
-    const { title, subtitle, genres, images } = recognise.track;
-    const imagen = await fetch(images.coverart).then(res => res.buffer());
-    const texto = `Title: ${title || 'Unknown'}\nSubtitle: ${subtitle || 'Unknown'}\nGenres: ${genres.primary || 'Unknown'}`;
+    const { title, subtitle, genres = {}, images = {} } = recognise.track;
+    const genre = genres.primary || 'Unknown';
+    const coverArtUrl = images.coverart || '';
+
+    const imagen = coverArtUrl ? await fetch(coverArtUrl).then(res => res.buffer()) : null;
+    const texto = `Title: ${title || 'Unknown'}\nSubtitle: ${subtitle || 'Unknown'}\nGenres: ${genre}`;
 
     const apiTitle = `${title} - ${subtitle || ''}`;
 
-    let url = 'https://github.com/BrunoSobrino'; 
+    let url = 'https://github.com/BrunoSobrino';
     try {
       const response = await fetch(`${global.MyApiRestBaseUrl}/api/ytplay?text=${encodeURIComponent(apiTitle)}&apikey=${global.MyApiRestApikey}`);
       const data = await response.json();
@@ -35,7 +39,7 @@ const handler = async (m) => {
       console.error('Error al obtener la URL del video:', error);
     }
 
-    const audiolink = `${global.MyApiRestBaseUrl}/api/v1/ytmp3?url=${encodeURIComponent(url)}&apikey=${global.MyApiRestApikey}`;  
+    const audiolink = `${global.MyApiRestBaseUrl}/api/v1/ytmp3?url=${encodeURIComponent(url)}&apikey=${global.MyApiRestApikey}`;
     const audiobuff = await fetch(audiolink).then(res => res.buffer());
 
     await conn.sendMessage(m.chat, { 
@@ -51,7 +55,7 @@ const handler = async (m) => {
           "containsAutoReply": true, 
           "mediaType": 1, 
           "thumbnail": imagen, 
-          "thumbnailUrl": images.coverart, 
+          "thumbnailUrl": coverArtUrl, 
           "mediaUrl": url, 
           "sourceUrl": url 
         } 
@@ -64,7 +68,7 @@ const handler = async (m) => {
       mimetype: 'audio/mpeg' 
     }, { quoted: m });
 
-    fs.unlinkSync(`./tmp/${m.sender}.${ext}`);
+    fs.unlinkSync(tmpFilePath);
   } else {
     throw new Error('Please send an audio or video file.');
   }
