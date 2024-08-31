@@ -1,15 +1,14 @@
 import fetch from 'node-fetch';
 import axios from 'axios';
 import { youtubedl, youtubedlv2 } from '@bochilteam/scraper';
-import fs from "fs";
 import yts from 'yt-search';
 import ytmp33 from './lib/ytmp33.js';
 import ytmp44 from './lib/ytmp44.js';
 
-let limit1 = 100;
-let limit2 = 400;
-let limit_a1 = 50;
-let limit_a2 = 400;
+let limit1 = 100; // Límite en MB para videos
+let limit2 = 400; // Límite máximo en MB para videos
+let limit_a1 = 50; // Límite mínimo en MB para audios
+let limit_a2 = 400; // Límite máximo en MB para audios
 
 const handler = async (m, { conn, command, args, text, usedPrefix }) => {
   if (!text) throw `Debes escribir el nombre de la canción o video. Uso: _${usedPrefix + command} <texto>_`;
@@ -50,7 +49,7 @@ const handler = async (m, { conn, command, args, text, usedPrefix }) => {
         return;
       }
     } catch (error) {
-      console.log('Fallo el 1: ' + error)
+      console.log('Fallo el 1: ' + error);
       try {
         const audio = `${global.MyApiRestBaseUrl}/api/v1/ytmp3?url=${yt_play[0].url}&apikey=${global.MyApiRestApikey}`;
         const ttl = yt_play[0].title;
