@@ -1,6 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { generateWAMessageFromContent } from 'baileys';
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 import fs from 'fs';
 import { tiktokdl } from '@bochilteam/scraper';
 
