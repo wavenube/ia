@@ -24,7 +24,7 @@ async function sendInteractiveMessage(m, conn, mensaje, youtubeLink, usedPrefix)
                                 name: 'quick_reply',
                                 buttonParamsJson: JSON.stringify({
                                     display_text: 'DESCARGAR VIDEO',
-                                    id: `${usedPrefix}video ${youtubeLink}`
+                                    id: `${usedPrefix}video`
                                 })
                             },
                             {
