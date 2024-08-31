@@ -1,7 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
-import performanceNow from 'performance-now';
+import { generateWAMessageFromContent } from 'baileys';
 import fs from 'fs';
 import { tiktokdl } from '@bochilteam/scraper';
 
@@ -38,7 +37,7 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
     }, { quoted: m, userJid: conn.user.jid });
     await conn.relayMessage(m.chat, prep.message, { messageId: prep.key.id, mentions: [m.sender] });
 
-    // Intentar obtener el video usando la API
+    // Intentar obtener el video usando tiktokdl
     const dataFn = await conn.getFile(`${global.MyApiRestBaseUrl}/api/tiktokv2?url=${args[0]}&apikey=${global.MyApiRestApikey}`);
     await conn.sendMessage(m.chat, { video: dataFn.data, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
   } catch (e1) {
@@ -50,7 +49,11 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
       try {
         // Usar tiktokdl
         const tTiktok = await tiktokdlF(args[0]);
-        await conn.sendMessage(m.chat, { video: { url: tTiktok.video }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
+        if (tTiktok.status) {
+          await conn.sendMessage(m.chat, { video: { url: tTiktok.video }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
+        } else {
+          throw 'No se pudo obtener el video de TikTok usando el servicio alternativo.';
+        }
       } catch (e3) {
         try {
           const { video } = await tiktokdl(args[0]);
@@ -69,26 +72,30 @@ export default handler;
 
 async function tiktokdlF(url) {
   if (!/tiktok/.test(url)) throw 'Enlace no válido. Ejemplo: _!tiktok https://vm.tiktok.com/ZM686Q4ER/_';
-  
-  const gettoken = await axios.get('https://tikdown.org/id');
-  const $ = cheerio.load(gettoken.data);
-  const token = $('#download-form > input[type=hidden]:nth-child(2)').attr('value');
-  const param = { url: url, _token: token };
-  
-  const { data } = await axios.request({
-    method: 'post',
-    url: 'https://tikdown.org/getAjax?',
-    data: new URLSearchParams(Object.entries(param)),
-    headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', 'user-agent': 'Mozilla/5.0' }
-  });
-  
-  const getdata = cheerio.load(data.html);
-  if (data.status) {
-    return {
-      status: true,
-      video: getdata('div.download-links > div:nth-child(1) > a').attr('href')
-    };
-  } else {
-    throw 'No se pudo descargar el video. Intenta con otro enlace.';
+
+  try {
+    const gettoken = await axios.get('https://tikdown.org/id');
+    const $ = cheerio.load(gettoken.data);
+    const token = $('#download-form > input[type=hidden]:nth-child(2)').attr('value');
+    const param = { url: url, _token: token };
+
+    const { data } = await axios.post('https://tikdown.org/getAjax?', new URLSearchParams(param), {
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'user-agent': 'Mozilla/5.0',
+      },
+    });
+
+    const getdata = cheerio.load(data.html);
+    if (data.status) {
+      return {
+        status: true,
+        video: getdata('div.download-links > div:nth-child(1) > a').attr('href')
+      };
+    } else {
+      return { status: false };
+    }
+  } catch (e) {
+    throw 'No se pudo procesar la descarga del video.';
   }
 }
