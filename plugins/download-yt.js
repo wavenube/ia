@@ -13,32 +13,25 @@ const handler = async function(m, { conn, args, usedPrefix }) {
 async function sendInteractiveMessage(m, conn, mensaje, youtubeLink, usedPrefix) {
     // Generar el mensaje interactivo con botones
     const msg = generateWAMessageFromContent(m.chat, {
-        viewOnceMessage: {
-            message: {
-                interactiveMessage: {
-                    body: { text: mensaje },
-                    footer: { text: 'Selecciona una opción' }, // Pie de página opcional
-                    nativeFlowMessage: {
-                        buttons: [
-                            {
-                                name: 'quick_reply',
-                                buttonParamsJson: JSON.stringify({
-                                    display_text: 'DESCARGAR VIDEO',
-                                    id: `${usedPrefix}getvid ${youtubeLink}`
-                                })
-                            },
-                            {
-                                name: 'quick_reply',
-                                buttonParamsJson: JSON.stringify({
-                                    display_text: 'DESCARGAR AUDIO',
-                                    id: `${usedPrefix}getaud ${youtubeLink}`
-                                })
-                            },
-                        ],
-                        messageParamsJson: "",
+        templateMessage: {
+            hydratedTemplate: {
+                hydratedContentText: mensaje,
+                hydratedFooterText: 'Selecciona una opción',
+                hydratedButtons: [
+                    {
+                        quickReplyButton: {
+                            displayText: 'DESCARGAR VIDEO',
+                            id: `${usedPrefix}video ${youtubeLink}`
+                        }
                     },
-                },
-            },
+                    {
+                        quickReplyButton: {
+                            displayText: 'DESCARGAR AUDIO',
+                            id: `${usedPrefix}audio ${youtubeLink}`
+                        }
+                    }
+                ]
+            }
         }
     }, { userJid: conn.user.jid, quoted: m });
 
