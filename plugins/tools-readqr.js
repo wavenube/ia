@@ -16,4 +16,8 @@ const handler = async (m, { conn }) => {
 };
 
 handler.command = /^(readqr)$/i;
+handler.tags = ['tools'];
+handler.help = ['readqr'];
+handler.exp = 5;
+
 export default handler;
