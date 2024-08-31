@@ -2,18 +2,12 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 import { tiktokdl } from '@bochilteam/scraper';
-import fs from 'fs';
 
 const handler = async (m, { conn, text, args, usedPrefix, command }) => {
-  const datas = global;
-  const idioma = datas.db.data.users[m.sender].language;
-  const _translate = JSON.parse(fs.readFileSync(`./src/languages/${idioma}.json`));
-  const tradutor = _translate.plugins.descargas_tiktok;
+  if (!text) throw `Por favor, proporciona un enlace de TikTok. Usa _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  if (!/(?:https?:\/\/)?(?:www\.|m\.)?tiktok\.com\/([^\s&]+)/gi.test(text)) throw `El enlace proporcionado no es válido. Usa _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
 
-  if (!text) throw `${tradutor.texto1} _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
-  if (!/(?:https?:\/\/)?(?:www\.|m\.)?tiktok\.com\/([^\s&]+)/gi.test(text)) throw `${tradutor.texto2} _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
-
-  const texto = `${tradutor.texto3}`;
+  const texto = `Descargando video de TikTok.`;
   const image1 = 'https://example.com/thumbnail.jpg'; // Cambia esto por una imagen real
 
   try {
@@ -53,7 +47,7 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
       console.error('Error al obtener el video desde @bochilteam/scraper:', e.message);
     }
 
-    throw `${tradutor.texto9}`;
+    throw 'No se pudo obtener el video de TikTok.';
   } catch (error) {
     console.error('Error en el manejo del comando:', error.message);
     throw 'Hubo un problema al procesar tu solicitud.';
