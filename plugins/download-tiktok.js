@@ -4,20 +4,16 @@ import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 import { tiktokdl } from '@bochilteam/scraper';
 import fs from 'fs';
 
-let tiktok;
-import('@xct007/frieren-scraper')
-  .then((module) => {
-    tiktok = module.tiktok;
-  })
-  .catch((error) => {
-    console.error('No se pudo importar "@xct007/frieren-scraper":', error);
-  });
-
 const handler = async (m, { conn, text, args, usedPrefix, command }) => {
-  if (!text) throw `Por favor proporciona un enlace de TikTok. Ejemplo: _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
-  if (!/(?:https?:\/\/)?(?:www\.|m\.)?tiktok\.com\/([^\s&]+)/gi.test(text)) throw `Enlace no válido. Ejemplo: _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  const datas = global;
+  const idioma = datas.db.data.users[m.sender].language;
+  const _translate = JSON.parse(fs.readFileSync(`./src/languages/${idioma}.json`));
+  const tradutor = _translate.plugins.descargas_tiktok;
 
-  const texto = 'Descargando video de TikTok...';
+  if (!text) throw `${tradutor.texto1} _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  if (!/(?:https?:\/\/)?(?:www\.|m\.)?tiktok\.com\/([^\s&]+)/gi.test(text)) throw `${tradutor.texto2} _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+
+  const texto = `${tradutor.texto3}`;
   const image1 = 'https://example.com/thumbnail.jpg'; // Cambia esto por una imagen real
 
   try {
@@ -47,29 +43,7 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
       console.error('Error al obtener el video desde el API Rest:', e.message);
     }
 
-    // Prueba el módulo @xct007/frieren-scraper
-    try {
-      const dataF = await tiktok.v1(args[0]);
-      await conn.sendMessage(m.chat, { video: { url: dataF.play }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
-      return;
-    } catch (e) {
-      console.error('Error al obtener el video desde @xct007/frieren-scraper:', e.message);
-    }
-
-    // Prueba tiktokdlF
-    try {
-      const tTiktok = await tiktokdlF(args[0]);
-      if (tTiktok.status) {
-        await conn.sendMessage(m.chat, { video: { url: tTiktok.video }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
-        return;
-      } else {
-        throw 'No se pudo obtener el video usando TikTokdlF.';
-      }
-    } catch (e) {
-      console.error('Error al obtener el video desde TikTokdlF:', e.message);
-    }
-
-    // Prueba el módulo @bochilteam/scraper
+    // Prueba tiktokdl
     try {
       const { video } = await tiktokdl(args[0]);
       const url = video.no_watermark2 || video.no_watermark || 'https://tikcdn.net' + video.no_watermark_raw || video.no_watermark_hd;
@@ -79,7 +53,7 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
       console.error('Error al obtener el video desde @bochilteam/scraper:', e.message);
     }
 
-    throw 'No se pudo obtener el video de TikTok. Asegúrate de que el enlace sea válido.';
+    throw `${tradutor.texto9}`;
   } catch (error) {
     console.error('Error en el manejo del comando:', error.message);
     throw 'Hubo un problema al procesar tu solicitud.';
@@ -88,35 +62,3 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
 
 handler.command = /^(tiktok|ttdl|tiktokdl|tiktoknowm|tt|ttnowm|tiktokaudio)$/i;
 export default handler;
-
-async function tiktokdlF(url) {
-  if (!/tiktok/.test(url)) throw 'Enlace no válido. Ejemplo: _!tiktok https://vm.tiktok.com/ZM686Q4ER/_';
-
-  try {
-    const gettoken = await axios.get('https://tikdown.org/id');
-    const $ = cheerio.load(gettoken.data);
-    const token = $('#download-form > input[type=hidden]:nth-child(2)').attr('value');
-    const param = { url: url, _token: token };
-
-    const { data } = await axios.post('https://tikdown.org/getAjax?', new URLSearchParams(param), {
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'user-agent': 'Mozilla/5.0',
-      },
-    });
-
-    const getdata = cheerio.load(data.html);
-    if (data.status) {
-      return {
-        status: true,
-        video: getdata('div.download-links > div:nth-child(1) > a').attr('href')
-      };
-    } else {
-      return { status: false };
-    }
-  } catch (e) {
-    console.error('Error en tiktokdlF:', e.message);
-    throw 'No se pudo procesar la descarga del video.';
-  }
-}
-
