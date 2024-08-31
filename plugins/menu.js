@@ -29,71 +29,69 @@ const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     const readMore = more.repeat(850);
 
     const menuText = `
-      *Bienvenido al Menú de Comandos*
+*Bienvenido al Menú de Comandos*
       
-      👤 *Usuario:* ${name}
-      🔢 *Nivel:* ${level}
-      🎓 *Experiencia:* ${exp} / ${xp}
-      🛡️ *Rol:* ${role}
-      📊 *Limite:* ${limit}
-      👥 *Registrados:* ${totalreg} / ${rtotalreg}
+👤 *Usuario:* ${name}
+🔢 *Nivel:* ${level}
+🎓 *Experiencia:* ${exp} / ${xp}
+🛡️ *Rol:* ${role}
+📊 *Limite:* ${limit}
+👥 *Registrados:* ${totalreg} / ${rtotalreg}
       
-      📅 *Fecha:* ${week}, ${date}
-      ⏰ *Uptime:* ${uptime}
-      ${readMore}
+📅 *Fecha:* ${week}, ${date}
+⏰ *Uptime:* ${uptime}
+${readMore}
       
-      *Comandos Disponibles:*
-      ☆  .blocklist
-      ☆  .owner
-      ☆  .runtime
-      ☆  .script
-      
-      
-      
-      ☆  .enable <option>
-      ☆  .disable <option>
+*Comandos Disponibles:*
+☆  .blocklist
+☆  .owner
+☆  .runtime
+☆  .script
       
       
       
-      ☆  .Setdesc <text>
-      ☆  .setname <text>
-      ☆  .add
-      ☆  .delete
-      ☆  .demote (@tag)
-      ☆  .infogp
-      ☆  .hidetag
-      ☆  .invite <919172x>
-      ☆  .kick @user
-      ☆  .link
-      ☆  .poll question|option|option
-      ☆  .setwelcome <text>
+☆  .enable <option>
+☆  .disable <option>
       
       
       
-      ☆  .ban @user
-      ☆  .banchat
-      ☆  .unban @user
-      ☆  .unbanchat
-      ☆  .listban
+☆  .Setdesc <text>
+☆  .setname <text>
+☆  .add
+☆  .delete
+☆  .demote (@tag)
+☆  .infogp
+☆  .hidetag
+☆  .invite <919172x>
+☆  .kick @user
+☆  .link
+☆  .poll question|option|option
+☆  .setwelcome <text>
       
       
       
-      ☆  .reg <name.age>
-      ☆  .mysn
-      ☆  .unreg <Num Serie>
+☆  .ban @user
+☆  .banchat
+☆  .unban @user
+☆  .unbanchat
+☆  .listban
       
       
       
-      ☆  .stiker (caption|reply media)
-      ☆  .stiker <url>
-      ☆  .stikergif (caption|reply media)
-      ☆  .stikergif <url>
+☆  .reg <name.age>
+☆  .mysn
+☆  .unreg <Num Serie>
       
       
-      Made by ♡ Shizo
       
-      *Made by ♡ Shizo*
-    `.trim();
+☆  .stiker (caption|reply media)
+☆  .stiker <url>
+☆  .stikergif (caption|reply media)
+☆  .stikergif <url>
+      
+      
+Made by ♡ ZephyrByte
+          `.trim();
 
     const fkontak = {
       key: { participants: "0@s.whatsapp.net", remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
