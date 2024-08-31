@@ -20,6 +20,23 @@ function times(second) {
   return `${days} días, ${hours} horas, ${minutes} minutos, ${sec} segundos`;
 }
 
+function humanFileSize(bytes, si = true, dp = 1) {
+  const thresh = si ? 1000 : 1024;
+  if (Math.abs(bytes) < thresh) {
+    return bytes + ' B';
+  }
+  const units = si
+    ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+  let u = -1;
+  const r = 10 ** dp;
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+  return Math.round(bytes * r) / r + ' ' + units[u];
+}
+
 export const handler = async (m, { conn, command, usedPrefix }) => {
   if (!['ping', 'stat'].includes(command)) return;
 
@@ -31,15 +48,15 @@ export const handler = async (m, { conn, command, usedPrefix }) => {
     const ram = await si.mem();
     const cpu = await si.cpuCurrentSpeed();
     const disk = await si.fsSize();
-    const up = si.time();
+    const up = await si.time();
     const botNumber = jidNormalizedUser(conn.user.id);
-    
+
     let json = {
       server_time: new Date(up.current).toLocaleString('pe'),
       uptime: times(up.uptime),
       memory: `${humanFileSize(ram.free, true, 1)} libre de ${humanFileSize(ram.total, true, 1)}`,
       memory_used: humanFileSize(ram.used, true, 1),
-      cpu: `${cpu.avg} Ghz`,
+      cpu: `${cpu.avg} GHz`,
       disk: `${humanFileSize(disk[0].available, true, 1)} libre de ${humanFileSize(disk[0].size, true, 1)}`,
       chats: {
         total: conn.chats.length,
@@ -101,19 +118,5 @@ export const handler = async (m, { conn, command, usedPrefix }) => {
   }
 };
 
-function humanFileSize(bytes, si = true, dp = 1) {
-  const thresh = si ? 1000 : 1024;
-  if (Math.abs(bytes) < thresh) {
-    return bytes + ' B';
-  }
-  const units = si
-    ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-  let u = -1;
-  const r = 10 ** dp;
-  do {
-    bytes /= thresh;
-    ++u;
-  } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-  return Math.round(bytes * r) / r + ' ' + units[u];
-}
+handler.command = /^(ping|stat)$/i;
+export default handler;
