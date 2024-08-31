@@ -35,12 +35,7 @@ async function sendInteractiveMessage(m, conn, mensaje, youtubeLink, usedPrefix)
             hydratedTemplate: {
                 hydratedContentText: buttonMessage.text,
                 hydratedFooterText: buttonMessage.footer,
-                hydratedButtons: buttonMessage.buttons.map(button => ({
-                    urlButton: {
-                        displayText: button.buttonText.displayText,
-                        url: button.buttonId
-                    }
-                }))
+                hydratedButtons: buttonMessage.buttons
             }
         }
     }, { userJid: conn.user.jid, quoted: m });
