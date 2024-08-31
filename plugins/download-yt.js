@@ -1,6 +1,6 @@
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
-const handler = async function(m, { conn, args, usedPrefix }) {
+const handler = async function (m, { conn, args, usedPrefix }) {
     if (!args[0]) throw 'Por favor, proporciona un enlace de YouTube.';
 
     const youtubeLink = args[0];
@@ -12,38 +12,19 @@ const handler = async function(m, { conn, args, usedPrefix }) {
 // Función para enviar el mensaje interactivo con botones
 async function sendInteractiveMessage(m, conn, mensaje, youtubeLink, usedPrefix) {
     // Generar el mensaje interactivo con botones
-    const msg = generateWAMessageFromContent(m.chat, {
-        viewOnceMessage: {
-            message: {
-                interactiveMessage: {
-                    body: { text: mensaje },
-                    footer: { text: 'Selecciona una opción' }, // Pie de página opcional
-                    nativeFlowMessage: {
-                        buttons: [
-                            {
-                                name: 'quick_reply',
-                                buttonParamsJson: JSON.stringify({
-                                    display_text: 'DESCARGAR VIDEO',
-                                    id: `${usedPrefix}video ${youtubeLink}`
-                                })
-                            },
-                            {
-                                name: 'quick_reply',
-                                buttonParamsJson: JSON.stringify({
-                                    display_text: 'DESCARGAR AUDIO',
-                                    id: `${usedPrefix}audio ${youtubeLink}`
-                                })
-                            },
-                        ],
-                        messageParamsJson: "",
-                    },
-                },
-            },
-        }
-    }, { userJid: conn.user.jid, quoted: m });
+    const buttons = [
+        { buttonId: `${usedPrefix}audio ${youtubeLink}`, buttonText: { displayText: 'DESCARGAR AUDIO' }, type: 1 },
+        { buttonId: `${usedPrefix}video ${youtubeLink}`, buttonText: { displayText: 'DESCARGAR VIDEO' }, type: 1 }
+    ];
 
-    // Enviar el mensaje
-    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+    const buttonMessage = {
+        text: mensaje,
+        footer: 'Selecciona una opción',
+        buttons: buttons,
+        headerType: 1
+    };
+
+    await conn.sendMessage(m.chat, buttonMessage, { quoted: m });
 }
 
 // Configuración del comando
