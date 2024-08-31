@@ -19,7 +19,7 @@ const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     const totalreg = Object.keys(global.db.data.users).length;
     const rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length;
 
-    const pp = global.imagen1 || './media/contact.png';  // Imagen predeterminada
+    const pp = global.imagen1 || './media/abyss.png';  // Imagen predeterminada
     const more = String.fromCharCode(8206);
     const readMore = more.repeat(850);
 
