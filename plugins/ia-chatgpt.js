@@ -14,6 +14,7 @@
 
 import fetch from 'node-fetch';
 import axios from 'axios';
+import fs from 'fs';
 import translate from '@vitalets/google-translate-api';
 import {Configuration, OpenAIApi} from 'openai';
 
