@@ -1,8 +1,6 @@
-import { Shazam } from 'node-shazam';
 import fetch from 'node-fetch';
-import fs from 'fs';  // Importa el módulo fs
-
-const shazam = new Shazam();
+import fs from 'fs';
+import axios from 'axios';  // Usar axios para realizar solicitudes HTTP
 
 const handler = async (m, { conn }) => {
   try {
@@ -16,18 +14,24 @@ const handler = async (m, { conn }) => {
       const tmpFilePath = `./tmp/${m.sender}.${ext}`;
       fs.writeFileSync(tmpFilePath, media);
 
-      // Reconocimiento de música
-      let recognise;
-      if (/audio/.test(mime)) {
-        recognise = await shazam.recognize(tmpFilePath, 'audio');
-      } else if (/video/.test(mime)) {
-        recognise = await shazam.recognize(tmpFilePath, 'video');
-      }
+      // Reconocimiento de música usando una API (por ejemplo, ACRCloud o similar)
+      const buffer = fs.readFileSync(tmpFilePath);
+      const response = await axios({
+        method: 'post',
+        url: 'https://api.acrcloud.com/v1/identify', // Asegúrate de cambiar esto a la URL de la API de reconocimiento que estás utilizando
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Authorization': 'Bearer YOUR_API_KEY_HERE', // Reemplaza con tu clave de API
+        },
+        data: buffer,
+      });
+
+      const recognise = response.data;
 
       // Extraer información
-      const { title, subtitle, artists, genres, images } = recognise.track;
+      const { title, subtitle, artists, genres, images } = recognise.metadata.music[0]; // La estructura de datos puede variar según la API
       const image = await (await fetch(images.coverart)).buffer();
-      const text = `Title: ${title || 'Unknown'}\nSubtitle: ${subtitle || 'Unknown'}\nGenres: ${genres.primary || 'Unknown'}`;
+      const text = `Title: ${title || 'Unknown'}\nSubtitle: ${subtitle || 'Unknown'}\nGenres: ${genres ? genres[0] : 'Unknown'}`;
 
       // Obtener URL de video
       const apiTitle = `${title} - ${subtitle || ''}`;
