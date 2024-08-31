@@ -1,28 +1,13 @@
 import fs from 'fs';
 import os from 'os';
-import si from 'systeminformation';
-import speed from 'performance-now';
-import moment from 'moment';
+import performanceNow from 'performance-now';
 import { generateWAMessageFromContent, jidNormalizedUser } from '@adiwajshing/baileys';
-import { runtime } from './lib/funcs_delirius.js'; // Asegúrate de que esta ruta sea correcta
 
-// Lee archivos de configuración
-const mulai = fs.statSync('./proto/src/start.txt');
-const config = JSON.parse(fs.readFileSync('./proto/src/config.json'));
-const info = JSON.parse(fs.readFileSync('./db/info.json')); // Asegúrate de que esta ruta sea correcta
-const { stats } = info('stats');
-const usuarios_delirius = JSON.parse(fs.readFileSync('./db/user.json'));
+// Archivo que registra el inicio
+const startFile = './proto/src/start.txt';
+const startTime = fs.existsSync(startFile) ? fs.statSync(startFile).mtime : new Date();
 
-// Función para formatear tiempo
-function times(second) {
-  const days = Math.floor(second / 60 / 60 / 24);
-  const hours = Math.floor(second / 60 / 60);
-  const minutes = Math.floor(second / 60);
-  const sec = Math.floor(second);
-  return `${days} días, ${hours} horas, ${minutes} minutos, ${sec} segundos`;
-}
-
-// Función para formatear tamaño de archivo
+// Función para formatear el tamaño de archivo
 function humanFileSize(bytes, si = true, dp = 1) {
   const thresh = si ? 1000 : 1024;
   if (Math.abs(bytes) < thresh) {
@@ -40,71 +25,52 @@ function humanFileSize(bytes, si = true, dp = 1) {
   return Math.round(bytes * r) / r + ' ' + units[u];
 }
 
+// Función para formatear el tiempo de ejecución
+function formatUptime(seconds) {
+  const days = Math.floor(seconds / (3600 * 24));
+  const hours = Math.floor((seconds % (3600 * 24)) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${days} días, ${hours} horas, ${minutes} minutos, ${secs} segundos`;
+}
+
 // Manejador del comando
-export const handler = async (m, { conn, command, usedPrefix }) => {
-  if (!['ping', 'stat'].includes(command)) return;
+export const handler = async (m, { conn, command }) => {
+  if (!['ping', 'stats'].includes(command)) return;
 
   try {
-    const mtime = new Date(mulai.mtime);
-    const now = new Date();
-    const timestampe = speed();
-    const latensie = speed() - timestampe;
-    const ram = await si.mem();
-    const cpu = await si.cpuCurrentSpeed();
-    const disk = await si.fsSize();
-    const up = await si.time();
+    const start = performanceNow();
+    const ram = os.totalmem() - os.freemem(); // Usado - Libre RAM
+    const uptime = os.uptime(); // Tiempo de actividad en segundos
+    const elapsed = performanceNow() - start; // Tiempo de respuesta
+
     const botNumber = jidNormalizedUser(conn.user.id);
 
-    let json = {
-      server_time: new Date(up.current).toLocaleString('pe'),
-      uptime: times(up.uptime),
-      memory: `${humanFileSize(ram.free, true, 1)} libre de ${humanFileSize(ram.total, true, 1)}`,
-      memory_used: humanFileSize(ram.used, true, 1),
-      cpu: `${cpu.avg} GHz`,
-      disk: `${humanFileSize(disk[0].available, true, 1)} libre de ${humanFileSize(disk[0].size, true, 1)}`,
-      chats: {
-        total: conn.chats.length,
-        private: conn.chats.filter(x => x.id.includes('@s.whatsapp.net')).length,
-        groups: conn.chats.filter(x => x.id.includes('@g.us')).length
-      }
-    };
+    let statsText = `
+* Estadísticas del Bot *
 
-    let txtping = `\n– B O T  S T A T\n
-› Ram : ${json.memory}
-› Memoria : ${json.memory_used}
-› Disco : ${json.disk}
-› Ejecución : ${moment.duration((now - mtime) / 1000, 'seconds').locale('es').humanize()}
-› OS uptime : ${moment.duration(os.uptime(), 'seconds').locale('es').humanize()}
-* *${Object.keys(usuarios_delirius).length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}* usuarios
-* ${humanFileSize(stats.filesize, true)} media enviada
-* ${humanFileSize(stats.bufferRecv, true)} media recibida
-* *${stats.msgRecv.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}* mensajes recibidos
-* *${stats.msgSent.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}* mensajes enviados
-* ${json.chats.total} chats totales
-* ${json.chats.private} chats privados
-* ${json.chats.groups} chats grupales
-* ${stats.autodownload} autodescargas
-* *${stats.sticker.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}* stickers creados
-› Runtime : ${runtime(process.uptime())}\n
-– S Y S T E M\n
-* ${config.composing ? '[ √ ]' : '[ × ]'} Autotyping
-* ${config.autoRead ? '[ √ ]' : '[ × ]'} Autoread
-* ${config.autoPost ? '[ √ ]' : '[ × ]'} Autopost
-› CPU : ${json.cpu}
-› Servidor : ${json.server_time}
-› Prefix : (multi) (!./#-)\n
-> Powered By Delirius (神志不清)`;
+› Tiempo de Respuesta: ${elapsed.toFixed(2)} ms
+› RAM Usada: ${humanFileSize(ram)}
+› Uptime: ${formatUptime(uptime)}
 
-    const extendedText = generateWAMessageFromContent(
+* Sistema *
+› CPU: ${os.cpus()[0].model}
+› Memoria Total: ${humanFileSize(os.totalmem())}
+› Memoria Libre: ${humanFileSize(os.freemem())}
+› Plataforma: ${os.platform()} (${os.release()})
+› Arquitectura: ${os.arch()}
+› Nodo: ${process.version}
+    `;
+
+    const message = generateWAMessageFromContent(
       m.chat,
       {
         extendedTextMessage: {
-          text: txtping,
+          text: statsText,
           contextInfo: {
             externalAdReply: {
-              title: '– E S T A D I S T I C A S',
-              body: runtime(process.uptime()),
-              sourceUrl: config.appWeb,
+              title: 'Estadísticas del Bot',
+              body: 'Información del bot y el sistema',
               mediaType: 1,
               renderLargerThumbnail: true,
               showAdAttribution: true,
@@ -116,12 +82,12 @@ export const handler = async (m, { conn, command, usedPrefix }) => {
       { userJid: botNumber, quoted: m }
     );
 
-    await conn.relayMessage(m.chat, extendedText.message, { messageId: extendedText.key.id });
+    await conn.relayMessage(m.chat, message.message, { messageId: message.key.id });
   } catch (error) {
     console.error('Error en el comando stats:', error);
   }
 };
 
 // Expresión regular para los comandos
-handler.command = /^(ping|stat)$/i;
+handler.command = /^(ping|stats)$/i;
 export default handler;
