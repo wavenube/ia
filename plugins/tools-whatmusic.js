@@ -35,7 +35,7 @@ const handler = async (m) => {
       const apiBaseUrl = global.MyApiRestBaseUrl || 'https://example.com'; // Reemplaza con un valor válido si es necesario
       const apiKey = global.MyApiRestApikey || 'your-api-key-here'; // Reemplaza con tu API key
 
-      let url = 'https://github.com/BrunoSobrino'; 
+      let url = 'https://instagram.com/agostini.fm'; 
       try {
         const response = await fetch(`${apiBaseUrl}/api/ytplay?text=${encodeURIComponent(apiTitle)}&apikey=${apiKey}`);
         const data = await response.json();
