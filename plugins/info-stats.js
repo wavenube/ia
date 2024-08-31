@@ -1,4 +1,4 @@
-import process from 'process';
+import os from 'os';
 import performanceNow from 'performance-now';
 
 // Función para formatear el tamaño de archivo
