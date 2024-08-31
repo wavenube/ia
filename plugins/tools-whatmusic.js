@@ -1,7 +1,7 @@
-import { Shazam } from 'node-shazam';
-import fetch from 'node-fetch';
-import fs from 'fs';
-import { downloadContentFromMessage } from '@whiskeysockets/baileys';
+const { Shazam } = require('node-shazam');
+const fetch = require('node-fetch');
+const fs = require('fs');
+const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
 
 const shazam = new Shazam();
 
@@ -57,4 +57,4 @@ const handler = async (m, { conn }) => {
 
 handler.command = /^(quemusica|quemusicaes|whatmusic|shazam)$/i;
 
-export default handler;
+module.exports = handler;
