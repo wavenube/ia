@@ -15,9 +15,9 @@ const handler = async (m) => {
 
     let recognise;
     if (/audio/.test(mime)) {
-      recognise = await shazam.fromFilePath(`./src/tmp/${m.sender}.${ext}`, false, 'en');
+      recognise = await shazam.fromFilePath(`./tmp/${m.sender}.${ext}`, false, 'en');
     } else if (/video/.test(mime)) {
-      recognise = await shazam.fromVideoFile(`./src/tmp/${m.sender}.${ext}`, false, 'en');
+      recognise = await shazam.fromVideoFile(`./tmp/${m.sender}.${ext}`, false, 'en');
     }
 
     const { title, subtitle, genres, images } = recognise.track;
