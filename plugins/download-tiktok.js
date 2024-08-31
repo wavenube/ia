@@ -1,4 +1,4 @@
- import axios from 'axios';
+import axios from 'axios';
 import cheerio from 'cheerio';
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 import { tiktokdl } from '@bochilteam/scraper';
@@ -39,16 +39,17 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
     await conn.relayMessage(m.chat, prep.message, { messageId: prep.key.id, mentions: [m.sender] });
 
     try {
-      // Intentar obtener el video usando el servicio API Rest
       const dataFn = await conn.getFile(`${global.MyApiRestBaseUrl}/api/tiktokv2?url=${args[0]}&apikey=${global.MyApiRestApikey}`);
       await conn.sendMessage(m.chat, { video: dataFn.data, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
     } catch (e) {
-      // Intentar obtener el video usando @xct007/frieren-scraper
+      console.error('Error al obtener el video desde el API Rest:', e.message);
+      
       try {
         const dataF = await tiktok.v1(args[0]);
         await conn.sendMessage(m.chat, { video: { url: dataF.play }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
       } catch (e) {
-        // Intentar obtener el video usando tiktokdl
+        console.error('Error al obtener el video desde @xct007/frieren-scraper:', e.message);
+
         try {
           const tTiktok = await tiktokdlF(args[0]);
           if (tTiktok.status) {
@@ -57,19 +58,21 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
             throw 'No se pudo obtener el video usando TikTokdlF.';
           }
         } catch (e) {
-          // Intentar obtener el video usando @bochilteam/scraper
+          console.error('Error al obtener el video desde TikTokdlF:', e.message);
+
           try {
             const { video } = await tiktokdl(args[0]);
             const url = video.no_watermark2 || video.no_watermark || 'https://tikcdn.net' + video.no_watermark_raw || video.no_watermark_hd;
             await conn.sendMessage(m.chat, { video: { url: url }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
           } catch (e) {
+            console.error('Error al obtener el video desde @bochilteam/scraper:', e.message);
             throw 'No se pudo obtener el video de TikTok. Asegúrate de que el enlace sea válido.';
           }
         }
       }
     }
   } catch (error) {
-    console.error('Error en el manejo del comando:', error);
+    console.error('Error en el manejo del comando:', error.message);
     throw 'Hubo un problema al procesar tu solicitud.';
   }
 };
@@ -103,6 +106,7 @@ async function tiktokdlF(url) {
       return { status: false };
     }
   } catch (e) {
+    console.error('Error en tiktokdlF:', e.message);
     throw 'No se pudo procesar la descarga del video.';
   }
 }
