@@ -1,8 +1,6 @@
-import ShazamAPI from 'shazam-api';
+import { Shazam } from 'node-shazam';
 import fetch from 'node-fetch';
-import fs from 'fs';
-
-const shazam = new ShazamAPI();
+const shazam = new Shazam();
 
 const handler = async (m, { conn }) => {
   try {
