@@ -15,10 +15,10 @@ let handler = async function (m, { conn, __dirname }) {
       const repoData = response.data;
 
       const formattedInfo = `
-📂 Repository Name: ${repoData.name}
-📝 Description: ${repoData.description}
-👤 Owner: ${repoData.owner.login}
-⭐ Stars: ${repoData.stargazers_count}
+📂 Nombre del Repositorio: ${repoData.name}
+📝 Descripcion: ${repoData.description}
+👤 Creador: ${repoData.owner.login}
+⭐ Estrellas: ${repoData.stargazers_count}
 🍴 Forks: ${repoData.forks_count}
 🌐 URL: ${repoData.html_url}
       `.trim();
