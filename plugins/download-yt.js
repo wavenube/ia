@@ -1,11 +1,11 @@
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
 // Handler para el comando .yt + link
-const handler = async function (m, { conn, args, usedPrefix }) {
+const handler = async function(m, { conn, args, usedPrefix }) {
     if (!args[0]) throw 'Por favor, proporciona un enlace de YouTube.';
 
     const youtubeLink = args[0];
-    const mensaje = `¿Cómo deseas descargar el contenido de YouTube?`;
+    const mensaje = '¿Cómo deseas descargar el contenido de YouTube?';
 
     await sendInteractiveMessage(m, conn, mensaje, youtubeLink, usedPrefix);
 };
@@ -30,26 +30,18 @@ async function sendInteractiveMessage(m, conn, mensaje, youtubeLink, usedPrefix)
         headerType: 1
     };
 
-    const messageContent = {
-        interactiveMessage: {
-            body: buttonMessage.text,
-            footer: buttonMessage.footer,
-            nativeFlowMessage: {
-                buttons: buttonMessage.buttons.map(btn => ({
-                    name: 'quick_reply',
-                    buttonParamsJson: JSON.stringify({
-                        display_text: btn.buttonText.displayText,
-                        id: btn.buttonId
-                    })
-                })),
-                messageParamsJson: "",
-            },
-        }
-    };
-
     const msg = generateWAMessageFromContent(m.chat, {
-        viewOnceMessage: {
-            message: messageContent
+        templateMessage: {
+            hydratedTemplate: {
+                hydratedContentText: buttonMessage.text,
+                hydratedFooterText: buttonMessage.footer,
+                hydratedButtons: buttonMessage.buttons.map(button => ({
+                    urlButton: {
+                        displayText: button.buttonText.displayText,
+                        url: button.buttonId
+                    }
+                }))
+            }
         }
     }, { userJid: conn.user.jid, quoted: m });
 
