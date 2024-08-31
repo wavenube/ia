@@ -34,6 +34,26 @@ Límites: ${limit}
 Registro: ${registered ? 'Registrado' : 'No registrado'}
 Premium: ${premiumTime > 0 ? 'Sí' : (isPrems ? 'Premium' : 'No premium')}
 Hash: ${sn}`;
+
+    
+    const contextInfo = {
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: "120363318622514917@newsletter",
+        serverMessageId: 1,
+        newsletterName: "Abyss Bot"
+      },
+      externalAdReply: {
+        mediaUrl: "https://whatsapp.com/channel/0029VakDx9I0gcfFXnzZIX2v",
+        mediaType: 'VIDEO',
+        description: 'canal del grupo',
+        title: 'Abyss Bot',
+        body: "By: ZephyrByte",
+        thumbnailUrl: "https://i.ibb.co/Qjf1sdk/abyss-profile.png",
+        sourceUrl: "https://whatsapp.com/channel/0029VakDx9I0gcfFXnzZIX2v"
+      }
+    };
+
     
     // Enviar el mensaje con la imagen de perfil y la cadena de perfil
     conn.sendMessage(m.chat, { image: { url: pp }, caption: str }, { quoted: m });
