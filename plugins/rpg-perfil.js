@@ -1,8 +1,8 @@
 import { createHash } from 'crypto';
 import PhoneNumber from 'awesome-phonenumber';
-import fetch from 'node-fetch';
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
-const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
+const handler = async (m, { conn, usedPrefix, isPrems }) => {
   // Configuración de la imagen de perfil por defecto
   let pp = 'https://telegra.ph/file/06cc652844ea19e8aed1c.jpg';
   
@@ -35,7 +35,7 @@ Registro: ${registered ? 'Registrado' : 'No registrado'}
 Premium: ${premiumTime > 0 ? 'Sí' : (isPrems ? 'Premium' : 'No premium')}
 Hash: ${sn}`;
     
-     // Enviar el mensaje con la imagen de perfil y la cadena de perfil
+    // Enviar el mensaje interactivo con botones
     await sendInteractiveMessage(m, conn, str, usedPrefix);
   }
 };
@@ -44,17 +44,9 @@ Hash: ${sn}`;
 async function sendInteractiveMessage(m, conn, mensaje, usedPrefix) {
   // Generar el mensaje interactivo con botones
   const msg = generateWAMessageFromContent(m.chat, {
-    extendedTextMessage: {
-      text: mensaje,
-      contextInfo: {
-        externalAdReply: {
-          title: 'Perfil de Usuario',
-          body: 'Selecciona una opción',
-          thumbnail: 'https://example.com/thumbnail.jpg', // Cambia esto por una imagen real si lo deseas
-        },
-      },
-      contentText: mensaje,
-      footerText: 'Selecciona una opción',
+    interactiveMessage: {
+      body: { text: mensaje },
+      footer: { text: 'Selecciona una opción' },
       buttons: [
         {
           buttonId: `${usedPrefix}allmenu`,
@@ -74,8 +66,7 @@ async function sendInteractiveMessage(m, conn, mensaje, usedPrefix) {
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
 }
 
-handler.help = ['profile [@user]'];
-handler.tags = ['xp'];
+// Configuración del comando
 handler.command = /^perfil|profile?$/i;
 
 export default handler;
