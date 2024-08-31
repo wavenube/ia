@@ -29,8 +29,11 @@ const handler = async (m, { conn }) => {
   }
 };
 
+// Definir ayuda y etiquetas del comando
 handler.help = ['readvo'];
 handler.tags = ['tools'];
+
+// Definir el comando y el patrón de regex
 handler.command = /^(readviewonce|read|revelar|readvo)$/i;
 
 export default handler;
