@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import PhoneNumber from 'awesome-phonenumber';
 import fetch from 'node-fetch';
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
 const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
   // Configuración de la imagen de perfil por defecto
@@ -36,9 +37,43 @@ Premium: ${premiumTime > 0 ? 'Sí' : (isPrems ? 'Premium' : 'No premium')}
 Hash: ${sn}`;
     
     // Enviar el mensaje con la imagen de perfil y la cadena de perfil
-    conn.sendMessage(m.chat, { image: { url: pp }, caption: str }, { quoted: m });
+    await sendInteractiveMessage(m, conn, str, usedPrefix);
   }
 };
+
+// Función para enviar el mensaje interactivo con botones
+async function sendInteractiveMessage(m, conn, mensaje, usedPrefix) {
+  // Generar el mensaje interactivo con botones
+  const msg = generateWAMessageFromContent(m.chat, {
+    extendedTextMessage: {
+      text: mensaje,
+      contextInfo: {
+        externalAdReply: {
+          title: 'Perfil de Usuario',
+          body: 'Selecciona una opción',
+          thumbnail: 'https://example.com/thumbnail.jpg', // Cambia esto por una imagen real si lo deseas
+        },
+      },
+      contentText: mensaje,
+      footerText: 'Selecciona una opción',
+      buttons: [
+        {
+          buttonId: `${usedPrefix}allmenu`,
+          buttonText: { displayText: 'MENU COMPLETO' },
+          type: 1,
+        },
+        {
+          buttonId: `${usedPrefix}balance`,
+          buttonText: { displayText: 'BALANCE' },
+          type: 1,
+        },
+      ],
+    },
+  }, { userJid: conn.user.jid, quoted: m });
+
+  // Enviar el mensaje
+  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+}
 
 handler.help = ['profile [@user]'];
 handler.tags = ['xp'];
