@@ -4,8 +4,13 @@ import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 import { tiktokdl } from '@bochilteam/scraper';
 
 const handler = async (m, { conn, text, args, usedPrefix, command }) => {
-  if (!text) throw `Por favor, proporciona un enlace de TikTok. Usa _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
-  if (!/(?:https?:\/\/)?(?:www\.|m\.)?tiktok\.com\/([^\s&]+)/gi.test(text)) throw `El enlace proporcionado no es válido. Usa _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  if (!text) {
+    throw `Por favor, proporciona un enlace de TikTok. Usa _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  }
+  
+  if (!/(?:https?:\/\/)?(?:www\.|m\.)?tiktok\.com\/([^\s&]+)/gi.test(text)) {
+    throw `El enlace proporcionado no es válido. Usa _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`;
+  }
 
   const texto = `Descargando video de TikTok.`;
   const image1 = 'https://example.com/thumbnail.jpg'; // Cambia esto por una imagen real
@@ -30,9 +35,14 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
 
     // Prueba la API externa
     try {
-      const dataFn = await conn.getFile(`${global.MyApiRestBaseUrl}/api/tiktokv2?url=${args[0]}&apikey=${global.MyApiRestApikey}`);
-      await conn.sendMessage(m.chat, { video: dataFn.data, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
-      return;
+      const apiUrl = `${global.MyApiRestBaseUrl}/api/tiktokv2?url=${args[0]}&apikey=${global.MyApiRestApikey}`;
+      const response = await axios.get(apiUrl);
+      if (response.data && response.data.url) {
+        await conn.sendMessage(m.chat, { video: { url: response.data.url }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
+        return;
+      } else {
+        console.error('Respuesta inesperada de la API externa:', response.data);
+      }
     } catch (e) {
       console.error('Error al obtener el video desde el API Rest:', e.message);
     }
@@ -41,8 +51,12 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
     try {
       const { video } = await tiktokdl(args[0]);
       const url = video.no_watermark2 || video.no_watermark || 'https://tikcdn.net' + video.no_watermark_raw || video.no_watermark_hd;
-      await conn.sendMessage(m.chat, { video: { url: url }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
-      return;
+      if (url) {
+        await conn.sendMessage(m.chat, { video: { url: url }, caption: 'Aquí está el video de TikTok.' }, { quoted: m });
+        return;
+      } else {
+        console.error('No se encontró la URL del video en la respuesta de tiktokdl');
+      }
     } catch (e) {
       console.error('Error al obtener el video desde @bochilteam/scraper:', e.message);
     }
