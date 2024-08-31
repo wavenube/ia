@@ -14,6 +14,7 @@ global.prems = []
 
 global.author = 'Cyber Bot'
 global.botname = 'CyberBot'
+global.wm = 'Cyber - Bot';
  
  
  //Api's
