@@ -1,17 +1,20 @@
-const { Shazam } = require('node-shazam');
-const fetch = require('node-fetch');
-const fs = require('fs');
-const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
+import { Shazam } from 'node-shazam';
+import fetch from 'node-fetch';
+import fs from 'fs';
+import { downloadContentFromMessage } from '@whiskeysockets/baileys';
 
 const shazam = new Shazam();
 
 const handler = async (m, { conn }) => {
   try {
-    // Verifica si el mensaje tiene contenido multimedia
+    const datas = global;
+    const idioma = datas.db.data.users[m.sender].language;
+    const _translate = JSON.parse(fs.readFileSync(`./src/languages/${idioma}.json`));
+    const traductor = _translate.plugins.herramientas_whatmusic;
+
     const q = m.quoted ? m.quoted : m;
     const mime = (q.msg || q).mimetype || '';
     if (/audio|video/.test(mime)) {
-      // Descarga el contenido multimedia
       const media = await q.download();
       const ext = mime.split('/')[1];
       const tmpFilePath = `./src/tmp/${m.sender}.${ext}`;
@@ -26,7 +29,7 @@ const handler = async (m, { conn }) => {
 
       const { title, subtitle, artists, genres, images } = recognise.track;
       const image = await (await fetch(images.coverart)).buffer();
-      const text = `Title: ${title || 'Unknown'}\nSubtitle: ${subtitle || 'Unknown'}\nGenre: ${genres.primary || 'Unknown'}`;
+      const text = `${traductor.texto3[0]}\n\n${traductor.texto3[1]} ${title || traductor.texto2}\n${traductor.texto3[2]} ${subtitle || traductor.texto2}\n${traductor.texto3[4]} ${genres.primary || traductor.texto2}`;
 
       const apiTitle = `${title} - ${subtitle || ''}`;
       let url = 'https://github.com/BrunoSobrino';
@@ -48,7 +51,7 @@ const handler = async (m, { conn }) => {
 
       fs.unlinkSync(tmpFilePath);
     } else {
-      throw 'El archivo no es un audio o video.';
+      throw traductor.texto4;
     }
   } catch (error) {
     await conn.sendMessage(m.chat, { text: `Error: ${error.message}` }, { quoted: m });
@@ -57,4 +60,4 @@ const handler = async (m, { conn }) => {
 
 handler.command = /^(quemusica|quemusicaes|whatmusic|shazam)$/i;
 
-module.exports = handler;
+export default handler;
