@@ -1,11 +1,5 @@
-import fs from 'fs';
 import os from 'os';
 import performanceNow from 'performance-now';
-import { generateWAMessageFromContent, jidNormalizedUser } from '@adiwajshing/baileys';
-
-// Archivo que registra el inicio
-const startFile = './proto/src/start.txt';
-const startTime = fs.existsSync(startFile) ? fs.statSync(startFile).mtime : new Date();
 
 // Función para formatear el tamaño de archivo
 function humanFileSize(bytes, si = true, dp = 1) {
@@ -25,7 +19,7 @@ function humanFileSize(bytes, si = true, dp = 1) {
   return Math.round(bytes * r) / r + ' ' + units[u];
 }
 
-// Función para formatear el tiempo de ejecución
+// Función para formatear el tiempo de actividad
 function formatUptime(seconds) {
   const days = Math.floor(seconds / (3600 * 24));
   const hours = Math.floor((seconds % (3600 * 24)) / 3600);
@@ -39,50 +33,28 @@ export const handler = async (m, { conn, command }) => {
   if (!['ping', 'stats'].includes(command)) return;
 
   try {
+    // Medir el tiempo de respuesta
     const start = performanceNow();
-    const ram = os.totalmem() - os.freemem(); // Usado - Libre RAM
-    const uptime = os.uptime(); // Tiempo de actividad en segundos
-    const elapsed = performanceNow() - start; // Tiempo de respuesta
+    // Medir el uso de RAM
+    const totalMemory = os.totalmem();
+    const freeMemory = os.freemem();
+    const usedMemory = totalMemory - freeMemory;
 
-    const botNumber = jidNormalizedUser(conn.user.id);
+    // Calcular el tiempo de respuesta
+    const responseTime = (performanceNow() - start).toFixed(2); // en milisegundos
 
-    let statsText = `
-* Estadísticas del Bot *
+    // Crear el mensaje
+    const messageText = `
+*Estadísticas del Bot*
 
-› Tiempo de Respuesta: ${elapsed.toFixed(2)} ms
-› RAM Usada: ${humanFileSize(ram)}
-› Uptime: ${formatUptime(uptime)}
-
-* Sistema *
-› CPU: ${os.cpus()[0].model}
-› Memoria Total: ${humanFileSize(os.totalmem())}
-› Memoria Libre: ${humanFileSize(os.freemem())}
-› Plataforma: ${os.platform()} (${os.release()})
-› Arquitectura: ${os.arch()}
-› Nodo: ${process.version}
+› Tiempo de Respuesta: ${responseTime} ms
+› RAM Usada: ${humanFileSize(usedMemory)}
+› RAM Total: ${humanFileSize(totalMemory)}
+› RAM Libre: ${humanFileSize(freeMemory)}
     `;
 
-    const message = generateWAMessageFromContent(
-      m.chat,
-      {
-        extendedTextMessage: {
-          text: statsText,
-          contextInfo: {
-            externalAdReply: {
-              title: 'Estadísticas del Bot',
-              body: 'Información del bot y el sistema',
-              mediaType: 1,
-              renderLargerThumbnail: true,
-              showAdAttribution: true,
-              thumbnailUrl: 'https://i.ibb.co/K6kXPc0/image.jpg'
-            }
-          }
-        }
-      },
-      { userJid: botNumber, quoted: m }
-    );
-
-    await conn.relayMessage(m.chat, message.message, { messageId: message.key.id });
+    // Enviar el mensaje
+    await conn.sendMessage(m.chat, { text: messageText }, { quoted: m });
   } catch (error) {
     console.error('Error en el comando stats:', error);
   }
