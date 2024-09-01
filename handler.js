@@ -472,13 +472,25 @@ export async function participantsUpdate({ id, participants, action }) {
                 for (let user of participants) {
                     let pp = './src/abyss5.png';
                     let ppgp = 'https://i.ibb.co/QdGBLgw/zephyr2.png';
-                    try {
-                        pp = await this.profilePictureUrl(user, './src/abyss5.png') || pp;
-                        ppgp = await this.profilePictureUrl(id, './src/abyss5.png') || ppgp;
-                    } catch (error) {
-                        console.error('Error al obtener la foto de perfil:', error);
+                    let attempts = 0;
+                    const maxAttempts = 3;
+
+                    // Intentar obtener la foto de perfil varias veces
+                    while (attempts < maxAttempts) {
+                        try {
+                            pp = await this.profilePictureUrl(user, './src/abyss5.png') || pp;
+                            ppgp = await this.profilePictureUrl(id, './src/abyss5.png') || ppgp;
+                            break; // Si la solicitud es exitosa, salir del bucle
+                        } catch (error) {
+                            console.error(`Error al obtener la foto de perfil (intento ${attempts + 1}):`, error);
+                            attempts++;
+                            if (attempts >= maxAttempts) {
+                                console.log("Se alcanzó el número máximo de intentos. Usando imágenes por defecto.");
+                                break; // Usar la imagen por defecto después de fallar todos los intentos
+                            }
+                        }
                     }
-                    
+
                     text = (action === 'add' ? (chat.sSwagat || this.swagat || conn.swagat || 'Un placer tenerte en este grupo, @user')
                         .replace('@group', await this.getName(id))
                         .replace('@desc', groupMetadata.desc?.toString() || 'A stranger') :
@@ -506,6 +518,7 @@ export async function participantsUpdate({ id, participants, action }) {
             break;
     }
 }
+
 
 
 /**
