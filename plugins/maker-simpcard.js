@@ -9,7 +9,7 @@ const handler = async (m, { conn }) => {
       avatar: await conn.profilePictureUrl(who, 'image').catch(() => 'https://telegra.ph/file/24fa902ead26340f3df2c.png'),
     }),
     'simpcard.png',
-    'Aquí está tu imagen'
+    'Tremendo Simp'
     // Se eliminó la traducción, se usa texto estático en lugar de texto traducido
     , 
     m
