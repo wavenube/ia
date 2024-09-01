@@ -13,14 +13,6 @@ const handler = async (m, { conn }) => {
     m
   );
 
-  // Envía un mensaje de audio
-  await conn.sendMessage(
-    m.chat, 
-    { audio: { url: vn }, fileName: 'error.mp3', mimetype: 'audio/mpeg', ptt: true }, 
-    { quoted: m }
-  );
-};
-
 handler.help = ['gay'];
 handler.tags = ['maker'];
 handler.command = /^(gay)$/i;
