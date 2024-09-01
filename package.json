@@ -78,6 +78,7 @@
         "openai": "^3.3.0",
         "yargs": "^17.6.0",
         "moment-timezone": "^0.5.37",
+        "api-dylux": "^1.6.2",
         "node-shazam": "*"
     },
     "optionalDependencies": {
