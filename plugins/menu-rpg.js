@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
 import { xpRange } from '../lib/levelling.js';
-import { join } from 'path';
 import moment from 'moment-timezone';
 
 const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
