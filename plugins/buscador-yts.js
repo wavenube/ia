@@ -1,6 +1,5 @@
 import { prepareWAMessageMedia, generateWAMessageFromContent, getDevice } from "@whiskeysockets/baileys";
 import yts from 'yt-search';
-import fs from 'fs';
 
 const handler = async (m, { conn, text, usedPrefix: prefijo }) => {
     const device = await getDevice(m.key.id);
@@ -15,8 +14,12 @@ const handler = async (m, { conn, text, usedPrefix: prefijo }) => {
 
         var messa = await prepareWAMessageMedia({ image: {url: randomVideo.thumbnail}}, { upload: conn.waUploadToServer });
         const interactiveMessage = {
-            body: `*—◉ Resultados obtenidos:* ${results.videos.length}\n*—◉ Video aleatorio:*\n*-› Title:* ${randomVideo.title}\n*-› Author:* ${randomVideo.author.name}\n*-› Views:* ${randomVideo.views}\n*-› URL:* ${randomVideo.url}\n*-› Imagen:* ${randomVideo.thumbnail}`,
-            footer: { text: `${global.wm}`.trim() },  
+            body: {
+                text: `*—◉ Resultados obtenidos:* ${results.videos.length}\n*—◉ Video aleatorio:*\n*-› Title:* ${randomVideo.title}\n*-› Author:* ${randomVideo.author.name}\n*-› Views:* ${randomVideo.views}\n*-› URL:* ${randomVideo.url}\n*-› Imagen:* ${randomVideo.thumbnail}`,
+            },
+            footer: {
+                text: `${global.wm}`.trim(),
+            },  
             header: {
                 title: `*< YouTube Search />*\n`,
                 hasMediaAttachment: true,
@@ -73,7 +76,7 @@ const handler = async (m, { conn, text, usedPrefix: prefijo }) => {
 ↳ 📥 *_Ago:* ${v.ago}
 ↳ 👁 *_Views:* ${v.views}`;
             }
-        }).filter((v) => v).join('\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n');
+        }).filter((v) => v).join('\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◉◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n');
         conn.sendFile(m.chat, tes[0].thumbnail, 'error.jpg', teks.trim(), m);      
     }    
 };
