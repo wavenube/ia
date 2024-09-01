@@ -471,43 +471,42 @@ export async function participantsUpdate({ id, participants, action }) {
                 let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata;
                 for (let user of participants) {
                     let pp = './media/abyss5.png';
-                    let ppgp = './media/abyss5.png'; // Imagen por defecto para el grupo
-                    
+                    let ppgp = 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg';
                     try {
                         pp = await this.profilePictureUrl(user, 'image') || pp;
                         ppgp = await this.profilePictureUrl(id, 'image') || ppgp;
                     } catch (error) {
-                        console.error('Error al obtener la foto de perfil, usando imagen por defecto:', error);
-                        // Si ocurre un error, ya se tienen asignadas las imágenes por defecto
+                        console.error('Error al obtener la foto de perfil:', error);
                     }
-
-                    text = (action === 'add' ? (chat.sSwagat || this.swagat || conn.swagat || 'Un placer tenerte en este grupo, @user')
+                    
+                    text = (action === 'add' ? (chat.sSwagat || this.swagat || conn.swagat || 'Welcome, @user')
                         .replace('@group', await this.getName(id))
                         .replace('@desc', groupMetadata.desc?.toString() || 'A stranger') :
-                        (chat.sBye || this.bye || conn.bye || 'Supongo que a @user nadie lo va a extrañar'))
+                        (chat.sBye || this.bye || conn.bye || 'GoodBye, @user'))
                         .replace('@user', '@' + user.split('@')[0]);
 
                     let nthMember = groupMetadata.participants.length;
                     let wel = `https://shizoapi.onrender.com/api/generator/welcome?apikey=shizo&username=${encodeURIComponent(await this.getName(user))}&gcname=${encodeURIComponent(await this.getName(id))}&gcicon=${encodeURIComponent(ppgp)}&memberCount=${encodeURIComponent(nthMember.toString())}&avatar=${encodeURIComponent(pp)}&background=https://i.imgur.com/DrmeH1z.jpg`;
                     
-                    await this.sendFile(id, wel, 'pp.jpg', text, null, false, { mentions: [user] });
+                    await this.sendFile(id, wel, './media/abyss5.png', text, null, false, { mentions: [user] });
                 }
             }
             break;
         
         case 'promote':
-            text = (chat.sPromote || this.spromote || conn.spromote || '@user es un admin 🧧')
+            text = (chat.sPromote || this.spromote || conn.spromote || '@user is now Admin 🧧')
                 .replace('@user', '@' + participants[0].split('@')[0]);
-            await this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
+            await this.sendFile(id, await this.profilePictureUrl(participants[0], 'image').catch(() => './media/abyss5.png'), './media/abyss5.png', text, null, false, { mentions: this.parseMention(text) });
             break;
         
         case 'demote':
-            text = (chat.sDemote || this.sdemote || conn.sdemote || '@user ya no es admin 🧧🔫')
+            text = (chat.sDemote || this.sdemote || conn.sdemote || '@user is no Longer Admin 🧧🔫')
                 .replace('@user', '@' + participants[0].split('@')[0]);
-            await this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
+            await this.sendFile(id, await this.profilePictureUrl(participants[0], 'image').catch(() => './media/abyss5.png'), './media/abyss5.png', text, null, false, { mentions: this.parseMention(text) });
             break;
     }
 }
+
 
 
 
