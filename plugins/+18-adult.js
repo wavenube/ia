@@ -1,27 +1,14 @@
 import axios from 'axios';
 import fetch from 'node-fetch';
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys'; // Importar esta función para enviar mensajes con botones
 
 const handler = async (m, { command, conn }) => {
 
   if (!db.data.chats[m.chat].modohorny && m.isGroup) throw 'Este comando no está permitido en este grupo.';
 
-  const sendInteractiveMessage = async (m, conn, imageUrl, command) => {
-    const button = [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }];
-    const buttonMessage = {
-      image: { url: imageUrl },
-      caption: `_${command}_`.trim(),
-      buttons: button,
-      footer: 'Presiona el botón para ver otra imagen.',
-      headerType: 4
-    };
-    conn.sendMessage(m.chat, buttonMessage, { quoted: m });
-  };
-
   const sendNsfwImage = async (url, command) => {
     const res = (await axios.get(url)).data;
     const imageUrl = res[Math.floor(res.length * Math.random())];
-    await sendInteractiveMessage(m, conn, imageUrl, command);
+    conn.sendMessage(m.chat, { image: { url: imageUrl }, caption: `_${command}_`.trim() }, { quoted: m });
   };
 
   switch (command) {
@@ -38,7 +25,7 @@ const handler = async (m, { command, conn }) => {
       await sendNsfwImage(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/nsfwbdsm.json`, command);
       break;
     case 'nsfwcum':
-      conn.sendMessage(m.chat, { image: { url: `${global.MyApiRestBaseUrl}/api/nsfw/nsfwcum&apikey=${global.MyApiRestApikey}` }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      conn.sendMessage(m.chat, { image: { url: `${global.MyApiRestBaseUrl}/api/nsfw/nsfwcum&apikey=${global.MyApiRestApikey}` }, caption: `_${command}_`.trim() }, { quoted: m });
       break;
     case 'nsfwero':
       await sendNsfwImage(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/nsfwero.json`, command);
@@ -55,12 +42,12 @@ const handler = async (m, { command, conn }) => {
     case 'tetas':
       const resTetas = (await axios.get(`https://api-fgmods.ddns.net/api/nsfw/boobs?apikey=fg-dylux`)).data || (await axios.get(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/tetas.json`)).data;
       const imageTetas = resTetas[Math.floor(resTetas.length * Math.random())];
-      conn.sendMessage(m.chat, { image: { url: imageTetas }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      conn.sendMessage(m.chat, { image: { url: imageTetas }, caption: `_${command}_`.trim() }, { quoted: m });
       break;
     case 'booty':
       const resBooty = (await axios.get(`https://api-fgmods.ddns.net/api/nsfw/ass?apikey=fg-dylux`)).data || (await axios.get(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/booty.json`)).data;
       const imageBooty = resBooty[Math.floor(resBooty.length * Math.random())];
-      conn.sendMessage(m.chat, { image: { url: imageBooty }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      conn.sendMessage(m.chat, { image: { url: imageBooty }, caption: `_${command}_`.trim() }, { quoted: m });
       break;
     case 'ecchi':
       await sendNsfwImage(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/ecchi.json`, command);
@@ -71,18 +58,18 @@ const handler = async (m, { command, conn }) => {
     case 'trapito':
       const resTrapito = await fetch(`https://api.waifu.pics/nsfw/trap`);
       const jsonTrapito = await resTrapito.json();
-      conn.sendMessage(m.chat, { image: { url: jsonTrapito.url }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      conn.sendMessage(m.chat, { image: { url: jsonTrapito.url }, caption: `_${command}_`.trim() }, { quoted: m });
       break;
     case 'imagenlesbians':
       const resLesbians = (await axios.get(`https://api-fgmods.ddns.net/api/nsfw/lesbian?apikey=fg-dylux`)).data || (await axios.get(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/imagenlesbians.json`)).data;
       const imageLesbians = resLesbians[Math.floor(resLesbians.length * Math.random())];
-      conn.sendMessage(m.chat, { image: { url: imageLesbians }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      conn.sendMessage(m.chat, { image: { url: imageLesbians }, caption: `_${command}_`.trim() }, { quoted: m });
       break;
     case 'panties':
       await sendNsfwImage(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/panties.json`, command);
       break;
     case 'pene':
-      conn.sendMessage(m.chat, { image: { url: `${global.MyApiRestBaseUrl}/api/adult/pene?apikey=${global.MyApiRestApikey}` }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      conn.sendMessage(m.chat, { image: { url: `${global.MyApiRestBaseUrl}/api/adult/pene?apikey=${global.MyApiRestApikey}` }, caption: `_${command}_`.trim() }, { quoted: m });
       break;
     case 'porno':
       await sendNsfwImage(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/porno.json`, command);
@@ -98,16 +85,27 @@ const handler = async (m, { command, conn }) => {
     case 'yaoi':
       const resYaoi = await fetch(`https://nekobot.xyz/api/image?type=yaoi`);
       const jsonYaoi = await resYaoi.json();
-      conn.sendMessage(m.chat, { image: { url: jsonYaoi.message }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      conn.sendMessage(m.chat, { image: { url: jsonYaoi.message }, caption: `_${command}_`.trim() }, { quoted: m });
       break;
     case 'yaoi2':
-      const resYaoi2 = await fetch(`https://purrbot.site/api/img/nsfw/yaoi/g`);
+      const resYaoi2 = await fetch(`https://purrbot.site/api/img/nsfw/yaoi/gif`);
       const jsonYaoi2 = await resYaoi2.json();
-      conn.sendMessage(m.chat, { image: { url: jsonYaoi2.url }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      conn.sendMessage(m.chat, { image: { url: jsonYaoi2.link }, caption: `_${command}_`.trim() }, { quoted: m });
       break;
-    default:
-      conn.sendMessage(m.chat, { text: 'Comando no reconocido.' }, { quoted: m });
+    case 'yuri':
+      await sendNsfwImage(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/yuri.json`, command);
+      break;
+    case 'yuri2':
+      const resYuri2 = await fetch(`https://purrbot.site/api/img/nsfw/yuri/gif`);
+      const jsonYuri2 = await resYuri2.json();
+      const resErrorYuri2 = (await axios.get(`https://raw.githubusercontent.com/BrunoSobrino/TheMystic-Bot-MD/master/src/JSON/yuri.json`)).data;
+      const imageYuri2 = jsonYuri2.link || resErrorYuri2[Math.floor(resErrorYuri2.length * Math.random())];
+      conn.sendMessage(m.chat, { image: { url: imageYuri2 }, caption: `_${command}_`.trim() }, { quoted: m });
+      break;
   }
 };
 
-export default handler;
+handler.help = [
+  'nsfwloli', 'nsfwfoot', 'nsfwass', 'nsfwbdsm', 'nsfwcum', 'nsfwero', 'nsfwfemdom', 'nsfwfoot', 'nsfwglass', 
+  'nsfworgy', 'yuri', 'yuri2', 'yaoi', 'yaoi2', 'panties', 'tetas', 'booty', 'ecchi', 'furro', 'trapito', 
+  'imagenlesbians', 'pene', 'porno', 'randomxxx', 'pechos'
