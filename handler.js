@@ -470,8 +470,8 @@ export async function participantsUpdate({ id, participants, action }) {
             if (chat.welcome) {
                 let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata;
                 for (let user of participants) {
-                    let pp = './src/abyss5.png';
-                    let ppgp = './src/abyss5.png'; // Imagen por defecto para el grupo
+                    let pp = './media/abyss5.png';
+                    let ppgp = './media/abyss5.png'; // Imagen por defecto para el grupo
                     
                     try {
                         pp = await this.profilePictureUrl(user, 'image') || pp;
