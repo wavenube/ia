@@ -4,7 +4,10 @@ import { extractImageThumb } from '@whiskeysockets/baileys';
 import axios from 'axios';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
+  // Verifica si el comando está habilitado en el grupo
   if (!db.data.chats[m.chat].modohorny && m.isGroup) throw 'Este comando está desactivado en grupos.';
+  
+  // Verifica si se ha proporcionado texto
   if (!text) throw `Por favor ingresa el nombre de una categoría de hentai. Ejemplo: ${usedPrefix + command} miku`;
 
   try {
@@ -13,12 +16,12 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     // Reemplaza con tu clave API real
     const lolkeysapi = global.lolkeysapi || 'YOUR_API_KEY_HERE';
 
-    // Fetch NHentai search results
+    // Realiza la búsqueda de NHentai
     const res = await fetch(`https://api.lolhuman.xyz/api/nhentaisearch?apikey=${lolkeysapi}&query=${text}`);
     const json = await res.json();
     const aa = json.result[0].id;
 
-    // Fetch NHentai data
+    // Obtiene los datos de NHentai
     const data = await nhentaiScraper(aa);
     const pages = [];
     const thumb = `https://external-content.duckduckgo.com/iu/?u=https://t.nhentai.net/galleries/${data.media_id}/thumb.jpg`;
@@ -28,7 +31,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       pages.push(`https://external-content.duckduckgo.com/iu/?u=https://i7.nhentai.net/galleries/${data.media_id}/${i + 1}.${ext}`);
     });
 
-    // Generate PDF
+    // Genera el PDF
     const buffer = await (await fetch(thumb)).buffer();
     const jpegThumbnail = await extractImageThumb(buffer);
     const imagepdf = await toPDF(pages);
@@ -40,8 +43,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       mimetype: 'application/pdf'
     }, { quoted: m });
 
-  } catch (error) {
-    console.error('Error en la solicitud:', error); // Imprime el error para depuración
+  } catch {
     throw 'Error al procesar la solicitud. Intenta de nuevo más tarde.';
   }
 };
