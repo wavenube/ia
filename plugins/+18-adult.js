@@ -1,23 +1,27 @@
 import axios from 'axios';
 import fetch from 'node-fetch';
+import { generateWAMessageFromContent } from '@adiwajshing/baileys'; // Importar esta función para enviar mensajes con botones
 
 const handler = async (m, { command, conn }) => {
 
   if (!db.data.chats[m.chat].modohorny && m.isGroup) throw 'Este comando no está permitido en este grupo.';
 
-  const sendNsfwImage = async (url, command) => {
-    const res = (await axios.get(url)).data;
-    const imageUrl = res[Math.floor(res.length * Math.random())];
+  const sendInteractiveMessage = async (m, conn, imageUrl, command) => {
+    const button = [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }];
     const buttonMessage = {
       image: { url: imageUrl },
       caption: `_${command}_`.trim(),
+      buttons: button,
       footer: 'Presiona el botón para ver otra imagen.',
-      buttons: [
-        { buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }
-      ],
       headerType: 4
     };
     conn.sendMessage(m.chat, buttonMessage, { quoted: m });
+  };
+
+  const sendNsfwImage = async (url, command) => {
+    const res = (await axios.get(url)).data;
+    const imageUrl = res[Math.floor(res.length * Math.random())];
+    await sendInteractiveMessage(m, conn, imageUrl, command);
   };
 
   switch (command) {
@@ -96,13 +100,14 @@ const handler = async (m, { command, conn }) => {
       const jsonYaoi = await resYaoi.json();
       conn.sendMessage(m.chat, { image: { url: jsonYaoi.message }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
       break;
- const json = await res.json();
-    let url = json.link;
-    if (url == '' || !url || url == null) url = await resError[Math.floor(resError.length * Math.random())];
-    conn.sendMessage(m.chat, {image: {url: url}, caption: `_${command}_`.trim()}, {quoted: m});
+    case 'yaoi2':
+      const resYaoi2 = await fetch(`https://purrbot.site/api/img/nsfw/yaoi/g`);
+      const jsonYaoi2 = await resYaoi2.json();
+      conn.sendMessage(m.chat, { image: { url: jsonYaoi2.url }, caption: `_${command}_`.trim(), buttons: [{ buttonId: `${command}`, buttonText: { displayText: 'Siguiente' }, type: 1 }], footer: 'Presiona el botón para ver otra imagen.' }, { quoted: m });
+      break;
+    default:
+      conn.sendMessage(m.chat, { text: 'Comando no reconocido.' }, { quoted: m });
   }
 };
-handler.help = ['nsfwloli', 'nsfwfoot', 'nsfwass', 'nsfwbdsm', 'nsfwcum', 'nsfwero', 'nsfwfemdom', 'nsfwfoot', 'nsfwglass', 'nsfworgy', 'yuri', 'yuri2', 'yaoi', 'yaoi2', 'panties', 'tetas', 'booty', 'ecchi', 'furro', 'trapito', 'imagenlesbians', 'pene', 'porno', 'randomxxx', 'pechos'];
-handler.command = ['nsfwloli', 'nsfwfoot', 'nsfwass', 'nsfwbdsm', 'nsfwcum', 'nsfwero', 'nsfwfemdom', 'nsfwfoot', 'nsfwglass', 'nsfworgy', 'yuri', 'yuri2', 'yaoi', 'yaoi2', 'panties', 'tetas', 'booty', 'ecchi', 'furro', 'trapito', 'imagenlesbians', 'pene', 'porno', 'randomxxx', 'pechos'];
-handler.tags = ['nsfw'];
+
 export default handler;
