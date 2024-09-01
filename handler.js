@@ -460,17 +460,17 @@ export async function participantsUpdate({ id, participants, action }) {
     if (opts['self']) return;
     if (this.isInit) return;
     if (global.db.data == null) await loadDatabase();
-    
+
     let chat = global.db.data.chats[id] || {};
     let text = '';
-    
+
     switch (action) {
         case 'add':
         case 'remove':
             if (chat.swagat) {
                 let groupMetadata = await this.groupMetadata(id) || (this.chats[id] || {}).metadata;
                 for (let user of participants) {
-                    // Elimina la lógica de obtención de fotos de perfil y usa la imagen predeterminada
+                    // Usamos la imagen predeterminada para bienvenida/despedida
                     let image = './media/abyss5.png';
                     
                     text = (action === 'add' ? 
@@ -480,30 +480,28 @@ export async function participantsUpdate({ id, participants, action }) {
                         (chat.sBye || this.bye || 'Goodbye, @user'))
                         .replace('@user', '@' + user.split('@')[0]);
 
-                    // Envía la imagen predeterminada con el mensaje
-                    await this.sendFile(id, image, 'pp.jpg', text, null, false, { mentions: [user] });
+                    // Verificamos si el texto se ha generado correctamente antes de enviarlo
+                    if (text) {
+                        await this.sendFile(id, image, 'pp.jpg', text, null, false, { mentions: [user] });
+                    }
                 }
             }
             break;
-        
-        case 'promote':
-            text = (chat.sPromote || this.spromote || '@user is now Admin 🧧')
-                .replace('@user', '@' + participants[0].split('@')[0]);
-            break;
-        
-        case 'demote':
-            text = (chat.sDemote || this.sdemote || '@user is no Longer Admin 🧧🔫')
-                .replace('@user', '@' + participants[0].split('@')[0]);
-            break;
-    }
 
-    // Enviar la imagen predeterminada en caso de promoción o degradación
-    if (text && chat.detect) {
-        let image = './media/abyss5.png';
-        await this.sendFile(id, image, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
+        case 'promote':
+        case 'demote':
+            text = action === 'promote' ? 
+                (chat.sPromote || this.spromote || '@user is now Admin 🧧') :
+                (chat.sDemote || this.sdemote || '@user is no Longer Admin 🧧🔫');
+            
+            text = text.replace('@user', '@' + participants[0].split('@')[0]);
+            if (text && chat.detect) {
+                let image = './media/abyss5.png';
+                await this.sendFile(id, image, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
+            }
+            break;
     }
 }
-
 
 
 /**
