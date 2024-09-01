@@ -115,7 +115,7 @@ Made by ♡ ZephyrByte
   }
 };
 
-handler.command = /^(menu)$/i;
+handler.command = /^(rpg)$/i;
 handler.exp = 50;
 handler.fail = null;
 
