@@ -5,30 +5,24 @@ import fs from 'fs';
 import axios from 'axios';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-  const datas = global;
-  const idioma = datas.db.data.users[m.sender].language;
-  const _translate = JSON.parse(fs.readFileSync(`./src/languages/${idioma}.json`));
-  const tradutor = _translate.plugins.adult_hentaipdf;
-
-  if (!db.data.chats[m.chat].modohorny && m.isGroup) throw tradutor.texto1;
-  if (!text) throw `${tradutor.texto2} ${usedPrefix + command} ${tradutor.texto2_1}`;
+  if (!db.data.chats[m.chat].modohorny && m.isGroup) throw 'Este comando está desactivado en grupos.';
+  if (!text) throw `Por favor ingresa el nombre de una categoría de hentai. Ejemplo: ${usedPrefix + command} miku`;
 
   try {
     m.reply(global.wait);
 
-    // Reemplaza `lolkeysapi` con la clave API correcta si no está definida
-    const lolkeysapi = global.lolkeysapi || 'YOUR_API_KEY_HERE';
-    
+    const lolkeysapi = global.lolkeysapi || 'GataDiosV2'; // Reemplaza con tu clave API si no está definida
+
     // Fetch NHentai search results
     const res = await fetch(`https://api.lolhuman.xyz/api/nhentaisearch?apikey=${lolkeysapi}&query=${text}`);
     const json = await res.json();
     const aa = json.result[0].id;
-    
+
     // Fetch NHentai data
     const data = await nhentaiScraper(aa);
     const pages = [];
     const thumb = `https://external-content.duckduckgo.com/iu/?u=https://t.nhentai.net/galleries/${data.media_id}/thumb.jpg`;
-    
+
     data.images.pages.forEach((v, i) => {
       const ext = new URL(v.t).pathname.split('.')[1];
       pages.push(`https://external-content.duckduckgo.com/iu/?u=https://i7.nhentai.net/galleries/${data.media_id}/${i + 1}.${ext}`);
@@ -48,7 +42,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
   } catch (error) {
     console.error('Error en la solicitud:', error); // Imprime el error para depuración
-    throw `${tradutor.texto3}`;
+    throw 'Error al procesar la solicitud. Intenta de nuevo más tarde.';
   }
 };
 
@@ -85,4 +79,3 @@ function toPDF(images, opt = {}) {
     doc.end();
   });
 }
-
