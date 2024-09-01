@@ -457,71 +457,50 @@ export async function handler(chatUpdate) {
  * @param {import('@whiskeysockets/baileys').BaileysEventMap<unknown>['group-participants.update']} groupsUpdate 
  */
 export async function participantsUpdate({ id, participants, action }) {
-    const m = this;  // Uso de 'this' similar a la referencia
     if (opts['self']) return;
+    if (this.isInit) return;
     if (global.db.data == null) await loadDatabase();
     
-    const chat = global.db.data.chats[id] || {};
-    const botTt = global.db.data.settings[m?.conn?.user?.jid] || {};
+    let chat = global.db.data.chats[id] || {};
     let text = '';
-
+    
     switch (action) {
         case 'add':
         case 'remove':
-            if (chat.welcome && !chat?.isBanned) {
-                const groupMetadata = await m?.conn?.groupMetadata(id) || (m?.conn?.chats[id] || {}).metadata;
-                
-                for (const user of participants) {
-                    let pp = './media/abyss5.png'; // Imagen por defecto
-                    try {
-                        pp = await m.conn.profilePictureUrl(user, 'image');
-                    } catch (e) {
-                        console.error('Error al obtener la foto de perfil, usando imagen por defecto:', e);
-                    } finally {
-                        const apii = await m.conn.getFile(pp);
-                        const antiArab = JSON.parse(fs.readFileSync('./src/antiArab.json'));
-                        const userPrefix = antiArab.some((prefix) => user.startsWith(prefix));
-                        const botTt2 = groupMetadata?.participants?.find((u) => m?.conn?.decodeJid(u.id) == m?.conn?.user?.jid) || {};
-                        const isBotAdminNn = botTt2?.admin === 'admin' || false;
+            if (chat.swagat) {
+                let groupMetadata = await this.groupMetadata(id) || (this.chats[id] || {}).metadata;
+                for (let user of participants) {
+                    // Elimina la lógica de obtención de fotos de perfil y usa la imagen predeterminada
+                    let image = './media/abyss5.png';
+                    
+                    text = (action === 'add' ? 
+                        (chat.sSwagat || this.swagat || 'Welcome, @user')
+                            .replace('@group', await this.getName(id))
+                            .replace('@desc', groupMetadata.desc?.toString() || 'A stranger') :
+                        (chat.sBye || this.bye || 'Goodbye, @user'))
+                        .replace('@user', '@' + user.split('@')[0]);
 
-                        text = (action === 'add' ? (chat.sWelcome || 'Welcome, @user!')
-                            .replace('@subject', await m.conn.getName(id))
-                            .replace('@desc', groupMetadata.desc?.toString() || 'No Description') :
-                            (chat.sBye || 'Bye, @user!'))
-                            .replace('@user', '@' + user.split('@')[0]);
-
-                        if (userPrefix && chat.antiArab && botTt.restrict && isBotAdminNn && action === 'add') {
-                            const responseb = await m.conn.groupParticipantsUpdate(id, [user], 'remove');
-                            if (responseb[0].status === '404') return;
-                            const fkontak2 = {
-                                'key': { 'participants': '0@s.whatsapp.net', 'remoteJid': 'status@broadcast', 'fromMe': false, 'id': 'Halo' },
-                                'message': { 'contactMessage': { 'vcard': `BEGIN:VCARD\nVERSION:3.0\nN:Sy;Bot;;;\nFN:y\nitem1.TEL;waid=${user.split('@')[0]}:${user.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD` } },
-                                'participant': '0@s.whatsapp.net'
-                            };
-                            await m.conn.sendMessage(id, { text: `*[❗] @${user.split('@')[0]} en este grupo no se permiten números árabes o raros, por lo que se te sacará del grupo*`, mentions: [user] }, { quoted: fkontak2 });
-                            return;
-                        }
-                        await m.conn.sendFile(id, apii.data, 'pp.jpg', text, null, false, { mentions: [user] });
-                    }
+                    // Envía la imagen predeterminada con el mensaje
+                    await this.sendFile(id, image, 'pp.jpg', text, null, false, { mentions: [user] });
                 }
             }
             break;
-
+        
         case 'promote':
-        case 'daradmin':
-        case 'darpoder':
-            text = (chat.sPromote || '@user es ahora Admin 🧧').replace('@user', '@' + participants[0].split('@')[0]);
+            text = (chat.sPromote || this.spromote || '@user is now Admin 🧧')
+                .replace('@user', '@' + participants[0].split('@')[0]);
             break;
-
+        
         case 'demote':
-        case 'quitarpoder':
-        case 'quitaradmin':
-            text = (chat.sDemote || '@user ya no es Admin 🧧🔫').replace('@user', '@' + participants[0].split('@')[0]);
+            text = (chat.sDemote || this.sdemote || '@user is no Longer Admin 🧧🔫')
+                .replace('@user', '@' + participants[0].split('@')[0]);
             break;
     }
 
-    if (text && chat.detect && !chat?.isBanned) {
-        await m.conn.sendMessage(id, { text, mentions: m.conn.parseMention(text) });
+    // Enviar la imagen predeterminada en caso de promoción o degradación
+    if (text && chat.detect) {
+        let image = './media/abyss5.png';
+        await this.sendFile(id, image, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
     }
 }
 
