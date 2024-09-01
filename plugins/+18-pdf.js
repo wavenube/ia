@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import PDFDocument from 'pdfkit';
-import { extractImageThumb } from 'baileys';
+import { extractImageThumb } from '@whiskeysockets/baileys';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!db.data.chats[m.chat].modohorny && m.isGroup) throw 'Este comando no está permitido en este grupo.';
