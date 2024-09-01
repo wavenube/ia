@@ -479,10 +479,10 @@ export async function participantsUpdate({ id, participants, action }) {
                         console.error('Error al obtener la foto de perfil:', error);
                     }
                     
-                    text = (action === 'add' ? (chat.sSwagat || this.swagat || conn.swagat || 'Welcome, @user')
+                    text = (action === 'add' ? (chat.sSwagat || this.swagat || conn.swagat || 'Un placer tenerte en este grupo, @user')
                         .replace('@group', await this.getName(id))
                         .replace('@desc', groupMetadata.desc?.toString() || 'A stranger') :
-                        (chat.sBye || this.bye || conn.bye || 'GoodBye, @user'))
+                        (chat.sBye || this.bye || conn.bye || 'Supongo que a @user nadie lo va a extrañar'))
                         .replace('@user', '@' + user.split('@')[0]);
 
                     let nthMember = groupMetadata.participants.length;
@@ -494,15 +494,15 @@ export async function participantsUpdate({ id, participants, action }) {
             break;
         
         case 'promote':
-            text = (chat.sPromote || this.spromote || conn.spromote || '@user is now Admin 🧧')
+            text = (chat.sPromote || this.spromote || conn.spromote || '@user es un admin 🧧')
                 .replace('@user', '@' + participants[0].split('@')[0]);
-            await this.sendFile(id, await this.profilePictureUrl(participants[0], 'image').catch(() => 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg'), 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
+            await this.sendFile(id, await this.profilePictureUrl(participants[0], 'image').catch(() => 'https://i.ibb.co/QdGBLgw/zephyr2.png'), 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
             break;
         
         case 'demote':
-            text = (chat.sDemote || this.sdemote || conn.sdemote || '@user is no Longer Admin 🧧🔫')
+            text = (chat.sDemote || this.sdemote || conn.sdemote || '@user ya no es admin 🧧🔫')
                 .replace('@user', '@' + participants[0].split('@')[0]);
-            await this.sendFile(id, await this.profilePictureUrl(participants[0], 'image').catch(() => 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg'), 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
+            await this.sendFile(id, await this.profilePictureUrl(participants[0], 'image').catch(() => 'https://i.ibb.co/QdGBLgw/zephyr2.png'), 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
             break;
     }
 }
