@@ -12,6 +12,7 @@ const handler = async (m, { conn }) => {
     'Aquí está tu imagen', // Texto en lugar de la traducción
     m
   );
+};
 
 handler.help = ['gay'];
 handler.tags = ['maker'];
