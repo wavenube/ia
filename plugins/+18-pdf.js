@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
 import PDFDocument from 'pdfkit';
 import { extractImageThumb } from '@whiskeysockets/baileys';
-import fs from 'fs';
 import axios from 'axios';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
@@ -11,7 +10,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     m.reply(global.wait);
 
-    const lolkeysapi = global.lolkeysapi || 'GataDiosV2'; // Reemplaza con tu clave API si no está definida
+    // Reemplaza con tu clave API real
+    const lolkeysapi = global.lolkeysapi || 'YOUR_API_KEY_HERE';
 
     // Fetch NHentai search results
     const res = await fetch(`https://api.lolhuman.xyz/api/nhentaisearch?apikey=${lolkeysapi}&query=${text}`);
