@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
 import { xpRange } from '../lib/levelling.js';
+import { join } from 'path';
 import moment from 'moment-timezone';
 
 const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
@@ -23,7 +24,7 @@ const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     const rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length;
 
     // Usar imagen predeterminada o imagen de contacto
-    const pp = global.imagen1 || './media/contact.png';
+    const pp = './media/contact.png';
     const more = String.fromCharCode(8206);
     const readMore = more.repeat(850);
 
