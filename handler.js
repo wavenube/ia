@@ -482,7 +482,7 @@ export async function participantsUpdate({ id, participants, action }) {
                             (chat.sBye || this.bye || conn.bye || 'GoodBye, @user')).replace('@user', '@' + user.split('@')[0])
          let nthMember = groupMetadata.participants.length;
          let wel =
-          https://shizoapi.onrender.com/api/generator/welcome?apikey=shizo&username=${encodeURIComponent(await this.getName(user))}&gcname=${encodeURIComponent(await this.getName(id))}&gcicon=${encodeURIComponent(ppgp)}&memberCount=${encodeURIComponent(nthMember.toString())}&avatar=${encodeURIComponent(pp)}&background=https://i.imgur.com/DrmeH1z.jpg
+          `https://shizoapi.onrender.com/api/generator/welcome?apikey=shizo&username=${encodeURIComponent(await this.getName(user))}&gcname=${encodeURIComponent(await this.getName(id))}&gcicon=${encodeURIComponent(ppgp)}&memberCount=${encodeURIComponent(nthMember.toString())}&avatar=${encodeURIComponent(pp)}&background=https://i.imgur.com/DrmeH1z.jpg`
                         this.sendFile(id, action === 'add' ? wel : lea, 'pp.jpg', text, null, false, { mentions: [user] })
                     }
                 } 
@@ -500,7 +500,6 @@ export async function participantsUpdate({ id, participants, action }) {
             break
     }
 }
-
 
 /**
  * Handle groups update
