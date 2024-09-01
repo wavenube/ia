@@ -29,7 +29,7 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
           externalAdReply: {
             title: 'Descargar Video de TikTok',
             body: null,
-            thumbnail: '../media/contact.png',
+            thumbnail: imagen1,
             sourceUrl: 'https://github.com/BrunoSobrino/TheMystic-Bot-MD'
           },
           mentionedJid: [m.sender]
@@ -41,7 +41,7 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
 
     // Intentar obtener el video de TikTok de diferentes fuentes
     try {
-      const dataFn = await conn.getFile(`${global.MyApiRestBaseUrl}/api/tiktokv2?url=${args[0]}&apikey=${global.MyApiRestApikey}`);
+      const dataFn = await conn.getFile(`${global.MyApiRestBaseUrl}/api/tiktokv2?url=${encodeURIComponent(args[0])}&apikey=${global.MyApiRestApikey}`);
       const desc1 = `Aquí está tu video de TikTok. Usa _${usedPrefix}tomp3_ para convertirlo a audio.`;
       await conn.sendMessage(m.chat, { video: dataFn.data, caption: desc1 }, { quoted: m });
     } catch (error) {
@@ -87,7 +87,12 @@ async function tiktokdlF(url) {
   const $ = cheerio.load(gettoken.data);
   const token = $('#download-form > input[type=hidden]:nth-child(2)').attr('value');
   const param = { url: url, _token: token };
-  const { data } = await axios.request('https://tikdown.org/getAjax?', { method: 'post', data: new URLSearchParams(Object.entries(param)), headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8', 'user-agent': 'Mozilla/5.0' } });
+  const { data } = await axios.post('https://tikdown.org/getAjax?', new URLSearchParams(Object.entries(param)), {
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'user-agent': 'Mozilla/5.0'
+    }
+  });
   const getdata = cheerio.load(data.html);
   if (data.status) {
     return { status: true, thumbnail: getdata('img').attr('src'), video: getdata('div.download-links > div:nth-child(1) > a').attr('href'), audio: getdata('div.download-links > div:nth-child(2) > a').attr('href') };
