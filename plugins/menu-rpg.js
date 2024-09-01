@@ -1,40 +1,34 @@
 import fetch from 'node-fetch';
+import fs from 'fs';
+import { xpRange } from '../lib/levelling.js';
+import { join } from 'path';
+import moment from 'moment-timezone';
 
-// Para configurar o idioma, na raiz do projeto altere o arquivo config.json
-// Para configurar el idioma, en la raíz del proyecto, modifique el archivo config.json.
-// To set the language, in the root of the project, modify the config.json file.
-
-const handler = async (m, { conn, usedPrefix, usedPrefix: _p, __dirname, text, isPrems }) => {
-
-  if (usedPrefix == 'a' || usedPrefix == 'A') return;
+const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
   try {
-    const datas = global
-    const idioma = datas.db.data.users[m.sender].language
-    const _translate = JSON.parse(fs.readFileSync(`./language/${idioma}.json`))
-    const tradutor = _translate.plugins.menu_menu
-    // const pp = imagen7;
-
-    // let vn = './media/menu.mp3'
-    const img = 'https://i.ibb.co/Qjf1sdk/abyss-profile.png';
-    const d = new Date(new Date + 3600000);
+    const d = new Date(new Date() + 3600000);
     const locale = 'es-ES';
     const week = d.toLocaleDateString(locale, { weekday: 'long' });
     const date = d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
     const _uptime = process.uptime() * 1000;
     const uptime = clockString(_uptime);
+
+    // Obteniendo datos del usuario
     const user = global.db.data.users[m.sender];
-    const { money, joincount } = global.db.data.users[m.sender];
-    const { exp, limit, level, role } = global.db.data.users[m.sender];
-    const rtotalreg = Object.values(global.db.data.users).filter((user) => user.registered == true).length;
-    const rtotal = Object.entries(global.db.data.users).length || '0'
+    if (!user) throw new Error('No se pudo obtener los datos del usuario.');
+
+    const { exp, limit, level, role } = user;
+    const { min, xp, max } = xpRange(level, global.multiplier);
+    const name = await conn.getName(m.sender);
+    const totalreg = Object.keys(global.db.data.users).length;
+    const rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length;
+
+    // Usar imagen predeterminada o imagen de contacto
+    const pp = global.imagen1 || './media/contact.png';
     const more = String.fromCharCode(8206);
     const readMore = more.repeat(850);
-    const taguser = '@' + m.sender.split('@s.whatsapp.net')[0];
-    const doc = ['pdf', 'zip', 'vnd.openxmlformats-officedocument.presentationml.presentation', 'vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    const document = doc[Math.floor(Math.random() * doc.length)];
-    const str = `${tradutor.texto1[0]}
 
-${tradutor.texto1[1]} ${taguser}
+    const menuText = `
  > *━━━━━━━━━━━━━*
  ◤───── ★ • ─────◥
 
