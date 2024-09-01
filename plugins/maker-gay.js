@@ -9,7 +9,7 @@ const handler = async (m, { conn }) => {
       avatar: await conn.profilePictureUrl(who, 'image').catch(() => 'https://telegra.ph/file/24fa902ead26340f3df2c.png'),
     }), 
     'error.png', 
-    'Aquí está tu imagen', // Texto en lugar de la traducción
+    'Vaya Gay', // Texto en lugar de la traducción
     m
   );
 };
