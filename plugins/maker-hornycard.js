@@ -9,7 +9,7 @@ const handler = async (m, { conn }) => {
       avatar: await conn.profilePictureUrl(who, 'image').catch(() => 'https://telegra.ph/file/24fa902ead26340f3df2c.png'),
     }),
     'hornycard.png',
-    'Aquí está tu imagen'
+    'Tener una licensiapara estar Hot, no te da derecho a estarlo siempre'
     // Se eliminó la traducción, se usa texto estático en lugar de texto traducido
     , 
     m
