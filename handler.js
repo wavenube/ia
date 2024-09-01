@@ -457,49 +457,47 @@ export async function handler(chatUpdate) {
  * @param {import('@whiskeysockets/baileys').BaileysEventMap<unknown>['group-participants.update']} groupsUpdate 
  */
 export async function participantsUpdate({ id, participants, action }) {
-    if (opts['self']) return;
-    if (this.isInit) return;
-    if (global.db.data == null) await loadDatabase();
-
-    let chat = global.db.data.chats[id] || {};
-    let text = '';
-
+    if (opts['self'])
+        return
+    // if (id in conn.chats) return // First login will spam
+    if (this.isInit)
+        return
+    if (global.db.data == null)
+        await loadDatabase()
+    let chat = global.db.data.chats[id] || {}
+    let text = ''
     switch (action) {
         case 'add':
         case 'remove':
             if (chat.swagat) {
-                let groupMetadata = await this.groupMetadata(id) || (this.chats[id] || {}).metadata;
+                let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata
                 for (let user of participants) {
-                    // Usamos la imagen predeterminada para bienvenida/despedida
-                    let image = './media/abyss5.png';
-                    
-                    text = (action === 'add' ? 
-                        (chat.sSwagat || this.swagat || 'Welcome, @user')
-                            .replace('@group', await this.getName(id))
-                            .replace('@desc', groupMetadata.desc?.toString() || 'A stranger') :
-                        (chat.sBye || this.bye || 'Goodbye, @user'))
-                        .replace('@user', '@' + user.split('@')[0]);
-
-                    // Verificamos si el texto se ha generado correctamente antes de enviarlo
-                    if (text) {
-                        await this.sendFile(id, image, 'pp.jpg', text, null, false, { mentions: [user] });
+                    let pp = 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg'
+                    let ppgp = 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg'
+                    try {
+                        pp = await this.profilePictureUrl(user, 'image')
+                        ppgp = await this.profilePictureUrl(id, 'image')
+                        } finally {
+                        text = (action === 'add' ? (chat.sSwagat || this.swagat || conn.swagat || 'Welcome, @user').replace('@group', await this.getName(id)).replace('@desc', groupMetadata.desc?.toString() || 'A stranger') :
+                            (chat.sBye || this.bye || conn.bye || 'GoodBye, @user')).replace('@user', '@' + user.split('@')[0])
+         let nthMember = groupMetadata.participants.length;
+         let wel =
+          https://shizoapi.onrender.com/api/generator/welcome?apikey=shizo&username=${encodeURIComponent(await this.getName(user))}&gcname=${encodeURIComponent(await this.getName(id))}&gcicon=${encodeURIComponent(ppgp)}&memberCount=${encodeURIComponent(nthMember.toString())}&avatar=${encodeURIComponent(pp)}&background=https://i.imgur.com/DrmeH1z.jpg
+                        this.sendFile(id, action === 'add' ? wel : lea, 'pp.jpg', text, null, false, { mentions: [user] })
                     }
-                }
+                } 
             }
-            break;
-
+            break
         case 'promote':
+            text = (chat.sPromote || this.spromote || conn.spromote || '@user is now Admin 🧧')
         case 'demote':
-            text = action === 'promote' ? 
-                (chat.sPromote || this.spromote || '@user is now Admin 🧧') :
-                (chat.sDemote || this.sdemote || '@user is no Longer Admin 🧧🔫');
-            
-            text = text.replace('@user', '@' + participants[0].split('@')[0]);
-            if (text && chat.detect) {
-                let image = './media/abyss5.png';
-                await this.sendFile(id, image, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
-            }
-            break;
+            let pp = await this.profilePictureUrl(participants[0], 'image').catch(_ => 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg') 
+            if (!text)
+                text = (chat.sDemote || this.sdemote || conn.sdemote || '@user is no Longer Admin 🧧🔫')
+            text = text.replace('@user', '@' + participants[0].split('@')[0])
+            if (chat.detect)    
+            this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) })
+            break
     }
 }
 
