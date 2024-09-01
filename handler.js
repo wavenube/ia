@@ -471,24 +471,14 @@ export async function participantsUpdate({ id, participants, action }) {
                 let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata;
                 for (let user of participants) {
                     let pp = './src/abyss5.png';
-                    let ppgp = 'https://i.ibb.co/QdGBLgw/zephyr2.png';
-                    let attempts = 0;
-                    const maxAttempts = 3;
-
-                    // Intentar obtener la foto de perfil varias veces
-                    while (attempts < maxAttempts) {
-                        try {
-                            pp = await this.profilePictureUrl(user, './src/abyss5.png') || pp;
-                            ppgp = await this.profilePictureUrl(id, './src/abyss5.png') || ppgp;
-                            break; // Si la solicitud es exitosa, salir del bucle
-                        } catch (error) {
-                            console.error(`Error al obtener la foto de perfil (intento ${attempts + 1}):`, error);
-                            attempts++;
-                            if (attempts >= maxAttempts) {
-                                console.log("Se alcanzó el número máximo de intentos. Usando imágenes por defecto.");
-                                break; // Usar la imagen por defecto después de fallar todos los intentos
-                            }
-                        }
+                    let ppgp = './src/abyss5.png'; // Imagen por defecto para el grupo
+                    
+                    try {
+                        pp = await this.profilePictureUrl(user, 'image') || pp;
+                        ppgp = await this.profilePictureUrl(id, 'image') || ppgp;
+                    } catch (error) {
+                        console.error('Error al obtener la foto de perfil, usando imagen por defecto:', error);
+                        // Si ocurre un error, ya se tienen asignadas las imágenes por defecto
                     }
 
                     text = (action === 'add' ? (chat.sSwagat || this.swagat || conn.swagat || 'Un placer tenerte en este grupo, @user')
@@ -508,13 +498,13 @@ export async function participantsUpdate({ id, participants, action }) {
         case 'promote':
             text = (chat.sPromote || this.spromote || conn.spromote || '@user es un admin 🧧')
                 .replace('@user', '@' + participants[0].split('@')[0]);
-            await this.sendFile(id, await this.profilePictureUrl(participants[0], 'image').catch(() => 'https://i.ibb.co/QdGBLgw/zephyr2.png'), 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
+            await this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
             break;
         
         case 'demote':
             text = (chat.sDemote || this.sdemote || conn.sdemote || '@user ya no es admin 🧧🔫')
                 .replace('@user', '@' + participants[0].split('@')[0]);
-            await this.sendFile(id, await this.profilePictureUrl(participants[0], 'image').catch(() => 'https://i.ibb.co/QdGBLgw/zephyr2.png'), 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
+            await this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) });
             break;
     }
 }
