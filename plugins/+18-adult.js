@@ -1,6 +1,6 @@
 import axios from 'axios';
 import fetch from 'node-fetch';
-import { generateWAMessageFromContent } from '@adiwajshing/baileys'; // Importar esta función para enviar mensajes con botones
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys'; // Importar esta función para enviar mensajes con botones
 
 const handler = async (m, { command, conn }) => {
 
