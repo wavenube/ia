@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import PDFDocument from 'pdfkit';
-import { extractImageThumb } from "baileys";
+import { extractImageThumb } from "@whiskeysockets/baileys";
 import axios from 'axios';
 
 const handler = async (m, { conn, text, usedPrefix, command, args }) => {
