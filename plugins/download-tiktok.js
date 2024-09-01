@@ -1,4 +1,4 @@
-import fg from 'api-dylux';
+import fg from 'fg-dylux';
 import axios from 'axios';
 import cheerio from 'cheerio';
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
