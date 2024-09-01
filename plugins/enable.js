@@ -1,157 +1,136 @@
 let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isROwner }) => {
-	
-  let isEnable = /true|enable|(turn)?on|1/i.test(command)
-  let chat = global.db.data.chats[m.chat]
-  let user = global.db.data.users[m.sender]
-  let bot = global.db.data.settings[conn.user.jid] || {}
-  let type = (args[0] || '').toLowerCase()
-  let isAll = false, isUser = false
+  
+  let isEnable = /true|enable|(turn)?on|1/i.test(command);
+  let chat = global.db.data.chats[m.chat];
+  let user = global.db.data.users[m.sender];
+  let bot = global.db.data.settings[conn.user.jid] || {};
+  let type = (args[0] || '').toLowerCase();
+  let isAll = false, isUser = false;
+
   switch (type) {
-    case 'swagat':
     case 'welcome':
       if (!m.isGroup) {
         if (!isOwner) {
-          global.dfail('group', m, conn)
-          throw false
+          global.dfail('group', m, conn);
+          throw false;
         }
       } else if (!isAdmin) {
-        global.dfail('admin', m, conn)
-        throw false
+        global.dfail('admin', m, conn);
+        throw false;
       }
-      chat.swagat = isEnable
-      break
+      chat.welcome = isEnable;
+      break;
       
-      case 'detect':
-      case 'detector':
-        if (!m.isGroup) {
-         if (!isOwner) {
-           global.dfail('group', m, conn)
-          throw false
+    case 'detect':
+      if (!m.isGroup) {
+        if (!isOwner) {
+          global.dfail('group', m, conn);
+          throw false;
         }
-       } else if (!isAdmin) {
-         global.dfail('admin', m, conn)
-         throw false
-       }
-       chat.detect = isEnable
-     break
-    
-    case 'antidelete':
-    case 'delete':
+      } else if (!isAdmin) {
+        global.dfail('admin', m, conn);
+        throw false;
+      }
+      chat.detect = isEnable;
+      break;
+
+    case 'modohorny':
       if (m.isGroup) {
         if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn)
-          throw false
+          global.dfail('admin', m, conn);
+          throw false;
         }
       }
-      chat.delete = !isEnable
-      break
-
-    case 'public':
-      isAll = true
-      if (!isROwner) {
-        global.dfail('rowner', m, conn)
-        throw false
+      chat.modohorny = isEnable;
+      break;
+      
+    case 'antidelete':
+      if (m.isGroup) {
+        if (!(isAdmin || isOwner)) {
+          global.dfail('admin', m, conn);
+          throw false;
+        }
       }
-      global.opts['self'] = !isEnable
-      break
+      chat.antidelete = isEnable;
+      break;
+      
     case 'antilink':
       if (m.isGroup) {
         if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn)
-          throw false
+          global.dfail('admin', m, conn);
+          throw false;
         }
       }
-      chat.antiLink = isEnable
-      break
-      
-      case 'sirfbhartiya':
-      case 'onlyIndian':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn)
-          throw false
-        }
-      }
-      chat.sirfBhartiya = isEnable
-      break
-      
-      case 'modohorny':
-      case 'modohorny':
-       if (m.isGroup) {
-         if (!(isAdmin || isOwner)) {
-           global.dfail('admin', m, conn)
-            throw false
-           }}
-    chat.hfw = isEnable          
-    break
+      chat.antiLink = isEnable;
+      break;
 
-    case 'autolevelup':
-    isUser = true
-     user.autolevelup = isEnable
-     break
-     
-    case 'restrict':
-      isAll = true
-      if (!isOwner) {
-        global.dfail('owner', m, conn)
-        throw false
+    case 'public':
+      isAll = true;
+      if (!isROwner) {
+        global.dfail('rowner', m, conn);
+        throw false;
       }
-      bot.restrict = isEnable
-      break
-    
+      global.opts['self'] = !isEnable;
+      break;
+      
+    case 'restrict':
+      isAll = true;
+      if (!isOwner) {
+        global.dfail('owner', m, conn);
+        throw false;
+      }
+      bot.restrict = isEnable;
+      break;
+      
+    case 'gconly':
+      isAll = true;
+      if (!isROwner) {
+        global.dfail('rowner', m, conn);
+        throw false;
+      }
+      global.opts['gconly'] = isEnable;
+      break;
+
     case 'onlypv':
     case 'onlydm':
-      isAll = true
+      isAll = true;
       if (!isROwner) {
-        global.dfail('rowner', m, conn)
-        throw false
+        global.dfail('rowner', m, conn);
+        throw false;
       }
-      global.opts['pconly'] = isEnable
-      break
-      
-    case 'gponly':
-    case 'onlygp':
-    case 'grouponly':
-      isAll = true
-      if (!isROwner) {
-        global.dfail('rowner', m, conn)
-        throw false
-      }
-      global.opts['gconly'] = isEnable
-      break
-      
+      global.opts['pconly'] = isEnable;
+      break;
+
     default:
-      if (!/[01]/.test(command)) return m.reply(`Available Options to be Customised 
+      if (!/[01]/.test(command)) return m.reply(`Opciones disponibles para personalizar:
 
 ┌─⊷ *ADMIN*
-▢ swagat
+▢ welcome
 ▢ antilink
 ▢ detect 
-▢ document
-▢ hfw
-▢ sirfbhartiya
-└───────────── 
-┌─⊷ *USERS*
-▢ autolevelup
-▢ chatbot 
+▢ modohorny
 └─────────────
 ┌─⊷ *OWNER*
 ▢ public
+▢ restrict
+▢ gconly
+▢ onlypv
 └─────────────
-*📌 Example:*
-*${usedPrefix}on* swagat
-*${usedPrefix}off* swagat
-`)
-      throw false
+📌 Ejemplo:
+${usedPrefix}on welcome
+${usedPrefix}off welcome
+`);
+      throw false;
+  }
+
+  m.reply(`
+✅ *${type}* está *${isEnable ? 'activado' : 'desactivado'}* ${isAll ? 'para todo el bot' : isUser ? '' : 'para este chat'}
+`.trim());
+
 }
 
-m.reply(`
-✅ *${type}* is *${isEnable ? 'activated' : 'Deactived'}* ${isAll ? 'for bot' : isUser ? '' : 'for chat'}
-`.trim()) 
+handler.help = ['enable', 'disable'].map(v => v + ' <opción>');
+handler.tags = ['config'];
+handler.command = /^((en|dis)able|(tru|fals)e|(turn)?on|off|[01])$/i;
 
-}
-handler.help = ['en', 'dis'].map(v => v + 'able <option>')
-handler.tags = ['custom']
-handler.command = /^((en|dis)able|(tru|fals)e|(turn)?o(n|ff)|[01])$/i
-
-export default handler
+export default handler;
