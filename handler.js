@@ -470,8 +470,8 @@ export async function participantsUpdate({ id, participants, action }) {
             if (chat.welcome) {
                 let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata;
                 for (let user of participants) {
-                    let pp = 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg';
-                    let ppgp = 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg';
+                    let pp = './src/abyss5.png';
+                    let ppgp = 'https://i.ibb.co/QdGBLgw/zephyr2.png';
                     try {
                         pp = await this.profilePictureUrl(user, 'image') || pp;
                         ppgp = await this.profilePictureUrl(id, 'image') || ppgp;
