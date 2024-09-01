@@ -16,11 +16,11 @@ global.author = 'Cyber Bot'
 global.botname = 'CyberBot'
 global.wm = 'Cyber - Bot';
  
-global.imagen1 = fs.readFileSync('./media/abyss.png');
-global.imagen2 = fs.readFileSync('./media/abyss2.png');
-global.imagen3 = fs.readFileSync('./media/abyss3.png')
-global.imagen4 = fs.readFileSync('./media/abyss4.png')
-global.imagen5 = fs.readFileSync('./media/abyss5.png') 
+global.imagen1 = fs.readFileSync('./src/abyss.png');
+global.imagen2 = fs.readFileSync('./src/abyss2.png');
+global.imagen3 = fs.readFileSync('./src/abyss3.png')
+global.imagen4 = fs.readFileSync('./src/abyss4.png')
+global.imagen5 = fs.readFileSync('./src/abyss5.png') 
  //Api's
 global.APIs = {
   shizoapi: 'https://shizoapi.onrender.com'
