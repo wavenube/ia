@@ -1,7 +1,4 @@
 const handler = async (m, { conn }) => {
-  // Define el archivo de audio que se enviará
-  const vn = './src/assets/audio/01J673A5RN30C5EYPMKE5MR9XQ.mp3';
-
   // Determina el ID del usuario mencionado o el ID del remitente
   const who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender;
 
