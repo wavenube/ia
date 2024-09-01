@@ -29,7 +29,7 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
           externalAdReply: {
             title: 'Descargar Video de TikTok',
             body: null,
-            thumbnail: imagen1,
+            thumbnail: './media/contact.png',
             sourceUrl: 'https://github.com/BrunoSobrino/TheMystic-Bot-MD'
           },
           mentionedJid: [m.sender]
