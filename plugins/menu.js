@@ -91,6 +91,23 @@ ${readMore}
 
 
 ☆  .bot (txt)
+☆  .gay
+☆  .hornycard
+☆  .simpcard
+☆  .yt
+☆  .letra
+☆  .cuevana
+☆  .play
+☆  .chatgpt
+☆  .infobot
+☆  .ping
+☆  .perfil
+☆  .autoverificar
+☆  .s
+☆  .hd
+☆  .qrcode
+☆  .read
+☆  .quemusica
       
       
 Made by ♡ ZephyrByte
