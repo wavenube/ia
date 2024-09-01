@@ -473,8 +473,8 @@ export async function participantsUpdate({ id, participants, action }) {
                     let pp = './src/abyss5.png';
                     let ppgp = 'https://i.ibb.co/QdGBLgw/zephyr2.png';
                     try {
-                        pp = await this.profilePictureUrl(user, 'image') || pp;
-                        ppgp = await this.profilePictureUrl(id, 'image') || ppgp;
+                        pp = await this.profilePictureUrl(user, './src/abyss5.png') || pp;
+                        ppgp = await this.profilePictureUrl(id, './src/abyss5.png') || ppgp;
                     } catch (error) {
                         console.error('Error al obtener la foto de perfil:', error);
                     }
