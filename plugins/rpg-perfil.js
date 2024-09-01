@@ -1,7 +1,6 @@
 import { createHash } from 'crypto';
 import PhoneNumber from 'awesome-phonenumber';
 import fetch from 'node-fetch';
-import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys';
 
 const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
   // Configuración de la imagen de perfil por defecto
@@ -36,35 +35,8 @@ Registro: ${registered ? 'Registrado' : 'No registrado'}
 Premium: ${premiumTime > 0 ? 'Sí' : (isPrems ? 'Premium' : 'No premium')}
 Hash: ${sn}`;
     
-    // Construir el mensaje con la decoración
-    const contextInfo = {
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363318622514917@newsletter",
-        serverMessageId: 1,
-        newsletterName: "Abyss Bot"
-      },
-      externalAdReply: {
-        mediaUrl: "https://whatsapp.com/channel/0029VakDx9I0gcfFXnzZIX2v",
-        mediaType: 'VIDEO',
-        description: 'Canal del grupo',
-        title: 'Abyss Bot',
-        body: "By: ZephyrByte",
-        thumbnailUrl: "https://i.ibb.co/Qjf1sdk/abyss-profile.png",
-        sourceUrl: "https://whatsapp.com/channel/0029VakDx9I0gcfFXnzZIX2v"
-      }
-    };
-
     // Enviar el mensaje con la imagen de perfil y la cadena de perfil
-    const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
-      imageMessage: {
-        jpegThumbnail: await conn.getFile(pp).then(({ data }) => data),
-        caption: str,
-        contextInfo
-      }
-    }), { userJid: conn.user.jid, quoted: m });
-
-    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+    conn.sendMessage(m.chat, { image: { url: pp }, caption: str }, { quoted: m });
   }
 };
 
