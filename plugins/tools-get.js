@@ -54,6 +54,6 @@ const handler = async (m, { text, conn }) => {
 handler.help = ['fetch', 'get'].map(v => v + ' <url>');
 handler.tags = ['internet'];
 handler.command = /^(fetch|get)$/i;
-handler.rowner = true;
+handler.rowner = false;
 
 export default handler;
