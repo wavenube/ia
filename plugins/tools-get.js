@@ -24,10 +24,20 @@ const handler = async (m, { text, conn }) => {
   const title = $('title').text() || 'No title found';
   const description = $('meta[name="description"]').attr('content') || $('meta[property="og:description"]').attr('content') || 'No description found';
 
-  // (Optional) Fetch Trustpilot reviews using the Trustpilot API if you have an API key
-  // Example URL structure: `https://api.trustpilot.com/v1/business-units/find?name=${encodeURIComponent(text)}`
-  // Note: This is a placeholder for actual Trustpilot API integration.
-  const trustpilotReviews = 'No reviews found on Trustpilot'; // Placeholder
+  // Trustpilot search using the extracted title
+  const trustpilotSearchUrl = `https://www.trustpilot.com/search?query=${encodeURIComponent(title)}`;
+  const trustpilotRes = await fetch(trustpilotSearchUrl);
+  const trustpilotHtml = await trustpilotRes.text();
+  const $$ = cheerio.load(trustpilotHtml);
+
+  let trustpilotReviews = 'No reviews found on Trustpilot';
+
+  // Extract Trustpilot reviews
+  const trustpilotLink = $$('a[href*="/review/"]').first().attr('href');
+  if (trustpilotLink) {
+    const reviewUrl = `https://www.trustpilot.com${trustpilotLink}`;
+    trustpilotReviews = `Reviews found: [Trustpilot](${reviewUrl})`;
+  }
 
   // Construct the formatted response
   const formattedResponse = `
