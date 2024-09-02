@@ -1,6 +1,9 @@
 let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isROwner }) => {
+  
+  let isEnable = /true|enable|(turn)?on|1/i.test(command); // Detectar si es "on" o "enable"
+  let isDisable = /false|disable|(turn)?off|0/i.test(command); // Detectar si es "off" o "disable"
+  if (!isEnable && !isDisable) return; // Si no es ninguno, salir
 
-  let isEnable = /true|enable|(turn)?on|1/i.test(command);
   let chat = global.db.data.chats[m.chat];
   let user = global.db.data.users[m.sender];
   let bot = global.db.data.settings[conn.user.jid] || {}; // Usar conn.user.jid para identificar las configuraciones del bot específico
@@ -112,7 +115,8 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
       break;
 
     default:
-      if (!/[01]/.test(command)) return m.reply(`Opciones disponibles para personalizar:
+      m.reply(`
+Opciones disponibles para personalizar:
 
 ┌─⊷ *ADMIN*
 ▢ welcome
@@ -140,3 +144,9 @@ ${usedPrefix}off welcome
   // Guardar los cambios en las configuraciones del bot
   global.db.data.settings[conn.user.jid] = bot;
 }
+
+handler.help = ['enable', 'disable'].map(v => v + ' <opción>');
+handler.tags = ['config'];
+handler.command = /^(en|dis)able|(tru|fals)e|(turn)?on|off|[01]$/i; // Asegurarse de que el regex detecte los comandos correctamente
+
+export default handler;
