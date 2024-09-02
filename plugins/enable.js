@@ -126,7 +126,7 @@ case 'private':
 ▢ modohorny
 └─────────────
 ┌─⊷ *OWNER*
-▢ public
+▢ public/private
 ▢ restrict
 ▢ gconly
 ▢ onlypv
