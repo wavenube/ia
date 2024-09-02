@@ -145,5 +145,6 @@ ${usedPrefix}off welcome`);
 handler.help = ['enable', 'disable'].map(v => v + ' <opción>');
 handler.tags = ['config'];
 handler.command = /^((en|dis)able|(tru|fals)e|(turn)?on|off|[01])$/i;
+handler.owner = true;
 
 export default handler;
