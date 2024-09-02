@@ -65,24 +65,25 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
       break;
 
    // Ajustar el estado del bot según el comando recibido
+// Cambia el estado del bot a público (accesible por todos)
 case 'public':
     if (!isROwner) {
         global.dfail('rowner', m, conn);
         throw false;
     }
-    global.opts['self'] = false; // Cambiar a modo público
-    m.reply('Bot is now public. Everyone can use it.');
+    global.opts['self'] = false; // Bot es accesible para todos
+    m.reply('El bot está ahora en modo público. Todos pueden usarlo.');
     break;
 
-case 'self': // Asumimos que 'self' es el comando para volver a modo privado
+// Cambia el estado del bot a privado (solo accesible por el owner)
+case 'private':
     if (!isROwner) {
         global.dfail('rowner', m, conn);
         throw false;
     }
-    global.opts['self'] = true; // Cambiar a modo privado
-    m.reply('Bot is now private. Only the owner can use it.');
+    global.opts['self'] = true; // Bot es solo para propietarios
+    m.reply('El bot está ahora en modo privado. Solo el propietario puede usarlo.');
     break;
-
 
       
     case 'restrict':
