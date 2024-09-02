@@ -64,13 +64,13 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
       chat.antiLink = isEnable;
       break;
 
-   case 'public':
+   // Ajustar el estado del bot según el comando recibido
+case 'public':
     if (!isROwner) {
         global.dfail('rowner', m, conn);
         throw false;
     }
-    isAll = true; // Permite el acceso a todos
-    global.opts['self'] = false; // Cambia el estado a público
+    global.opts['self'] = false; // Cambiar a modo público
     m.reply('Bot is now public. Everyone can use it.');
     break;
 
@@ -79,10 +79,10 @@ case 'self': // Asumimos que 'self' es el comando para volver a modo privado
         global.dfail('rowner', m, conn);
         throw false;
     }
-    isAll = false; // Limita el acceso solo a los propietarios
-    global.opts['self'] = true; // Cambia el estado a privado
+    global.opts['self'] = true; // Cambiar a modo privado
     m.reply('Bot is now private. Only the owner can use it.');
     break;
+
 
       
     case 'restrict':
