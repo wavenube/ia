@@ -92,6 +92,6 @@ async function sendLongMessage(m, message) {
 
 handler.help = ["chagpt", "ia", "openai", "gemini", "copilot"];
 handler.tags = ["buscadores"];
-handler.command = /^(openai|chatgpt|ia|ai|openai2|chatgpt2|ia2|gemini|copilot|bing)$/i;
+handler.command = /^(jailbreak|ia3)$/i;
 
 export default handler;
