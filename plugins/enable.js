@@ -1,12 +1,12 @@
 let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isROwner }) => {
   
-  let isEnable = /true|enable|(turn)?on|1/i.test(command); // Detectar si es "on" o "enable"
-  let isDisable = /false|disable|(turn)?off|0/i.test(command); // Detectar si es "off" o "disable"
-  if (!isEnable && !isDisable) return; // Si no es ninguno, salir
+  let isEnable = /true|enable|(turn)?on|1/i.test(command);
+  let isDisable = /false|disable|(turn)?off|0/i.test(command);
+  if (!isEnable && !isDisable) return;
 
   let chat = global.db.data.chats[m.chat];
   let user = global.db.data.users[m.sender];
-  let bot = global.db.data.settings[conn.user.jid] || {}; // Usar conn.user.jid para identificar las configuraciones del bot específico
+  let bot = global.db.data.settings[conn.user.jid] || {};
   let type = (args[0] || '').toLowerCase();
   let isAll = false, isUser = false;
 
@@ -67,13 +67,12 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
       chat.antiLink = isEnable;
       break;
 
-    // Ajustar el estado del bot según el comando recibido
     case 'public':
         if (!isROwner) {
             global.dfail('rowner', m, conn);
             throw false;
         }
-        bot.self = false; // Configuración específica para este bot
+        bot.self = false; // Cambiar el bot a público para todos los chats y grupos
         m.reply('El bot está ahora en modo público. Todos pueden usarlo.');
         break;
 
@@ -82,7 +81,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
             global.dfail('rowner', m, conn);
             throw false;
         }
-        bot.self = true; // Configuración específica para este bot
+        bot.self = true; // Cambiar el bot a privado para todos los chats y grupos
         m.reply('El bot está ahora en modo privado. Solo los propietarios pueden usarlo.');
         break;
 
@@ -101,7 +100,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
         global.dfail('rowner', m, conn);
         throw false;
       }
-      bot.gconly = isEnable;
+      global.opts['gconly'] = isEnable;
       break;
 
     case 'onlypv':
@@ -111,7 +110,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
         global.dfail('rowner', m, conn);
         throw false;
       }
-      bot.pconly = isEnable;
+      global.opts['pconly'] = isEnable;
       break;
 
     default:
@@ -147,6 +146,6 @@ ${usedPrefix}off welcome
 
 handler.help = ['enable', 'disable'].map(v => v + ' <opción>');
 handler.tags = ['config'];
-handler.command = /^(en|dis)able|(tru|fals)e|(turn)?on|off|[01]$/i; // Asegurarse de que el regex detecte los comandos correctamente
+handler.command = /^(en|dis)able|(tru|fals)e|(turn)?on|off|[01]$/i;
 
 export default handler;
