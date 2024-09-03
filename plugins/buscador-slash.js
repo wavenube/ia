@@ -55,4 +55,8 @@ const checkPhoneNumber = async (phone) => {
     return `Phone number ${phone} found on the following platforms: ...`;
 };
 
+
+handler.command = /^(prueba2)$/i;
+
+
 module.exports = handler;
