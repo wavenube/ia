@@ -1,62 +1,48 @@
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
-const puppeteer = require('puppeteer');
+import fetch from 'node-fetch';
+import cheerio from 'cheerio';
+import puppeteer from 'puppeteer';
 
+// Function to search for email/username/phone info across platforms
 const handler = async (m, { text }) => {
-    // Determine if the input is an email, username, or phone number
-    const input = text.trim();
-    let result = '';
+    let query = text.trim();
+    if (!query) return m.reply('Please provide an email, username, or phone number to search.');
 
-    // Email check - Example with a public API or regex
-    if (validateEmail(input)) {
-        result = await checkEmail(input);
+    m.reply(`Searching for information on: ${query}...`);
+
+    // Use puppeteer or cheerio for scraping information
+    // Example using puppeteer
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.goto(`https://www.google.com/search?q=${encodeURIComponent(query)}`);
+    const content = await page.content();
+
+    const $ = cheerio.load(content);
+    let platforms = [];
+
+    // Use Cheerio to parse the scraped content for platform info
+    $('a').each((i, element) => {
+        const link = $(element).attr('href');
+        if (link.includes('youtube.com') || link.includes('instagram.com') || link.includes('facebook.com')) {
+            platforms.push(link);
+        }
+    });
+
+    await browser.close();
+
+    if (platforms.length === 0) {
+        return m.reply(`No platforms found for: ${query}`);
     }
-    // Username check - Example with Puppeteer or simple fetch from specific platforms
-    else if (validateUsername(input)) {
-        result = await checkUsername(input);
-    }
-    // Phone number check - Example with a public API or regex
-    else if (validatePhoneNumber(input)) {
-        result = await checkPhoneNumber(input);
-    } else {
-        result = 'Invalid input. Please provide a valid email, username, or phone number.';
-    }
 
-    m.reply(result);
+    let resultMessage = `Platforms found for ${query}:\n\n`;
+    resultMessage += platforms.join('\n');
+
+    m.reply(resultMessage);
 };
 
-// Utility functions for validation
-const validateEmail = (email) => {
-    const re = /\S+@\S+\.\S+/;
-    return re.test(email);
-};
+// Set command attributes
+handler.help = ['getinfo'];
+handler.tags = ['search'];
+handler.command = /^getinfo$/i; // Triggered by .getinfo
 
-const validateUsername = (username) => {
-    return /^[a-zA-Z0-9_.-]+$/.test(username);
-};
-
-const validatePhoneNumber = (phone) => {
-    return /^\+?[0-9]{10,15}$/.test(phone);
-};
-
-// Mock functions to check the inputs (implement the actual logic)
-const checkEmail = async (email) => {
-    // Use an email verification API or scrape data
-    return `Email ${email} found on the following platforms: ...`;
-};
-
-const checkUsername = async (username) => {
-    // Use puppeteer to scrape social media platforms for this username
-    return `Username ${username} found on the following platforms: ...`;
-};
-
-const checkPhoneNumber = async (phone) => {
-    // Use a phone number lookup API or other techniques
-    return `Phone number ${phone} found on the following platforms: ...`;
-};
-
-
-handler.command = /^(prueba2)$/i;
-
-
-module.exports = handler;
+export default handler;
