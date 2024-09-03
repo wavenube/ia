@@ -30,15 +30,21 @@ const handler = async (m, { text }) => {
     description: song.longDescription || song.shortDescription || 'No description available',
   };
 
-  // Fetch reviews from a web source (e.g., YouTube or Reddit)
-  const reviewQuery = `${songInfo.title} ${songInfo.artist} review`;
-  const reviewApiUrl = `https://www.reddit.com/search.json?q=${encodeURIComponent(reviewQuery)}&limit=1&type=link`;
-  const reviewResponse = await fetch(reviewApiUrl);
-  const reviewData = await reviewResponse.json();
-
+  // Fetch reviews from a web source (e.g., Reddit)
   let reviewText = 'No reviews found';
-  if (reviewData && reviewData.data && reviewData.data.children.length > 0) {
-    reviewText = reviewData.data.children[0].data.selftext || reviewData.data.children[0].data.title;
+  try {
+    const reviewQuery = `${songInfo.title} ${songInfo.artist} review`;
+    const reviewApiUrl = `https://www.reddit.com/search.json?q=${encodeURIComponent(reviewQuery)}&limit=1&type=link`;
+    const reviewResponse = await fetch(reviewApiUrl);
+
+    // Check if the response is valid JSON
+    const reviewData = await reviewResponse.json().catch(() => null);
+
+    if (reviewData && reviewData.data && reviewData.data.children.length > 0) {
+      reviewText = reviewData.data.children[0].data.selftext || reviewData.data.children[0].data.title;
+    }
+  } catch (error) {
+    reviewText = 'Error fetching reviews';
   }
 
   // Construct the response message
