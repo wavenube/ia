@@ -24,7 +24,7 @@ const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     const rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length;
 
     // Usar imagen predeterminada o imagen de contacto
-    const pp = './media/contact.png';
+    const pp = './media/abyss.png';
     const more = String.fromCharCode(8206);
     const readMore = more.repeat(850);
 
@@ -107,6 +107,12 @@ ${readMore}
 ☆  .hd
 ☆  .qrcode
 ☆  .read
+☆  .quemusica
+☆  .rpg
+☆  .ig
+☆  .musicinfo
+☆  .hentai
+☆  (comandos + 18 /nsfwloli y demas a probar)
 ☆  .quemusica
       
       
