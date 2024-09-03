@@ -22,7 +22,7 @@ const handler = async (m, { text }) => {
 
         $('a').each((i, element) => {
             const link = $(element).attr('href');
-            if (link.includes('youtube.com') || link.includes('instagram.com') || link.includes('facebook.com')) {
+            if (link.includes('youtube.com') || link.includes('instagram.com') || link.includes('facebook.com') || link.includes('roblox.com')) {
                 platforms.push(link);
             }
         });
