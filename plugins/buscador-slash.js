@@ -2,7 +2,6 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import puppeteer from 'puppeteer';
 
-// Function to search for email/username/phone info across platforms
 const handler = async (m, { text }) => {
     let query = text.trim();
     if (!query) return m.reply('Please provide an email, username, or phone number to search.');
@@ -10,7 +9,9 @@ const handler = async (m, { text }) => {
     m.reply(`Searching for information on: ${query}...`);
 
     try {
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        });
         const page = await browser.newPage();
 
         await page.goto(`https://www.google.com/search?q=${encodeURIComponent(query)}`);
@@ -42,9 +43,8 @@ const handler = async (m, { text }) => {
     }
 };
 
-// Set command attributes
 handler.help = ['getinfo'];
 handler.tags = ['search'];
-handler.command = /^getinfo$/i; // Triggered by .getinfo
+handler.command = /^getinfo$/i;
 
 export default handler;
