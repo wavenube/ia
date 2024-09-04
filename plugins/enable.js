@@ -3,7 +3,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
   let isEnable = /true|enable|(turn)?on|1/i.test(command);
   let chat = global.db.data.chats[m.chat];
   let user = global.db.data.users[m.sender];
-  let bot = global.db.data.settings[conn.user.jid] || {};
+  let bot = global.db.data.settings[conn.user.jid] || {}; // Obtener las configuraciones específicas del sub-bot
   let type = (args[0] || '').toLowerCase();
   let isAll = false, isUser = false;
 
@@ -64,29 +64,25 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
       chat.antiLink = isEnable;
       break;
 
-   // Ajustar el estado del bot según el comando recibido
-// Cambia el estado del bot a público (accesible por todos)
-// Cambia el estado del bot a público (accesible por todos)
-case 'public':
-    if (!isROwner) {
-        global.dfail('rowner', m, conn);
-        throw false;
-    }
-    global.opts['self'] = false; // Bot es accesible para todos
-    m.reply('El bot está ahora en modo público. Todos pueden usarlo.');
-    break;
+    // Cambia el estado del bot a público (accesible por todos)
+    case 'public':
+      if (!isROwner) {
+          global.dfail('rowner', m, conn);
+          throw false;
+      }
+      bot.self = false; // Bot es accesible para todos
+      m.reply('El bot está ahora en modo público. Todos pueden usarlo.');
+      break;
 
-// Cambia el estado del bot a privado (solo accesible por el owner)
-case 'private':
-    if (!isROwner) {
-        global.dfail('rowner', m, conn);
-        throw false;
-    }
-    global.opts['self'] = true; // Bot es solo para propietarios
-    m.reply('El bot está ahora en modo privado. Solo los propietarios pueden usarlo.');
-    break;
-
-
+    // Cambia el estado del bot a privado (solo accesible por el owner)
+    case 'private':
+      if (!isROwner) {
+          global.dfail('rowner', m, conn);
+          throw false;
+      }
+      bot.self = true; // Bot es solo para propietarios
+      m.reply('El bot está ahora en modo privado. Solo los propietarios pueden usarlo.');
+      break;
       
     case 'restrict':
       isAll = true;
@@ -117,7 +113,7 @@ case 'private':
       break;
 
     default:
-      if (!/[01]/.test(command)) return m.reply(Opciones disponibles para personalizar:
+      if (!/[01]/.test(command)) return m.reply(`Opciones disponibles para personalizar:
 
 ┌─⊷ *ADMIN*
 ▢ welcome
@@ -133,13 +129,15 @@ case 'private':
 └─────────────
 📌 Ejemplo:
 ${usedPrefix}on welcome
-${usedPrefix}off welcome
-);
+${usedPrefix}off welcome`);
       throw false;
   }
+
+  // Guardar la configuración específica del sub-bot
   global.db.data.settings[conn.user.jid] = bot;
+
   m.reply(
-✅ *${type}* está *${isEnable ? 'activado' : 'desactivado'}* ${isAll ? 'para todo el bot' : isUser ? '' : 'para este chat'}
+`✅ *${type}* está *${isEnable ? 'activado' : 'desactivado'}* ${isAll ? 'para todo el bot' : isUser ? '' : 'para este chat'}`
 .trim());
 
 }
