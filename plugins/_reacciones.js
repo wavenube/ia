@@ -12,7 +12,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   const query = reactionType; // Personaliza la palabra clave según el comando
 
   // Realiza la búsqueda en Tenor
-  const response = await fetch(`https://tenor.googleapis.com/v2/search?q=${query}&key=${tenorApiKey}&client_key=my_test_app&limit=1`);
+  const response = await fetch(`https://tenor.googleapis.com/v2/search?q=${query}&key=${tenorApiKey}&client_key=my_test_app&q=1`);
   const json = await response.json();
 
   if (json.results && json.results.length > 0) {
