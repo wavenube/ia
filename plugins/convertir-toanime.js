@@ -1,4 +1,4 @@
-import uploadImage from '../src/libraries/uploadImage.js';
+import uploadImage from '../lib/uploadImage.js';
 import fetch from 'node-fetch';
 import axios from 'axios';
 import Jimp from 'jimp';
