@@ -42,83 +42,69 @@ const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 ⏰ *Uptime:* ${uptime}
 ${readMore}
       
-*Comandos Disponibles:*
-☆  .blocklist
-☆  .owner
-☆  .runtime
-☆  .script
-      
-      
-      
-☆  .enable <option>
-☆  .disable <option>
-      
-      
-      
-☆  .Setdesc <text>
-☆  .setname <text>
-☆  .add
-☆  .delete
-☆  .demote (@tag)
-☆  .infogp
-☆  .hidetag
-☆  .invite <919172x>
-☆  .kick @user
-☆  .link
-☆  .poll question|option|option
-☆  .setwelcome <text>
-      
-      
-      
-☆  .ban @user
-☆  .banchat
-☆  .unban @user
-☆  .unbanchat
-☆  .listban
-      
-      
-      
-☆  .reg <name.age>
-☆  .mysn
-☆  .unreg <Num Serie>
-      
-      
-      
-☆  .stiker (caption|reply media)
-☆  .stiker <url>
-☆  .stikergif (caption|reply media)
-☆  .stikergif <url>
+🛠️ *Configuración y Administración:*
+☆ .blocklist  
+☆ .owner  
+☆ .runtime  
+☆ .script  
+☆ .enable <option>  
+☆ .disable <option>  
+☆ .Setdesc <text>  
+☆ .setname <text>  
+☆ .infogp  
+☆ .add  
+☆ .delete  
+☆ .demote (@tag)  
+☆ .invite <919172x>  
+☆ .kick @user  
+☆ .link  
+☆ .setwelcome <text>  
 
+🔒 *Moderación:*
+☆ .ban @user  
+☆ .banchat  
+☆ .unban @user  
+☆ .unbanchat  
+☆ .listban  
 
-☆  .bot (txt)
-☆  .gay
-☆  .hornycard
-☆  .simpcard
-☆  .yt
-☆  .letra
-☆  .cuevana
-☆  .play
-☆  .chatgpt
-☆  .infobot
-☆  .ping
-☆  .perfil
-☆  .autoverificar
-☆  .s
-☆  .hd
-☆  .qrcode
-☆  .read
-☆  .quemusica
-☆  .rpg
-☆  .ig
-☆  .musicinfo
-☆  .hentai
-☆  (comandos + 18 /nsfwloli y demas a probar)
-☆  .quemusica
-☆  .pinterest
-☆  .hentaisearch
+🛡️ *Registro y Verificación:*
+☆ .reg <name.age>  
+☆ .mysn  
+☆ .unreg <Num Serie>  
+☆ .autoverificar  
 
+🎨 *Stickers y Multimedia:*
+☆ .stiker (caption|reply media)  
+☆ .stiker <url>  
+☆ .stikergif (caption|reply media)  
+☆ .stikergif <url>  
+☆ .qrcode  
+☆ .perfil  
 
-      
+💬 *Interacción y Diversión:*
+☆ .bot (txt)  
+☆ .gay  
+☆ .hornycard  
+☆ .simpcard  
+☆ .yt  
+☆ .letra  
+☆ .cuevana  
+☆ .play  
+☆ .chatgpt  
+☆ .infobot  
+☆ .ping  
+☆ .s  
+☆ .hd  
+☆ .read  
+☆ .quemusica  
+☆ .rpg  
+☆ .ig  
+☆ .musicinfo  
+☆ .hentai  
+☆ (comandos +18 /nsfwloli y demás a probar)  
+☆ .pinterest  
+☆ .hentaisearch  
+
       
 Made by ♡ ZephyrByte
           `.trim();
