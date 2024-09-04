@@ -1,6 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import {generateWAMessageFromContent} from "baileys";
+import {generateWAMessageFromContent} from "@whiskeysockets/baileys";
 import {tiktokdl} from '@bochilteam/scraper';
 
 let tiktok;
