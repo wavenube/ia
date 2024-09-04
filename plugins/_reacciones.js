@@ -1,36 +1,39 @@
 import fetch from 'node-fetch';
 
-const tenorApiKey = 'AIzaSyBLoTdLb1id3rpdjJNbwY8XwgjVnwvJS7I';
+const reactionGifs = {
+  kiss: 'https://nekos.life/api/v2/img/kiss',
+  slap: 'https://nekos.life/api/v2/img/slap',
+  pat: 'https://nekos.life/api/v2/img/pat',
+  cum: 'https://nekos.life/api/v2/img/cum',
+  // Agrega más acciones y sus URLs según sea necesario
+};
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
+  // Verifica si se ha mencionado a alguien
   if (!m.mentionedJid || m.mentionedJid.length === 0) {
     throw `*Uso correcto: ${usedPrefix + command} @usuario*`;
   }
 
   const mentionedJid = m.mentionedJid[0];
   const reactionType = command.toLowerCase();
-  const query = reactionType; // Personaliza la palabra clave según el comando
+  const reactionUrl = reactionGifs[reactionType];
 
-  // Realiza la búsqueda en Tenor
-  const response = await fetch(`https://tenor.googleapis.com/v2/search?q=${query}&key=${tenorApiKey}&client_key=my_test_app&q=1`);
-  const json = await response.json();
-
-  if (json.results && json.results.length > 0) {
-    const gifUrl = json.results[0].media_formats.gif.url;
-    const messageText = `@${m.sender.split('@')[0]} ${reactionType} a @${mentionedJid.split('@')[0]}!`;
-
-    await conn.sendMessage(m.chat, {
-      video: { url: gifUrl },
-      caption: messageText,
-      mentions: [m.sender, mentionedJid]
-    });
-  } else {
-    throw `*No se encontró ningún GIF para ${reactionType}*`;
+  if (!reactionUrl) {
+    throw `*Reacción no reconocida: ${reactionType}*`;
   }
+
+  const reactionGif = await fetch(reactionUrl).then(res => res.json()).then(json => json.url);
+  const messageText = `@${m.sender.split('@')[0]} ${reactionType} a @${mentionedJid.split('@')[0]}!`;
+
+  await conn.sendMessage(m.chat, {
+    image: { url: reactionGif },
+    caption: messageText,
+    mentions: [m.sender, mentionedJid]
+  });
 };
 
-handler.help = ['kiss', 'slap', 'pat']; 
+handler.help = ['kiss', 'slap', 'pat', 'cum']; // Agrega más comandos aquí
 handler.tags = ['fun'];
-handler.command = /^(kiss|slap|pat)$/i;
+handler.command = /^(kiss|slap|pat|cum)$/i; // Expande con más comandos si es necesario
 
 export default handler;
