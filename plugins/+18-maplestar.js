@@ -1,24 +1,46 @@
 import axios from 'axios';
-const { proto, generateWAMessageFromContent, generateWAMessageContent } = (await import("@whiskeysockets/baileys")).default;
+const { proto, generateWAMessageFromContent } = (await import("@whiskeysockets/baileys")).default;
 
-let handler = async (message, { conn, text }) => {
-    if (!text) return conn.sendMessage(message.chat, { text: '[❗] ¿Qué quieres buscar?' }, { quoted: message });
+const VIDEO_URLS = [
+    'https://qu.ax/scZw.mp4',
+    'https://qu.ax/sKfw.mp4',
+    'https://qu.ax/urcH.mp4',
+    'https://qu.ax/PZCF.mp4',
+    'https://qu.ax/rvnd.mp4',
+    'https://qu.ax/OxHZ.mp4',
+    'https://qu.ax/aUXT.mp4',
+    'https://qu.ax/wbJN.mp4',
+    'https://qu.ax/fJf.mp4',
+    'https://qu.ax/bFdc.mp4',
+    'https://qu.ax/vHNs.mp4',
+    'https://qu.ax/uppk.mp4',
+    'https://qu.ax/YnM.mp4',
+];
 
+let handler = async (message, { conn }) => {
     try {
-        let selectedResults = VIDEO_URLS.slice(0, 7); // Toma los primeros 7 enlaces
-        let imageMessages = await Promise.all(selectedResults.map(async (url) => createImageMessage(url, conn)));
-        
-        let results = imageMessages.map((imageMessage, index) => ({
-            body: proto.Message.InteractiveMessage.Body.fromObject({ text: '' }),
-            footer: proto.Message.InteractiveMessage.Footer.fromObject({ text: `*❧ By ${global.wm}*` }),
-            header: proto.Message.InteractiveMessage.Header.fromObject({
-                title: `Video ${index + 1}`,
-                hasMediaAttachment: true,
-                imageMessage: imageMessage
-            }),
-            nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ buttons: [] })
-        }));
-
+        let results = [];
+        for (let videoUrl of VIDEO_URLS) {
+            const thumbnailUrl = await generateThumbnail(videoUrl); // Genera una miniatura para cada video
+            results.push({
+                body: proto.Message.InteractiveMessage.Body.fromObject({ text: '' }),
+                footer: proto.Message.InteractiveMessage.Footer.fromObject({ text: `*❧ By ${global.wm}*` }),
+                header: proto.Message.InteractiveMessage.Header.fromObject({
+                    title: 'Video Link',
+                    hasMediaAttachment: true,
+                    documentMessage: {
+                        url: videoUrl,
+                        mimetype: 'video/mp4',
+                        caption: 'Click para ver el video'
+                    },
+                    imageMessage: {
+                        url: thumbnailUrl,
+                        caption: 'Click para ver el video'
+                    },
+                }),
+                nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ buttons: [] }),
+            });
+        }
         const responseMessage = generateWAMessageFromContent(message.chat, {
             viewOnceMessage: {
                 message: {
@@ -27,7 +49,7 @@ let handler = async (message, { conn, text }) => {
                         deviceListMetadataVersion: 2
                     },
                     interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-                        body: proto.Message.InteractiveMessage.Body.create({ text: `*< VIDEO LINKS >*\n\n📌 *Videos seleccionados:*` }),
+                        body: proto.Message.InteractiveMessage.Body.create({ text: `*< VIDEO LINKS >*\n\n` + `📌 *Videos disponibles:*` }),
                         footer: proto.Message.InteractiveMessage.Footer.create({ text: '' }),
                         header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
                         carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: results })
@@ -35,38 +57,18 @@ let handler = async (message, { conn, text }) => {
                 }
             }
         }, { quoted: message });
-
         await conn.relayMessage(message.chat, responseMessage.message, { messageId: responseMessage.key.id });
     } catch (error) {
-        await conn.sendMessage(message.chat, { text: error.toString() }, { quoted: message });
+        await conn.sendMessage(message.chat, { text: `Error: ${error.message}` }, { quoted: message });
     }
 };
 
-handler.help = ['videocarousel'];
-handler.tags = ['media'];
-handler.command = /^(videocarousel|vcaro)$/i;
+handler.help = ['videolinks'];
+handler.tags = ['utility'];
+handler.command = /^(videolinks)$/i;
 export default handler;
 
-async function createImageMessage(url, conn) {
-    try {
-        const thumbnailUrl = await getVideoThumbnail(url);
-        const response = await axios.get(thumbnailUrl, { responseType: 'arraybuffer' });
-        const buffer = response.data;
-
-        const { imageMessage } = await generateWAMessageContent({ image: buffer, caption: `🔗 [Click para ver el video](${url})` }, { upload: conn.waUploadToServer });
-        return imageMessage;
-    } catch (error) {
-        throw new Error(`Error al crear el mensaje de imagen: ${error.message}`);
-    }
-}
-
-async function getVideoThumbnail(url) {
-    // Usa una API o método para extraer el thumbnail del video, o usa un servicio de terceros.
-    return `https://img.youtube.com/vi/${extractVideoId(url)}/hqdefault.jpg`; // Ejemplo para YouTube, necesitarás adaptar esto para otros servicios.
-}
-
-function extractVideoId(url) {
-    // Extrae el ID del video desde la URL para servicios como YouTube.
-    const videoIdMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    return videoIdMatch ? videoIdMatch[1] : null;
+async function generateThumbnail(videoUrl) {
+    // Aquí puedes usar alguna API para generar una miniatura del video o retornar un placeholder
+    return 'https://via.placeholder.com/150'; // URL de la miniatura
 }
