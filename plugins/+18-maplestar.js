@@ -1,4 +1,4 @@
-const { proto, generateWAMessageFromContent } = (await import("@whiskeysockets/baileys")).default;
+const { default: makeWASocket, proto, generateWAMessageFromContent } = await import('@whiskeysockets/baileys');
 import fs from 'fs';
 
 let handler = async (message, { conn }) => {
@@ -6,26 +6,23 @@ let handler = async (message, { conn }) => {
 
     try {
         const imageBuffer = fs.readFileSync(imagePath);
+
         const buttonMessage = {
+            image: { url: imagePath },
             caption: "Click en la imagen para ver el video.",
             footer: "Video Link",
-            image: imageBuffer,
-            buttons: [
+            templateButtons: [
                 {
-                    buttonId: 'link',
-                    buttonText: { displayText: 'Ver Video' },
-                    type: 1
+                    index: 1,
+                    urlButton: {
+                        displayText: 'Ver Video',
+                        url: 'https://qu.ax/scZw.mp4'
+                    }
                 }
-            ],
-            headerType: 4,
-            buttonUrl: 'https://qu.ax/scZw.mp4'
+            ]
         };
 
-        const messageToSend = generateWAMessageFromContent(message.chat, proto.Message.fromObject({
-            buttonsMessage: proto.Message.ButtonsMessage.fromObject(buttonMessage)
-        }), { quoted: message });
-
-        await conn.relayMessage(message.chat, messageToSend.message, { messageId: messageToSend.key.id });
+        await conn.sendMessage(message.chat, buttonMessage, { quoted: message });
     } catch (error) {
         await conn.sendMessage(message.chat, { text: `Error: ${error.message}` }, { quoted: message });
     }
