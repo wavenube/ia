@@ -114,6 +114,10 @@ ${readMore}
 ☆  .hentai
 ☆  (comandos + 18 /nsfwloli y demas a probar)
 ☆  .quemusica
+☆  .pinterest
+☆  .hentaisearch
+
+
       
       
 Made by ♡ ZephyrByte
