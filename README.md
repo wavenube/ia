@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Ribeye&size=50&pause=1000&color=F710B1&center=true&width=910&height=100&lines=Welcome+to+Shizo+Techie's+Project;Shizo+WhatsApp+Bot;Coded+By+Shizo Techie" alt="Typing SVG" /></a>
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Ribeye&size=50&pause=1000&color=F710B1&center=true&width=910&height=100&lines=Welcome+to+Personal+Wa's+Project;Personal+WhatsApp+Bot;Coded+By+Zephyr Byte" alt="Typing SVG" /></a>
 </div>
 <p align="center"> 
 <img src="https://komarev.com/ghpvc/?username=shizothetechie&color=brightgreen" />
@@ -19,7 +19,7 @@
 <li> ---1. pkg update
  <li> ---2. pkg install git
 <li> ---3. pkg install nodejs
- <li> ---4. git clone https://github.com/shizothetechie/shizobot
+ <li> ---4. git clone https://github.com/wavenube/personal
  <br>
 - [Heroku Guide](https://shizoapi.onrender.com)
 </details>
