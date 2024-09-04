@@ -1,5 +1,5 @@
 import axios from 'axios';
-const { generateWAMessageContent, generateWAMessageFromContent, proto } = (await import("baileys")).default;
+const { generateWAMessageContent, generateWAMessageFromContent, proto } = (await import("@whiskeysockets/baileys")).default;
 
 let handler = async (message, { conn, text }) => {
     if (!text) return conn.sendMessage(message.chat, { text: "[❗] ¿Qué quieres buscar en Pinterest?" }, { quoted: message });
