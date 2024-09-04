@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-const tenorApiKey = 'AIzaSyBLoTdLb1id3rpdjJNbwY8XwgjVnwvJS7I'; // Reemplaza con tu clave de API
+const tenorApiKey = 'AIzaSyBLoTdLb1id3rpdjJNbwY8XwgjVnwvJS7I';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!m.mentionedJid || m.mentionedJid.length === 0) {
@@ -9,13 +9,14 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
   const mentionedJid = m.mentionedJid[0];
   const reactionType = command.toLowerCase();
-  const query = reactionType; // Puedes personalizar la palabra clave según el comando
+  const query = reactionType; // Personaliza la palabra clave según el comando
 
-  const response = await fetch(`https://g.tenor.com/v1/search?q=${query}&key=${tenorApiKey}&limit=1`);
+  // Realiza la búsqueda en Tenor
+  const response = await fetch(`https://tenor.googleapis.com/v2/search?q=${query}&key=${tenorApiKey}&client_key=my_test_app&limit=1`);
   const json = await response.json();
 
   if (json.results && json.results.length > 0) {
-    const gifUrl = json.results[0].media[0].gif.url;
+    const gifUrl = json.results[0].media_formats.gif.url;
     const messageText = `@${m.sender.split('@')[0]} ${reactionType} a @${mentionedJid.split('@')[0]}!`;
 
     await conn.sendMessage(m.chat, {
@@ -28,8 +29,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 };
 
-handler.help = ['kiss', 'slap', 'pat', 'excited']; 
+handler.help = ['kiss', 'slap', 'pat']; 
 handler.tags = ['fun'];
-handler.command = /^(kiss|slap|pat|excited)$/i;
+handler.command = /^(kiss|slap|pat)$/i;
 
 export default handler;
