@@ -54,7 +54,7 @@ let handler = async (message, { conn, text }) => {
 
 handler.help = ["pinterest"];
 handler.tags = ["downloader"];
-handler.command = /^(pinterest)$/i;
+handler.command = /^(pinterest|pins)$/i;
 export default handler;
 
 async function pinterestSearch(query) {
