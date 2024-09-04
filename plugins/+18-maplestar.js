@@ -72,3 +72,4 @@ async function generateThumbnail(videoUrl) {
     // Aquí puedes usar alguna API para generar una miniatura del video o retornar un placeholder
     return 'https://via.placeholder.com/150'; // URL de la miniatura
 }
+ 
