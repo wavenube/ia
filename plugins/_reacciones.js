@@ -28,8 +28,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 };
 
-handler.help = ['kiss', 'slap', 'pat']; 
+handler.help = ['kiss', 'slap', 'pat', 'excited']; 
 handler.tags = ['fun'];
-handler.command = /^(kiss|slap|pat)$/i;
+handler.command = /^(kiss|slap|pat|excited)$/i;
 
 export default handler;
