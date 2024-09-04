@@ -35,11 +35,11 @@ const {
 } = cfonts
 const rl = createInterface(process.stdin, process.stdout)
 console.log('ShizoBot is starting 🚀')
-say('SHIZO-WABOT', {
+say('Abyss', {
   font: 'chrome',
   align: 'center',
   gradient: ['red', 'magenta']})
-say(`Github@shizothetechie\nInstagram@shizo_the_techie`, {
+say(`sigueme en ig\nInstagram@agostini.fm`, {
   font: 'console',
   align: 'center',
   gradient: ['red', 'magenta']})
