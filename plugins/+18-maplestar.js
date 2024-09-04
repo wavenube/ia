@@ -1,41 +1,30 @@
-const { default: makeWASocket, proto, generateWAMessageFromContent } = await import('@whiskeysockets/baileys');
-import fs from 'fs';
+import { default as axios } from 'axios';
 
 let handler = async (message, { conn }) => {
-    const imagePath = './media/abyss.png'; // Ruta de la imagen
-
     try {
-        const imageBuffer = fs.readFileSync(imagePath);
+        const mediaUrl = "https://qu.ax/scZw.mp4";
+        const thumbnailUrl = "https://i.ibb.co/Qjf1sdk/abyss-profile.png"; // URL de la miniatura
+        const title = "Abyss Bot";
+        const body = "By: ZephyrByte";
 
-        const messageContent = generateWAMessageFromContent(
-            message.chat,
-            proto.Message.fromObject({
-                imageMessage: {
-                    url: 'https://qu.ax/scZw.mp4', // El enlace al que redirigirá
-                    caption: "Click en la imagen para ver el video.",
-                    jpegThumbnail: imageBuffer,
-                    contextInfo: {
-                        externalAdReply: {
-                            title: "Haz click aquí para ver el video",
-                            body: "Video disponible",
-                            mediaType: 2,
-                            thumbnail: imageBuffer,
-                            mediaUrl: 'https://qu.ax/scZw.mp4',
-                            sourceUrl: 'https://qu.ax/scZw.mp4'
-                        }
-                    }
-                }
-            }),
-            {}
-        );
+        const messageContent = {
+            externalAdReply: {
+                mediaUrl: mediaUrl,
+                mediaType: 2, // VIDEO
+                description: 'Haz clic para ver el video',
+                title: title,
+                body: body,
+                thumbnailUrl: thumbnailUrl,
+                sourceUrl: mediaUrl
+            }
+        };
 
-        await conn.relayMessage(message.chat, messageContent.message, { messageId: messageContent.key.id });
+        await conn.sendMessage(message.chat, messageContent, { quoted: message });
     } catch (error) {
-        await conn.sendMessage(message.chat, { text: `Error: ${error.message}` }, { quoted: message });
+        console.error("Error al enviar el mensaje:", error);
+        await conn.reply(message.chat, "Hubo un error al intentar enviar el mensaje.", message);
     }
 };
 
-handler.help = ['getvideo'];
-handler.tags = ['utility'];
-handler.command = /^(getvideo)$/i;
+handler.command = ['getvideo'];
 export default handler;
