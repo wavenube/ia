@@ -1,38 +1,35 @@
 import fetch from 'node-fetch';
 
-const reactionGifs = {
-  kiss: 'https://nekos.life/api/v2/img/kiss',
-  slap: 'https://nekos.life/api/v2/img/slap',
-  pat: 'https://nekos.life/api/v2/img/pat',
-  // Agrega más acciones y sus URLs según sea necesario
-};
+const tenorApiKey = 'AIzaSyBLoTdLb1id3rpdjJNbwY8XwgjVnwvJS7I'; // Reemplaza con tu clave de API
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-  // Verifica si se ha mencionado a alguien
   if (!m.mentionedJid || m.mentionedJid.length === 0) {
     throw `*Uso correcto: ${usedPrefix + command} @usuario*`;
   }
 
   const mentionedJid = m.mentionedJid[0];
   const reactionType = command.toLowerCase();
-  const reactionUrl = reactionGifs[reactionType];
+  const query = reactionType; // Puedes personalizar la palabra clave según el comando
 
-  if (!reactionUrl) {
-    throw `*Reacción no reconocida: ${reactionType}*`;
+  const response = await fetch(`https://g.tenor.com/v1/search?q=${query}&key=${tenorApiKey}&limit=1`);
+  const json = await response.json();
+
+  if (json.results && json.results.length > 0) {
+    const gifUrl = json.results[0].media[0].gif.url;
+    const messageText = `@${m.sender.split('@')[0]} ${reactionType} a @${mentionedJid.split('@')[0]}!`;
+
+    await conn.sendMessage(m.chat, {
+      video: { url: gifUrl },
+      caption: messageText,
+      mentions: [m.sender, mentionedJid]
+    });
+  } else {
+    throw `*No se encontró ningún GIF para ${reactionType}*`;
   }
-
-  const reactionGif = await fetch(reactionUrl).then(res => res.json()).then(json => json.url);
-  const messageText = `@${m.sender.split('@')[0]} ${reactionType} a @${mentionedJid.split('@')[0]}!`;
-
-  await conn.sendMessage(m.chat, {
-    image: { url: reactionGif },
-    caption: messageText,
-    mentions: [m.sender, mentionedJid]
-  });
 };
 
-handler.help = ['kiss', 'slap', 'pat']; // Agrega más comandos aquí
+handler.help = ['kiss', 'slap', 'pat']; 
 handler.tags = ['fun'];
-handler.command = /^(kiss|slap|pat)$/i; // Expande con más comandos si es necesario
+handler.command = /^(kiss|slap|pat)$/i;
 
 export default handler;
