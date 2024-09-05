@@ -4,7 +4,7 @@ let handler = async (m, { conn }) => {
    await conn.reply(m.chat, '✳️ ¿Por qué no vas directamente a la terminal?', m);
   } else {
     //Si el número no coincide, se detiene el bot.
-    await conn.reply(m.chat, `✅ ${mssg.stopbot}`, m);
+    conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
     conn.ws.close();
   }
 };
