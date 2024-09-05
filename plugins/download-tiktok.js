@@ -11,15 +11,24 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     m.reply('*⏳ Descargando el video...*');
 
-    // Llamada a la API para descargar el video de TikTok sin marca de agua
-    const response = await fetch(`https://ssstik.io/api/your_api_key?url=${url}`);
-    const json = await response.json();
+    // Llamada a la API de ttdownloader.com
+    const apiUrl = `https://ttdownloader.com/req`;
+    const body = new URLSearchParams({ url });
 
-    if (json.status !== 'ok') {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body,
+    });
+
+    const html = await response.text();
+    const videoUrl = html.match(/href="(https:\/\/.*?\.mp4)"/)?.[1]; // Extraer el enlace de video
+
+    if (!videoUrl) {
       throw '*Hubo un error al obtener el video. Verifica la URL o intenta más tarde.*';
     }
-
-    const videoUrl = json.result.nowatermark;  // URL del video sin marca de agua
 
     await conn.sendFile(m.chat, videoUrl, 'tiktok.mp4', `*Aquí está tu video de TikTok sin marca de agua*`, m);
   } catch (e) {
