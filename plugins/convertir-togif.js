@@ -10,8 +10,8 @@ const handler = async (m, { conn, usedPrefix, command }) => {
   
   const media = await q.download();
   
-  conn.sendMessage(m.chat, { video: media, gifPlayback: true, caption: 'Aquí tienes tu GIF con audio.' }, { quoted: m });
+  conn.sendMessage(m.chat, { video: media, gifPlayback: true, caption: 'Aquí tienes tu GIF.' }, { quoted: m });
 };
 
-handler.command = ['togifaud'];
+handler.command = ['togif'];
 export default handler;
