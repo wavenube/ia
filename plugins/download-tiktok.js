@@ -10,20 +10,20 @@ const handler = async (m, { conn, text, args, usedPrefix, command }) => {
     }
 
     try {
-        // Realizar la solicitud a ssstik.io API
-        const { data } = await axios.get(`https://api.ssstik.io/tiktok/tiktok_dl_no_wm`, {
+        // Realizar la solicitud a tikmate API
+        const { data } = await axios.get(`https://tikmate.online/api/tiktok`, {
             params: {
                 url: tiktokUrl
             }
         });
 
         // Verificar si la descarga fue exitosa
-        if (data.status !== 'ok') {
+        if (!data.success) {
             throw 'Error al descargar el video. Verifica el enlace y vuelve a intentarlo.';
         }
 
         // Enviar el video descargado
-        await conn.sendMessage(m.chat, { video: { url: data.link } }, { quoted: m });
+        await conn.sendMessage(m.chat, { video: { url: data.download_url } }, { quoted: m });
     } catch (e) {
         console.error(e);
         throw 'Error al descargar el video. Verifica el enlace y vuelve a intentarlo.';
