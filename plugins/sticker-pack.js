@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { sticker } from '../src/libraries/sticker.js';
+import { sticker } from '../lib/sticker.js';
 
 const handler = async (m, {conn, text, usedPrefix, command}) => {
   if (!text) throw `Usa el comando de esta forma: ${usedPrefix + command} https://getstickerpack.com/stickers/flork-memes-4-1`;
