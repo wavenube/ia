@@ -7,7 +7,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     if (!args[0].match(/tiktok/gi)) throw `❎ Proporciona un enlace de TikTok válido.`;
 
     try {
-        // Llamada a la API con la URL del video de TikTok
+        // Llamada a la API con la URL del video de TikTok usando global.API
         let res = await fetch(global.API('fgmods', '/api/downloader/tiktok', { url: args[0] }, 'apikey'));
         let data = await res.json();
 
