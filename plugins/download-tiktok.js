@@ -5,7 +5,7 @@ let handler = async (m, { conn, text, args, usedPrefix, command }) => {
     
         if (!args[0]) throw `✳️ ${m.noLink('TikTok')}\n\n 📌 ${m.example} : ${usedPrefix + command} https://vm.tiktok.com/ZMYG92bUh/`
         if (!args[0].match(/tiktok/gi)) throw `❎ ${m.noLink('TikTok')}`
-        m.react(rwait)
+        conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
       
         try {
         let res = await fetch(global.API('fgmods', '/api/downloader/tiktok', { url: args[0] }, 'apikey'))
@@ -33,11 +33,11 @@ let handler = async (m, { conn, text, args, usedPrefix, command }) => {
                 conn.sendMessage(m.chat, { image: { url: ttdl }, caption: cap }, { quoted: m })
             }
             conn.sendFile(m.chat, data.result.play, 'tiktok.mp3', '', m, null, { mimetype: 'audio/mp4' })
-            m.react(done)
+            conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
         }
 
       } catch (error) {
-        m.reply(`❎ ${m.error}`)
+        conn.sendMessage(m.chat, { react: { text: "✅", key: m.key }})
     }
    
 }
