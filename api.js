@@ -38,7 +38,7 @@ global.APIs = {
   zenzapis: 'https://api.zahwazein.xyz',
   akuari: 'https://api.akuari.my.id',
   akuari2: 'https://apimu.my.id',
-  fgmods: 'https://api-fgmods.ddns.net',
+  fgmods: 'https://api-fgmods.ddns.net', // API antigua, mantengo en caso de que siga siendo usada
   botcahx: 'https://api.botcahx.biz.id',
   ibeng: 'https://api.ibeng.tech/docs',
   rose: 'https://api.itsrose.site',
@@ -48,10 +48,12 @@ global.APIs = {
   erdwpe: 'https://api.erdwpe.com',
   xyroinee: 'https://api.xyroinee.xyz',
   nekobot: 'https://nekobot.xyz',
-  BK9: 'https://apii.bk9.site'
+  BK9: 'https://apii.bk9.site',
+  nrtm: 'https://fg-nrtm.ddns.net', // Nueva API agregada
+  fgmods: 'https://api.fgmods.xyz' // Nueva API agregada
 };
 
-global.APIKeys = {
+global.APIKeys = { // APIKey Here
   'https://api.xteam.xyz': `${global.keysxteam}`,
   'https://api.lolhuman.xyz': 'GataDios',
   'https://api.neoxr.my.id': `${global.keysneoxr}`,
@@ -62,8 +64,10 @@ global.APIKeys = {
   'https://api.itsrose.site': 'Rs-Zeltoria',
   'https://api-xcoders.site': 'Frieren',
   'https://api.xyroinee.xyz': 'uwgflzFEh6',
-  'https://apikasu.onrender.com': 'ApiKey'
+  'https://apikasu.onrender.com': 'ApiKey',
+  'https://api.fgmods.xyz': 'm2XBbNvz', // API Key nueva agregada
 };
+
 
 // Actualización en caliente del archivo
 const file = fileURLToPath(import.meta.url);
