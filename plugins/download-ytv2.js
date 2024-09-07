@@ -1,93 +1,46 @@
 import fetch from 'node-fetch';
-import yts from 'yt-search';
-import axios from 'axios';
-import ytmp44 from '../lib/ytmp44.js';
+import yts from 'yt-search'; // Utiliza yt-search para buscar videos de YouTube.
+import axios from 'axios'; // Utiliza axios para hacer solicitudes HTTP.
 
-let enviando = false;
+// Función de descarga del video
+let handler = async (m, { conn, args }) => {
+    if (!args[0]) throw '⚠️ Debes proporcionar un enlace de YouTube válido.\n\nEjemplo: .ytmp4 https://www.youtube.com/watch?v=example';
 
-const handler = async (m, { conn, args }) => {
-  if (!args[0]) return await conn.sendMessage(m.chat, { text: 'Por favor, proporciona un enlace de YouTube.' }, { quoted: m });
+    // Verificar que sea un enlace de YouTube
+    if (!args[0].match(/(https:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/gi)) throw '❎ Proporciona un enlace de YouTube válido.';
 
-  if (enviando) return; 
-  enviando = true; 
-
-  const { key } = await conn.sendMessage(m.chat, { text: 'Procesando tu solicitud...' }, { quoted: m });
-
-  const youtubeLink = args[0];
-
-  try {
-    const yt_play = await yts(youtubeLink);
-    const { status, resultados, error } = await ytmp44(yt_play.all[0].url);
-    if (!status) {
-      throw new Error(error);
-    }
-    const buff_vid = await getBuffer(resultados.descargar);
-    const fileSizeInBytes = buff_vid.byteLength;
-    const fileSizeInKB = fileSizeInBytes / 1024;
-    const fileSizeInMB = fileSizeInKB / 1024;
-    const size = fileSizeInMB.toFixed(2);
-    const title = resultados.titulo;
-    const cap = `Título: ${title}\nTamaño: ${size} MB`.trim();
-    await conn.sendMessage(m.chat, { document: buff_vid, caption: cap, mimetype: 'video/mp4', fileName: `${title}.mp4` }, { quoted: m });
-    await conn.sendMessage(m.chat, { text: 'Descarga completada.', edit: key }, { quoted: m });
-    enviando = false;
-  } catch (error) {
     try {
-      const yt_search = await yts(youtubeLink);
-      const videoUrl = `${global.MyApiRestBaseUrl}/api/v1/ytmp4?url=${yt_search.all[0].url}&apikey=${global.MyApiRestApikey}`;
-      const buff_vid = await getBuffer(videoUrl);
-      const fileSizeInBytes = buff_vid.byteLength;
-      const fileSizeInKB = fileSizeInBytes / 1024;
-      const fileSizeInMB = fileSizeInKB / 1024;
-      const size = fileSizeInMB.toFixed(2);
-      const title = yt_search.all[0].title;
-      const cap = `Título: ${title}\nTamaño: ${size} MB`.trim();
-      await conn.sendMessage(m.chat, { document: buff_vid, caption: cap, mimetype: 'video/mp4', fileName: `${title}.mp4` }, { quoted: m });
-      await conn.sendMessage(m.chat, { text: 'Descarga completada.', edit: key }, { quoted: m });
-      enviando = false;
+        // Enviar un mensaje de carga
+        await conn.sendMessage(m.chat, { text: '⏳ Procesando tu solicitud, espera un momento...' }, { quoted: m });
+
+        // Obtener información del video con yt-search
+        let videoSearch = await yts(args[0]);
+        let video = videoSearch.videos[0]; // Selecciona el primer video de la búsqueda
+
+        if (!video) throw '❎ No se encontró el video. Verifica el enlace y vuelve a intentarlo.';
+
+        // Construcción del enlace de descarga usando una API externa (asegúrate de tener una API que permita la descarga de YouTube)
+        let res = await axios.get(`https://api.akuari.my.id/downloader/youtube2?link=${video.url}`);
+        let data = res.data;
+
+        if (!data || !data.result || !data.result.url) throw '❎ No se pudo obtener el enlace de descarga.';
+
+        let videoUrl = data.result.url;
+        let title = video.title;
+        let size = data.result.size;
+
+        // Enviar el video
+        await conn.sendMessage(m.chat, { document: { url: videoUrl }, mimetype: 'video/mp4', fileName: `${title}.mp4`, caption: `📥 *Título:* ${title}\n📦 *Tamaño:* ${size}` }, { quoted: m });
+
     } catch (error) {
-      try {
-        const yt_search = await yts(youtubeLink);
-        const videoUrl = `${global.MyApiRestBaseUrl}/api/v2/ytmp4?url=${yt_search.all[0].url}&apikey=${global.MyApiRestApikey}`;
-        const buff_vid = await getBuffer(videoUrl);
-        const fileSizeInBytes = buff_vid.byteLength;
-        const fileSizeInKB = fileSizeInBytes / 1024;
-        const fileSizeInMB = fileSizeInKB / 1024;
-        const size = fileSizeInMB.toFixed(2);
-        const title = yt_search.all[0].title;
-        const cap = `Título: ${title}\nTamaño: ${size} MB`.trim();
-        await conn.sendMessage(m.chat, { document: buff_vid, caption: cap, mimetype: 'video/mp4', fileName: `${title}.mp4` }, { quoted: m });
-        await conn.sendMessage(m.chat, { text: 'Descarga completada.', edit: key }, { quoted: m });
-        enviando = false;
-      } catch (error) {
-        enviando = false;
-        await conn.sendMessage(m.chat, { text: 'Hubo un error al intentar descargar el video. Verifica el enlace y vuelve a intentarlo.' }, { quoted: m });
-      }
+        // En caso de error, enviar un mensaje de error
+        console.error(error);
+        await conn.sendMessage(m.chat, { text: '❎ Hubo un error al procesar tu solicitud. Intenta de nuevo más tarde.' }, { quoted: m });
     }
-  } finally {
-    enviando = false; 
-  }
 };
 
-handler.command = /^(ytmp4doc|ytvdoc|ytmp4.2|video2)$/i;
+handler.help = ['ytmp4'];
+handler.tags = ['downloader'];
+handler.command = /^(ytmp4)$/i;
+
 export default handler;
-
-const getBuffer = async (url, options) => {
-  try {
-    options ? options : {};
-    const res = await axios({
-      method: 'get',
-      url,
-      headers: {
-        'DNT': 1,
-        'Upgrade-Insecure-Request': 1,
-      },
-      ...options,
-      responseType: 'arraybuffer',
-    });
-    return res.data;
-  } catch (e) {
-    console.log(`Error : ${e}`);
-    throw e;  
-  }
-};
