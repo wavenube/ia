@@ -1,57 +1,32 @@
 import fetch from 'node-fetch';
-import yts from 'yt-search'; // Utiliza yt-search para buscar videos de YouTube.
-import axios from 'axios'; // Utiliza axios para hacer solicitudes HTTP.
-import path from 'path';
-import fs from 'fs';
 
-// Verifica la ruta absoluta de tmp
-const tmpDir = path.join(__dirname, 'tmp');
-console.log("Ruta a la carpeta tmp:", tmpDir);
-
-// Crear la carpeta /tmp si no existe
-if (!fs.existsSync(tmpDir)) {
-    fs.mkdirSync(tmpDir);
-}
-
-// Función de descarga del video
 let handler = async (m, { conn, args }) => {
-    if (!args[0]) throw '⚠️ Debes proporcionar un enlace de YouTube válido.\n\nEjemplo: .ytmp4 https://www.youtube.com/watch?v=example';
+  // Verifica que se haya proporcionado un enlace
+  if (!args[0]) return conn.sendMessage(m.chat, { text: '❌ Proporcione el enlace de YouTube.' });
 
-    // Verificar que sea un enlace de YouTube
-    if (!args[0].match(/(https:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/gi)) throw '❎ Proporciona un enlace de YouTube válido.';
+  // Verifica que el enlace sea de YouTube
+  if (!args[0].match(/youtube\.com|youtu\.be/gi)) return conn.sendMessage(m.chat, { text: '❌ Enlace inválido. Proporcione un enlace válido de YouTube.' });
 
-    try {
-        // Enviar un mensaje de carga
-        await conn.sendMessage(m.chat, { text: '⏳ Procesando tu solicitud, espera un momento...' }, { quoted: m });
+  try {
+    // Realiza la solicitud a la API que proporcionaste
+    const res = await fetch(`https://myaitest-3akm.onrender.com/ytdlv?apikey=sicuani&q=${args[0]}`);
+    const json = await res.json();
 
-        // Obtener información del video con yt-search
-        let videoSearch = await yts(args[0]);
-        let video = videoSearch.videos[0]; // Selecciona el primer video de la búsqueda
+    // Verifica si la API devolvió los datos correctamente
+    if (!json || !json.data || !json.data.videoUrl) return conn.sendMessage(m.chat, { text: '❎ Hubo un error al procesar tu solicitud. Intenta de nuevo más tarde.' });
 
-        if (!video) throw '❎ No se encontró el video. Verifica el enlace y vuelve a intentarlo.';
+    const { videoUrl, title } = json.data;
+    
+    // Descarga y envía el video al chat
+    await conn.sendMessage(m.chat, { text: '⏳ Descargando el video, por favor espera...' });
+    await conn.sendFile(m.chat, videoUrl, `${title}.mp4`, `🎥 Título: ${title}`, m);
 
-        // Construcción del enlace de descarga usando una API externa (asegúrate de tener una API que permita la descarga de YouTube)
-        let res = await axios.get(`https://api.akuari.my.id/downloader/youtube2?link=${video.url}`);
-        let data = res.data;
-
-        if (!data || !data.result || !data.result.url) throw '❎ No se pudo obtener el enlace de descarga.';
-
-        let videoUrl = data.result.url;
-        let title = video.title;
-        let size = data.result.size;
-
-        // Enviar el video
-        await conn.sendMessage(m.chat, { document: { url: videoUrl }, mimetype: 'video/mp4', fileName: `${title}.mp4`, caption: `📥 *Título:* ${title}\n📦 *Tamaño:* ${size}` }, { quoted: m });
-
-    } catch (error) {
-        // En caso de error, enviar un mensaje de error
-        console.error(error);
-        await conn.sendMessage(m.chat, { text: '❎ Hubo un error al procesar tu solicitud. Intenta de nuevo más tarde.' }, { quoted: m });
-    }
+  } catch (error) {
+    // Muestra un mensaje de error si algo falla
+    console.error(error);
+    conn.sendMessage(m.chat, { text: '❎ Hubo un error al procesar tu solicitud. Intenta de nuevo más tarde.' });
+  }
 };
 
-handler.help = ['ytmp4'];
-handler.tags = ['downloader'];
-handler.command = /^(ytmp4)$/i;
-
+handler.command = /^(ytmp44)$/i;
 export default handler;
