@@ -85,6 +85,12 @@
         "node-shazam": "*"
     },
     "optionalDependencies": {
+         "wa-sticker-formatter": "^4.3.2",
+         "@xct007/frieren-scraper": "github:BrunoSobrino/frieren-scraper",
          "wa-sticker-formatter": "^4.3.2"
-    }
+    },
+    "devDependencies": {
+    "eslint": "^8.45.0",
+    "eslint-config-google": "^0.14.0"
+          }
 }
