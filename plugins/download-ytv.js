@@ -114,7 +114,7 @@ const handler = async (m, { conn, args, usedPrefix, command }) => {
   }
 };
 
-handler.command = /^(video|fgmp4|dlmp4|getvid|yt(v|mp4)?)$/i;
+handler.command = /^(video|fgmp4|dlmp4|getvid)$/i;
 export default handler;
 
 const getBuffer = async (url, options) => {
