@@ -1,6 +1,17 @@
 import fetch from 'node-fetch';
 import yts from 'yt-search'; // Utiliza yt-search para buscar videos de YouTube.
 import axios from 'axios'; // Utiliza axios para hacer solicitudes HTTP.
+import path from 'path';
+import fs from 'fs';
+
+// Verifica la ruta absoluta de tmp
+const tmpDir = path.join(__dirname, 'tmp');
+console.log("Ruta a la carpeta tmp:", tmpDir);
+
+// Crear la carpeta /tmp si no existe
+if (!fs.existsSync(tmpDir)) {
+    fs.mkdirSync(tmpDir);
+}
 
 // Función de descarga del video
 let handler = async (m, { conn, args }) => {
