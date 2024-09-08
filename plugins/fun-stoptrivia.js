@@ -1,4 +1,4 @@
-import { getTriviaSessions, removeTriviaSession } from './plugins/_triviaManager.js';
+import { getTriviaSessions, removeTriviaSession } from './_triviaManager.js';
 
 const handler = async (m, { conn, command }) => {
   let chatId = m.chat;
