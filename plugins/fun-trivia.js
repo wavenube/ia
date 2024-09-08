@@ -1,4 +1,5 @@
 let triviaSessions = {};
+const fs = require('fs');
 
 const questions = [
   {
@@ -246,6 +247,20 @@ const questions = [
 
 ];
 
+// Función para mezclar un array
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+
+// Mezcla las preguntas al iniciar el bot
+const shuffledQuestions = shuffle([...questions]);
+
 const handler = async (m, { conn, args, command }) => {
   let chatId = m.chat;
   
@@ -266,20 +281,21 @@ const handler = async (m, { conn, args, command }) => {
     }
 
     let currentQuestion = triviaSessions[chatId];
-    if (args[0].toLowerCase() === questions[currentQuestion.questionIndex].answer) {
+    let question = shuffledQuestions[currentQuestion.questionIndex];
+    if (args[0].toLowerCase() === question.answer) {
       triviaSessions[chatId].score++;
       conn.sendMessage(m.chat, { text: "✅ ¡Respuesta correcta!" });
     } else {
-      conn.sendMessage(m.chat, { text: `❌ Respuesta incorrecta. La correcta era: ${questions[currentQuestion.questionIndex].answer}` });
+      conn.sendMessage(m.chat, { text: `❌ Respuesta incorrecta. La correcta era: ${question.answer}` });
     }
 
-    if (currentQuestion.questionIndex + 1 < questions.length) {
+    if (currentQuestion.questionIndex + 1 < shuffledQuestions.length) {
       triviaSessions[chatId].questionIndex++;
       sendQuestion(m, conn, chatId);
     } else {
       let finalScore = triviaSessions[chatId].score;
       delete triviaSessions[chatId];
-      conn.sendMessage(m.chat, { text: `🎉 ¡Trivia terminada! Puntaje final: ${finalScore}/${questions.length}` });
+      conn.sendMessage(m.chat, { text: `🎉 ¡Trivia terminada! Puntaje final: ${finalScore}/${shuffledQuestions.length}` });
     }
   }
 };
@@ -287,7 +303,7 @@ const handler = async (m, { conn, args, command }) => {
 // Función para enviar pregunta
 function sendQuestion(m, conn, chatId) {
   let triviaSession = triviaSessions[chatId];
-  let question = questions[triviaSession.questionIndex];
+  let question = shuffledQuestions[triviaSession.questionIndex];
 
   let message = `❓ ${question.question}\n\n${question.options.join('\n')}\n\nResponde con el comando: *.answer + opción*`;
   conn.sendMessage(m.chat, { text: message });
