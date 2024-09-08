@@ -1,4 +1,5 @@
-import { shuffle } from 'lodash'; // Para mezclar preguntas de forma aleatoria
+const lodash = require('lodash'); // Importar lodash en formato CommonJS
+const shuffle = lodash.shuffle; // Obtener la función shuffle de lodash
 
 let triviaSessions = {};
 let playerScores = {};
@@ -258,7 +259,10 @@ const startTrivia = async (m, conn, chatId, senderId) => {
   playerScores[chatId] = {};
   playerScores[chatId][senderId] = { score: 0, questionIndex: 0 };
 
-  sendQuestion(m, conn, chatId, senderId);
+  // Mezclar preguntas
+  let shuffledQuestions = shuffle(questions);
+  
+  sendQuestion(m, conn, chatId, senderId, shuffledQuestions);
 };
 
 // Responder pregunta
@@ -279,7 +283,7 @@ const answerQuestion = async (m, conn, args, chatId, senderId) => {
 
   playerScores[chatId][senderId].questionIndex++;
   if (playerScores[chatId][senderId].questionIndex < questions.length) {
-    sendQuestion(m, conn, chatId, senderId);
+    sendQuestion(m, conn, chatId, senderId, questions);
   } else {
     conn.sendMessage(m.chat, { text: `🎉 ¡Has terminado la trivia! Tu puntaje final es: ${playerScores[chatId][senderId].score}/${questions.length}` });
   }
@@ -305,9 +309,9 @@ const stopTrivia = async (m, conn, chatId) => {
 };
 
 // Función para enviar pregunta
-function sendQuestion(m, conn, chatId, playerId) {
+function sendQuestion(m, conn, chatId, playerId, shuffledQuestions) {
   let triviaSession = triviaSessions[chatId];
-  let question = questions[triviaSession.questionIndex];
+  let question = shuffledQuestions[triviaSession.questionIndex];
 
   let message = `❓ ${question.question}\n\n${question.options.join('\n')}\n\nResponde con el comando: *.answer + opción*`;
   conn.sendMessage(m.chat, { text: message });
