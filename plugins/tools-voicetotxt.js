@@ -2,7 +2,7 @@ import fs from 'fs';
 import ffmpeg from 'fluent-ffmpeg';
 import { Model, Recognizer } from 'vosk';
 
-const modelPath = './models/es'; // Cambia esto según el modelo descargado
+const modelPath = './models/es'; // Asegúrate de que esta ruta sea correcta y apunte al modelo español descargado
 
 const handler = async (m, { conn }) => {
   if (!m.quoted || !/audio|voice/.test(m.quoted.mimetype)) {
@@ -10,7 +10,7 @@ const handler = async (m, { conn }) => {
   }
 
   const audioBuffer = await m.quoted.download();
-  
+
   // Guardar el audio temporalmente
   const audioFilePath = './tmp/audio.ogg';
   fs.writeFileSync(audioFilePath, audioBuffer);
