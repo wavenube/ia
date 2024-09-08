@@ -1,6 +1,6 @@
 import pkg from 'lodash';
 const { shuffle } = pkg;
-import { getTriviaSessions, setTriviaSession, removeTriviaSession } from './plugins/_triviaManager.js';
+import { getTriviaSessions, setTriviaSession, removeTriviaSession } from './_triviaManager.js';
 
 const questions = [
   {
