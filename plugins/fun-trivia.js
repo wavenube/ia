@@ -1,7 +1,6 @@
 import pkg from 'lodash';
 const { shuffle } = pkg;
-
-let triviaSessions = {};
+import { getTriviaSessions, setTriviaSession, removeTriviaSession } from './plugins/_triviaManager.js';
 
 const questions = [
   {
@@ -252,21 +251,21 @@ const handler = async (m, { conn, args, command }) => {
   
   // Iniciar trivia
   if (command === "trivia") {
-    if (triviaSessions[chatId]) {
+    if (getTriviaSessions()[chatId]) {
       return conn.sendMessage(m.chat, { text: "Ya hay una trivia en curso en este chat." });
     }
 
-    triviaSessions[chatId] = { score: 0, questions: shuffle(questions), userAnswers: {} };
+    setTriviaSession(chatId, { score: 0, questions: shuffle(questions), userAnswers: {} });
     sendQuestion(m, conn, chatId);
   }
 
   // Responder pregunta
   if (command === "answer") {
-    if (!triviaSessions[chatId]) {
+    if (!getTriviaSessions()[chatId]) {
       return conn.sendMessage(m.chat, { text: "No hay ninguna trivia activa." });
     }
 
-    let triviaSession = triviaSessions[chatId];
+    let triviaSession = getTriviaSessions()[chatId];
     let currentQuestion = triviaSession.questions[0];
     
     if (args[0].toLowerCase() === currentQuestion.answer) {
@@ -284,7 +283,7 @@ const handler = async (m, { conn, args, command }) => {
       sendQuestion(m, conn, chatId);
     } else {
       let finalScore = triviaSession.score;
-      delete triviaSessions[chatId];
+      removeTriviaSession(chatId);
       conn.sendMessage(m.chat, { text: `🎉 ¡Trivia terminada! Puntaje final: ${finalScore}/${questions.length}` });
     }
   }
@@ -292,7 +291,7 @@ const handler = async (m, { conn, args, command }) => {
 
 // Función para enviar pregunta
 function sendQuestion(m, conn, chatId) {
-  let triviaSession = triviaSessions[chatId];
+  let triviaSession = getTriviaSessions()[chatId];
   let question = triviaSession.questions[0];
 
   let message = `❓ ${question.question}\n\n${question.options.join('\n')}\n\nResponde con el comando: *.answer + opción*`;
