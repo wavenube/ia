@@ -1,40 +1,37 @@
-let schedule = require('node-schedule');
+import { setTimeout as delay } from 'timers/promises';
 
-// Función para manejar el comando de programación de mensajes
-const handler = async (m, { conn, args }) => {
-    let timeArg = args[0]; // Argumento de tiempo (ej: 5m, 2h, 1d)
-    let phoneNumber = args[1]; // Número de teléfono
-    let messageText = args.slice(2).join(' ') || ''; // Mensaje programado
+const handler = async (m, { conn, args, command }) => {
+    if (args.length < 3) return conn.sendMessage(m.chat, { text: '⚠️ Debes proporcionar el tiempo, el número y el mensaje.' });
 
-    if (!timeArg || !phoneNumber) {
-        return conn.sendMessage(m.chat, { text: '❌ Debes proporcionar el tiempo y el número de teléfono. Ejemplo: .msgtime 5m 123456789 Hola!' }, { quoted: m });
-    }
+    const timeInput = args[0]; // Tiempo (ej. "5m", "2h", "3d")
+    const number = args[1]; // Número de teléfono
+    const message = args.slice(2).join(' '); // Mensaje a enviar
 
-    // Parsear el tiempo en milisegundos
-    let timeInMs;
-    if (timeArg.endsWith('m')) {
-        timeInMs = parseInt(timeArg) * 60 * 1000; // Minutos a milisegundos
-    } else if (timeArg.endsWith('h')) {
-        timeInMs = parseInt(timeArg) * 60 * 60 * 1000; // Horas a milisegundos
-    } else if (timeArg.endsWith('d')) {
-        timeInMs = parseInt(timeArg) * 24 * 60 * 60 * 1000; // Días a milisegundos
+    let timeMs;
+    if (timeInput.endsWith('m')) {
+        timeMs = parseInt(timeInput) * 60 * 1000; // Minutos a milisegundos
+    } else if (timeInput.endsWith('h')) {
+        timeMs = parseInt(timeInput) * 60 * 60 * 1000; // Horas a milisegundos
+    } else if (timeInput.endsWith('d')) {
+        timeMs = parseInt(timeInput) * 24 * 60 * 60 * 1000; // Días a milisegundos
     } else {
-        return conn.sendMessage(m.chat, { text: '❌ El formato de tiempo no es válido. Usa m para minutos, h para horas o d para días.' }, { quoted: m });
+        return conn.sendMessage(m.chat, { text: '⚠️ Formato de tiempo incorrecto. Usa m (minutos), h (horas) o d (días).' });
     }
 
-    // Confirmar que el mensaje fue programado
-    conn.sendMessage(m.chat, { text: `🕒 Mensaje programado para enviarse a ${phoneNumber} en ${timeArg}.` }, { quoted: m });
+    const senderNumber = m.sender.split('@')[0]; // Número del solicitante
+
+    // Notificar al usuario que el mensaje fue programado
+    conn.sendMessage(m.chat, { text: `✅ Mensaje programado para enviarse en ${timeInput} al número ${number}.` });
 
     // Programar el envío del mensaje
-    setTimeout(async () => {
-        // Enviar el mensaje al destinatario
-        await conn.sendMessage(phoneNumber + '@s.whatsapp.net', { text: messageText });
+    await delay(timeMs);
 
-        // Notificar al usuario que el mensaje fue enviado
-        await conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${phoneNumber} con éxito a las ${new Date().toLocaleTimeString()}.` }, { quoted: m });
+    // Enviar el mensaje al número indicado
+    await conn.sendMessage(`${number}@s.whatsapp.net`, { text: message });
 
-    }, timeInMs);
+    // Notificar al solicitante que el mensaje fue enviado
+    await conn.sendMessage(`${senderNumber}@s.whatsapp.net`, { text: `✅ Tu mensaje programado fue enviado a ${number} correctamente.` });
 };
 
-handler.command = /^(msgtime)$/i;
+handler.command = /^msgtime$/i;
 export default handler;
