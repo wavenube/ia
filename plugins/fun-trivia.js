@@ -1,4 +1,5 @@
-import { shuffle } from 'lodash'; // Para mezclar preguntas de forma aleatoria
+import pkg from 'lodash';
+const { shuffle } = pkg; // Correcta importación de shuffle
 
 let triviaSessions = {};
 let triviaScores = {}; // Para almacenar los puntajes de los jugadores
