@@ -1,4 +1,5 @@
-import { shuffle } from 'lodash'; // Para mezclar preguntas de forma aleatoria
+const lodash = require('lodash'); // Importar lodash en formato CommonJS
+const shuffle = lodash.shuffle; // Obtener la función shuffle de lodash
 
 let triviaSessions = {};
 let triviaScores = {}; // Para almacenar los puntajes de los jugadores
