@@ -39,8 +39,6 @@
         "awesome-phonenumber": "^3.4.0",
         "@bochilteam/scraper": "^4.2.4",
         "@green-code/music-track-data": "^2.0.3", 
-        "@google-cloud/speech": "6.7.0",
-        "vosk": "^0.3.42",
         "axios": "^1.1.2",
         "form-data": "^4.0.0",
         "cfonts": "^3.1.1",
