@@ -148,11 +148,13 @@ export async function handler(chatUpdate) {
                 if (!('self' in settings)) settings.self = false
                 if (!('autoread' in settings)) settings.autoread = false
                 if (!('restrict' in settings)) settings.restrict = false
+                if (!("private" in settings)) settings.private = false
                 if (!('status' in settings)) settings.status = 0
             } else global.db.data.settings[this.user.jid] = {
                 self: false,
                 autoread: false,
-                restrict: false, 
+                restrict: false,
+                private: false, 
                 status: 0
             }
         } catch (e) {
@@ -284,6 +286,7 @@ export async function handler(chatUpdate) {
 
                 if (!isAccept)
                     continue
+                if (global.db.data.settings[conn.user.jid].private && !isOwner) return
                 m.plugin = name
                 if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
                     let chat = global.db.data.chats[m.chat]
