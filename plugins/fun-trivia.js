@@ -2,7 +2,8 @@ import pkg from 'lodash';
 const { shuffle } = pkg;
 
 let triviaSessions = {};
-let questions = [
+
+const questions = [
   {
     question: "¿Cuál es el planeta más cercano al Sol?",
     options: ["a) Venus", "b) Marte", "c) Mercurio", "d) Júpiter"],
@@ -248,14 +249,14 @@ let questions = [
 
 const handler = async (m, { conn, args, command }) => {
   let chatId = m.chat;
-
+  
   // Iniciar trivia
   if (command === "trivia") {
     if (triviaSessions[chatId]) {
       return conn.sendMessage(m.chat, { text: "Ya hay una trivia en curso en este chat." });
     }
 
-    triviaSessions[chatId] = { score: 0, questionIndices: shuffle([...Array(questions.length).keys()]) };
+    triviaSessions[chatId] = { score: 0, questions: shuffle(questions), userAnswers: {} };
     sendQuestion(m, conn, chatId);
   }
 
@@ -265,21 +266,24 @@ const handler = async (m, { conn, args, command }) => {
       return conn.sendMessage(m.chat, { text: "No hay ninguna trivia activa." });
     }
 
-    let currentSession = triviaSessions[chatId];
-    let currentQuestionIndex = currentSession.questionIndices.pop();
-    let currentQuestion = questions[currentQuestionIndex];
-
+    let triviaSession = triviaSessions[chatId];
+    let currentQuestion = triviaSession.questions[0];
+    
     if (args[0].toLowerCase() === currentQuestion.answer) {
-      currentSession.score++;
+      triviaSession.score++;
       conn.sendMessage(m.chat, { text: "✅ ¡Respuesta correcta!" });
     } else {
       conn.sendMessage(m.chat, { text: `❌ Respuesta incorrecta. La correcta era: ${currentQuestion.answer}` });
     }
 
-    if (currentSession.questionIndices.length > 0) {
+    triviaSession.userAnswers[m.sender] = triviaSession.score;
+
+    triviaSession.questions.shift();
+
+    if (triviaSession.questions.length > 0) {
       sendQuestion(m, conn, chatId);
     } else {
-      let finalScore = currentSession.score;
+      let finalScore = triviaSession.score;
       delete triviaSessions[chatId];
       conn.sendMessage(m.chat, { text: `🎉 ¡Trivia terminada! Puntaje final: ${finalScore}/${questions.length}` });
     }
@@ -289,8 +293,7 @@ const handler = async (m, { conn, args, command }) => {
 // Función para enviar pregunta
 function sendQuestion(m, conn, chatId) {
   let triviaSession = triviaSessions[chatId];
-  let questionIndex = triviaSession.questionIndices.pop();
-  let question = questions[questionIndex];
+  let question = triviaSession.questions[0];
 
   let message = `❓ ${question.question}\n\n${question.options.join('\n')}\n\nResponde con el comando: *.answer + opción*`;
   conn.sendMessage(m.chat, { text: message });
