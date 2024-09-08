@@ -1,4 +1,4 @@
-import {speech} from '@google-cloud/speech';
+const speech = require('@google-cloud/speech');
 import fs from 'fs';
 
 // Configuración del cliente de Google Cloud Speech-to-Text
