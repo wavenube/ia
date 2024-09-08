@@ -1,49 +1,59 @@
-const schedule = require('node-schedule');
+let schedule = require('node-schedule');
 
-const handler = async (m, { conn, args, usedPrefix, command }) => {
-  if (args.length < 3) {
-    return conn.sendMessage(m.chat, { text: '❌ Uso incorrecto. Ejemplo: .msgtime 5m 123456789 mensaje o archivo' }, { quoted: m });
-  }
+// Función para manejar el comando
+const handler = async (m, { conn, args, command }) => {
+    let timeArg = args[0];
+    let phoneNumber = args[1];
+    let messageText = args.slice(2).join(' ') || '';
 
-  // Parsear tiempo
-  const timeArg = args[0];
-  const number = args[1];
-  const timeMatch = timeArg.match(/^(\d+)([mhd])$/);
-
-  if (!timeMatch) {
-    return conn.sendMessage(m.chat, { text: '❌ Formato de tiempo inválido. Usa m (minutos), h (horas), o d (días).' }, { quoted: m });
-  }
-
-  const amount = parseInt(timeMatch[1]);
-  const unit = timeMatch[2];
-  let delay;
-
-  if (unit === 'm') delay = amount * 60 * 1000;
-  if (unit === 'h') delay = amount * 60 * 60 * 1000;
-  if (unit === 'd') delay = amount * 24 * 60 * 60 * 1000;
-
-  const content = args.slice(2).join(' ');
-
-  // Programar el envío del mensaje o archivo
-  conn.sendMessage(m.chat, { text: `✅ Mensaje programado para enviarse en ${amount}${unit} al número ${number}.` }, { quoted: m });
-
-  setTimeout(async () => {
-    const quotedMsg = { quoted: m };
-
-    if (m.hasMedia) {
-      const media = await conn.downloadMediaMessage(m);
-      await conn.sendMessage(number + '@s.whatsapp.net', { 
-        document: media || content, 
-        caption: content || null, 
-        mimetype: m.mimetype || null, 
-        fileName: m.filename || null 
-      }, quotedMsg);
-    } else {
-      await conn.sendMessage(number + '@s.whatsapp.net', { text: content }, quotedMsg);
+    if (!timeArg || !phoneNumber) {
+        return conn.sendMessage(m.chat, { text: '❌ Debes proporcionar el tiempo y el número de teléfono. Ejemplo: .msgtime 5m 123456789 Hola!' }, { quoted: m });
     }
 
-    conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${number}` }, { quoted: m });
-  }, delay);
+    // Parsear el tiempo en milisegundos
+    let timeInMs;
+    if (timeArg.endsWith('m')) {
+        timeInMs = parseInt(timeArg) * 60 * 1000;
+    } else if (timeArg.endsWith('h')) {
+        timeInMs = parseInt(timeArg) * 60 * 60 * 1000;
+    } else if (timeArg.endsWith('d')) {
+        timeInMs = parseInt(timeArg) * 24 * 60 * 60 * 1000;
+    } else {
+        return conn.sendMessage(m.chat, { text: '❌ El formato de tiempo no es válido. Usa m para minutos, h para horas o d para días.' }, { quoted: m });
+    }
+
+    // Verificar si hay archivos adjuntos (imagen o video)
+    const media = m.message?.imageMessage || m.message?.videoMessage;
+
+    if (media) {
+        // Descargar el archivo multimedia
+        let mediaBuffer = await conn.downloadMediaMessage(m);
+
+        // Programar el mensaje
+        setTimeout(async () => {
+            // Enviar el mensaje programado con el archivo multimedia
+            await conn.sendMessage(phoneNumber + '@s.whatsapp.net', {
+                [media.mimetype.startsWith('image') ? 'image' : 'video']: mediaBuffer,
+                caption: messageText
+            });
+
+            // Enviar informe de que el mensaje ha sido enviado
+            await conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${phoneNumber} con éxito.` }, { quoted: m });
+        }, timeInMs);
+
+    } else {
+        // Programar solo el mensaje de texto
+        setTimeout(async () => {
+            // Enviar el mensaje programado sin archivo multimedia
+            await conn.sendMessage(phoneNumber + '@s.whatsapp.net', { text: messageText });
+
+            // Enviar informe de que el mensaje ha sido enviado
+            await conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${phoneNumber} con éxito.` }, { quoted: m });
+        }, timeInMs);
+    }
+
+    // Confirmar la programación al usuario
+    conn.sendMessage(m.chat, { text: `🕒 Mensaje programado para enviarse a ${phoneNumber} en ${timeArg}.` }, { quoted: m });
 };
 
 handler.command = /^(msgtime)$/i;
