@@ -1,7 +1,7 @@
 let schedule = require('node-schedule');
 
 // Función para manejar el comando
-const handler = async (m, { conn, args, command }) => {
+const handler = async (m, { conn, args, command, quoted }) => {
     let timeArg = args[0];
     let phoneNumber = args[1];
     let messageText = args.slice(2).join(' ') || '';
@@ -22,33 +22,31 @@ const handler = async (m, { conn, args, command }) => {
         return conn.sendMessage(m.chat, { text: '❌ El formato de tiempo no es válido. Usa m para minutos, h para horas o d para días.' }, { quoted: m });
     }
 
-    // Verificar si hay archivos adjuntos (imagen o video)
-    const media = m.message?.imageMessage || m.message?.videoMessage;
+    // Verificar si hay archivos adjuntos en el mensaje original o en el mensaje citado
+    const mediaMessage = m.message?.imageMessage || m.message?.videoMessage || quoted?.message?.imageMessage || quoted?.message?.videoMessage;
 
-    if (media) {
-        // Descargar el archivo multimedia
-        let mediaBuffer = await conn.downloadMediaMessage(m);
+    if (mediaMessage) {
+        // Descargar el archivo multimedia (de mensaje original o citado)
+        let mediaBuffer = await conn.downloadMediaMessage(m.message?.imageMessage || m.message?.videoMessage || quoted?.message?.imageMessage || quoted?.message?.videoMessage);
 
-        // Programar el mensaje
+        // Programar el envío del archivo multimedia con el mensaje adicional
         setTimeout(async () => {
-            // Enviar el mensaje programado con el archivo multimedia
             await conn.sendMessage(phoneNumber + '@s.whatsapp.net', {
-                [media.mimetype.startsWith('image') ? 'image' : 'video']: mediaBuffer,
+                [mediaMessage.mimetype.startsWith('image') ? 'image' : 'video']: mediaBuffer,
                 caption: messageText
             });
 
-            // Enviar informe de que el mensaje ha sido enviado
-            await conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${phoneNumber} con éxito.` }, { quoted: m });
+            // Informar que el mensaje programado ha sido enviado
+            await conn.sendMessage(m.chat, { text: `✅ Mensaje con archivo multimedia enviado a ${phoneNumber} con éxito a las ${new Date().toLocaleTimeString()}.` }, { quoted: m });
         }, timeInMs);
 
     } else {
-        // Programar solo el mensaje de texto
+        // Programar solo el mensaje de texto si no hay multimedia
         setTimeout(async () => {
-            // Enviar el mensaje programado sin archivo multimedia
             await conn.sendMessage(phoneNumber + '@s.whatsapp.net', { text: messageText });
 
-            // Enviar informe de que el mensaje ha sido enviado
-            await conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${phoneNumber} con éxito.` }, { quoted: m });
+            // Informar que el mensaje programado ha sido enviado
+            await conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${phoneNumber} con éxito a las ${new Date().toLocaleTimeString()}.` }, { quoted: m });
         }, timeInMs);
     }
 
