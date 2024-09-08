@@ -120,7 +120,130 @@ const questions = [
     "question": "¿Quién fue el primer presidente de los Estados Unidos?",
     "options": ["a) Thomas Jefferson", "b) Abraham Lincoln", "c) George Washington", "d) John Adams"],
     "answer": "c"
+  },
+  [
+  {
+    "question": "¿Cuál es el nombre completo de la famosa teoría de Einstein?",
+    "options": ["a) Teoría de la Relatividad Especial", "b) Teoría de la Relatividad General", "c) Teoría de la Gravedad Cuántica", "d) Teoría del Big Bang"],
+    "answer": "b"
+  },
+  {
+    "question": "¿En qué país se encuentra la ciudad de Petra, famosa por sus estructuras excavadas en la roca?",
+    "options": ["a) Jordania", "b) Egipto", "c) Grecia", "d) Turquía"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Cuál es la capital de Mongolia?",
+    "options": ["a) Ulaanbaatar", "b) Astana", "c) Tashkent", "d) Bishkek"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Cuál es el nombre del órgano en el cuerpo humano que produce la bilis?",
+    "options": ["a) Estómago", "b) Hígado", "c) Riñón", "d) Páncreas"],
+    "answer": "b"
+  },
+  {
+    "question": "¿Cuál es el segundo elemento más abundante en la atmósfera terrestre?",
+    "options": ["a) Oxígeno", "b) Hidrógeno", "c) Nitrógeno", "d) Argón"],
+    "answer": "c"
+  },
+  {
+    "question": "¿Qué civilización antigua construyó las pirámides de Teotihuacán?",
+    "options": ["a) Aztecas", "b) Mayas", "c) Toltecas", "d) Olmecas"],
+    "answer": "c"
+  },
+  {
+    "question": "¿En qué país se encuentra el Parque Nacional de los Glaciares, conocido por sus grandes masas de hielo?",
+    "options": ["a) Argentina", "b) Chile", "c) Canadá", "d) Noruega"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Quién fue el emperador romano durante el período de la mayor expansión del Imperio Romano?",
+    "options": ["a) Julio César", "b) Augusto", "c) Nerón", "d) Trajano"],
+    "answer": "d"
+  },
+  {
+    "question": "¿Qué famosa obra literaria comienza con la frase 'En un lugar de la Mancha, de cuyo nombre no quiero acordarme...'?",
+    "options": ["a) 'La Iliada'", "b) 'Cien años de soledad'", "c) 'Don Quijote de la Mancha'", "d) 'La Odisea'"],
+    "answer": "c"
+  },
+  {
+    "question": "¿Qué filósofo griego es conocido por su obra 'La República'?",
+    "options": ["a) Sócrates", "b) Platón", "c) Aristóteles", "d) Epicuro"],
+    "answer": "b"
+  },
+  {
+    "question": "¿Cuál es el nombre del satélite natural de la Tierra?",
+    "options": ["a) Fobos", "b) Deimos", "c) Luna", "d) Titán"],
+    "answer": "c"
+  },
+  {
+    "question": "¿Cuál es el metal que tiene el símbolo químico 'Hg'?",
+    "options": ["a) Mercurio", "b) Plata", "c) Oro", "d) Cobre"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Qué antiguo imperio se ubicaba en la región del actual Irán y fue conocido por su sistema de gobierno burocrático?",
+    "options": ["a) Imperio Persa", "b) Imperio Otomano", "c) Imperio Bizantino", "d) Imperio Mongol"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Quién es el autor de la novela 'Cien años de soledad'?",
+    "options": ["a) Gabriel García Márquez", "b) Mario Vargas Llosa", "c) Julio Cortázar", "d) Pablo Neruda"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Cuál es el nombre de la primera misión espacial tripulada que llegó a la Luna?",
+    "options": ["a) Apolo 11", "b) Apolo 12", "c) Apolo 13", "d) Apolo 14"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Qué elemento químico es conocido como 'el rey de los metales' por su resistencia a la corrosión?",
+    "options": ["a) Cobre", "b) Plata", "c) Oro", "d) Platino"],
+    "answer": "c"
+  },
+  {
+    "question": "¿Qué filósofo es conocido por la máxima 'Pienso, luego existo'?",
+    "options": ["a) René Descartes", "b) Immanuel Kant", "c) Friedrich Nietzsche", "d) Karl Marx"],
+    "answer": "a"
+  },
+  {
+    "question": "¿En qué país se encuentra la ciudad de Dubrovnik, conocida por su casco antiguo amurallado?",
+    "options": ["a) Croacia", "b) Italia", "c) Grecia", "d) España"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Qué tipo de estrella es el Sol en términos de su evolución estelar?",
+    "options": ["a) Estrella enana blanca", "b) Estrella gigante roja", "c) Estrella principal secuencia", "d) Supernova"],
+    "answer": "c"
+  },
+  {
+    "question": "¿Cuál es el nombre del protocolo utilizado para la transmisión de datos en redes informáticas?",
+    "options": ["a) HTTP", "b) FTP", "c) TCP/IP", "d) SMTP"],
+    "answer": "c"
+  },
+  {
+    "question": "¿Cuál es la ciudad más poblada del mundo?",
+    "options": ["a) Tokio", "b) Shanghái", "c) Nueva York", "d) São Paulo"],
+    "answer": "a"
+  },
+  {
+    "question": "¿En qué año se firmó la Declaración de Independencia de los Estados Unidos?",
+    "options": ["a) 1776", "b) 1789", "c) 1791", "d) 1804"],
+    "answer": "a"
+  },
+  {
+    "question": "¿Qué genio del Renacimiento pintó el fresco de la Capilla Sixtina?",
+    "options": ["a) Leonardo da Vinci", "b) Miguel Ángel", "c) Rafael", "d) Botticelli"],
+    "answer": "b"
+  },
+  {
+    "question": "¿Qué país es conocido por el festival de la cerveza Oktoberfest?",
+    "options": ["a) Alemania", "b) Austria", "c) Suiza", "d) Países Bajos"],
+    "answer": "a"
   }
+]
+
 ];
 
 const handler = async (m, { conn, args, command }) => {
