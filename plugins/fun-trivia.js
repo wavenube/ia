@@ -249,63 +249,59 @@ const questions = [
 
 ];
 
-const handler = async (m, { conn, args, command }) => {
-  let chatId = m.chat;
-  let senderId = m.sender;
+const startTrivia = async (m, conn, chatId, senderId) => {
+  if (triviaSessions[chatId]) {
+    return conn.sendMessage(m.chat, { text: "Ya hay una trivia en curso en este chat." });
+  }
 
-  // Iniciar trivia
-  if (command === "trivia") {
-    if (triviaSessions[chatId]) {
-      return conn.sendMessage(m.chat, { text: "Ya hay una trivia en curso en este chat." });
-    }
+  triviaSessions[chatId] = { questionIndex: 0 };
+  playerScores[chatId] = {};
+  playerScores[chatId][senderId] = { score: 0, questionIndex: 0 };
 
-    triviaSessions[chatId] = { questionIndex: 0 };
-    playerScores[chatId] = {};
-    playerScores[chatId][senderId] = { score: 0, questionIndex: 0 };
+  sendQuestion(m, conn, chatId, senderId);
+};
 
+// Responder pregunta
+const answerQuestion = async (m, conn, args, chatId, senderId) => {
+  if (!triviaSessions[chatId]) {
+    return conn.sendMessage(m.chat, { text: "No hay ninguna trivia activa en este chat." });
+  }
+
+  let currentQuestion = triviaSessions[chatId];
+  let question = questions[currentQuestion.questionIndex];
+  
+  if (args[0].toLowerCase() === question.answer) {
+    playerScores[chatId][senderId].score++;
+    conn.sendMessage(m.chat, { text: "✅ ¡Respuesta correcta!" });
+  } else {
+    conn.sendMessage(m.chat, { text: `❌ Respuesta incorrecta. La correcta era: ${question.answer}` });
+  }
+
+  playerScores[chatId][senderId].questionIndex++;
+  if (playerScores[chatId][senderId].questionIndex < questions.length) {
     sendQuestion(m, conn, chatId, senderId);
+  } else {
+    conn.sendMessage(m.chat, { text: `🎉 ¡Has terminado la trivia! Tu puntaje final es: ${playerScores[chatId][senderId].score}/${questions.length}` });
+  }
+};
+
+// Finalizar trivia y mostrar puntajes
+const stopTrivia = async (m, conn, chatId) => {
+  if (!triviaSessions[chatId]) {
+    return conn.sendMessage(m.chat, { text: "No hay ninguna trivia activa en este chat." });
   }
 
-  // Responder pregunta
-  if (command === "answer") {
-    if (!triviaSessions[chatId]) {
-      return conn.sendMessage(m.chat, { text: "No hay ninguna trivia activa." });
-    }
-
-    let currentQuestion = triviaSessions[chatId];
-    if (args[0].toLowerCase() === questions[currentQuestion.questionIndex].answer) {
-      playerScores[chatId][senderId].score++;
-      conn.sendMessage(m.chat, { text: "✅ ¡Respuesta correcta!" });
-    } else {
-      conn.sendMessage(m.chat, { text: `❌ Respuesta incorrecta. La correcta era: ${questions[currentQuestion.questionIndex].answer}` });
-    }
-
-    playerScores[chatId][senderId].questionIndex++;
-    if (playerScores[chatId][senderId].questionIndex < questions.length) {
-      sendQuestion(m, conn, chatId, senderId);
-    } else {
-      conn.sendMessage(m.chat, { text: `🎉 ¡Has terminado la trivia! Tu puntaje final es: ${playerScores[chatId][senderId].score}/${questions.length}` });
-    }
+  let results = "🏆 Resultados de la trivia:\n\n";
+  for (let playerId in playerScores[chatId]) {
+    let score = playerScores[chatId][playerId].score;
+    let totalQuestions = questions.length;
+    results += `📍 ${playerId} - ${score}/${totalQuestions}\n`;
   }
 
-  // Finalizar trivia y mostrar puntajes
-  if (command === "stoptrivia") {
-    if (!triviaSessions[chatId]) {
-      return conn.sendMessage(m.chat, { text: "No hay ninguna trivia activa en este chat." });
-    }
+  delete triviaSessions[chatId];
+  delete playerScores[chatId];
 
-    let results = "🏆 Resultados de la trivia:\n\n";
-    for (let playerId in playerScores[chatId]) {
-      let score = playerScores[chatId][playerId].score;
-      let totalQuestions = questions.length;
-      results += `📍 ${playerId} - ${score}/${totalQuestions}\n`;
-    }
-
-    delete triviaSessions[chatId];
-    delete playerScores[chatId];
-
-    conn.sendMessage(m.chat, { text: results });
-  }
+  conn.sendMessage(m.chat, { text: results });
 };
 
 // Función para enviar pregunta
@@ -316,6 +312,19 @@ function sendQuestion(m, conn, chatId, playerId) {
   let message = `❓ ${question.question}\n\n${question.options.join('\n')}\n\nResponde con el comando: *.answer + opción*`;
   conn.sendMessage(m.chat, { text: message });
 }
+
+const handler = async (m, { conn, args, command }) => {
+  let chatId = m.chat;
+  let senderId = m.sender;
+
+  if (command === "trivia") {
+    startTrivia(m, conn, chatId, senderId);
+  } else if (command === "answer") {
+    answerQuestion(m, conn, args, chatId, senderId);
+  } else if (command === "stoptrivia") {
+    stopTrivia(m, conn, chatId);
+  }
+};
 
 handler.command = /^(trivia|answer|stoptrivia)$/i;
 export default handler;
