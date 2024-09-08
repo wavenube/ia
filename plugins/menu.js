@@ -104,7 +104,10 @@ ${readMore}
 ☆ (comandos +18 /nsfwloli y demás a probar)  
 ☆ .pinterest  
 ☆ .hentaisearch  
-
+☆ .trivia
+☆ .msgtime
+☆ .remind
+☆ .decorar
       
 Made by ♡ ZephyrByte
           `.trim();
