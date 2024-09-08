@@ -70,8 +70,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
           global.dfail('rowner', m, conn);
           throw false;
       }
-      bot.self = false; // Bot es accesible para todos
-      m.reply('El bot está ahora en modo público. Todos pueden usarlo.');
+      bot.self = isEnable; // Bot es accesible para todos
       break;
 
     // Cambia el estado del bot a privado (solo accesible por el owner)
@@ -80,8 +79,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
           global.dfail('rowner', m, conn);
           throw false;
       }
-      bot.self = true; // Bot es solo para propietarios
-      m.reply('El bot está ahora en modo privado. Solo los propietarios pueden usarlo.');
+      bot.private = isEnable; // Bot es solo para propietarios
       break;
       
     case 'restrict':
