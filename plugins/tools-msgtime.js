@@ -1,10 +1,10 @@
 let schedule = require('node-schedule');
 
-// Función para manejar el comando
-const handler = async (m, { conn, args, command, quoted }) => {
-    let timeArg = args[0];
-    let phoneNumber = args[1];
-    let messageText = args.slice(2).join(' ') || '';
+// Función para manejar el comando de programación de mensajes
+const handler = async (m, { conn, args }) => {
+    let timeArg = args[0]; // Argumento de tiempo (ej: 5m, 2h, 1d)
+    let phoneNumber = args[1]; // Número de teléfono
+    let messageText = args.slice(2).join(' ') || ''; // Mensaje programado
 
     if (!timeArg || !phoneNumber) {
         return conn.sendMessage(m.chat, { text: '❌ Debes proporcionar el tiempo y el número de teléfono. Ejemplo: .msgtime 5m 123456789 Hola!' }, { quoted: m });
@@ -13,45 +13,27 @@ const handler = async (m, { conn, args, command, quoted }) => {
     // Parsear el tiempo en milisegundos
     let timeInMs;
     if (timeArg.endsWith('m')) {
-        timeInMs = parseInt(timeArg) * 60 * 1000;
+        timeInMs = parseInt(timeArg) * 60 * 1000; // Minutos a milisegundos
     } else if (timeArg.endsWith('h')) {
-        timeInMs = parseInt(timeArg) * 60 * 60 * 1000;
+        timeInMs = parseInt(timeArg) * 60 * 60 * 1000; // Horas a milisegundos
     } else if (timeArg.endsWith('d')) {
-        timeInMs = parseInt(timeArg) * 24 * 60 * 60 * 1000;
+        timeInMs = parseInt(timeArg) * 24 * 60 * 60 * 1000; // Días a milisegundos
     } else {
         return conn.sendMessage(m.chat, { text: '❌ El formato de tiempo no es válido. Usa m para minutos, h para horas o d para días.' }, { quoted: m });
     }
 
-    // Verificar si hay archivos adjuntos en el mensaje original o en el mensaje citado
-    const mediaMessage = m.message?.imageMessage || m.message?.videoMessage || quoted?.message?.imageMessage || quoted?.message?.videoMessage;
-
-    if (mediaMessage) {
-        // Descargar el archivo multimedia (de mensaje original o citado)
-        let mediaBuffer = await conn.downloadMediaMessage(m.message?.imageMessage || m.message?.videoMessage || quoted?.message?.imageMessage || quoted?.message?.videoMessage);
-
-        // Programar el envío del archivo multimedia con el mensaje adicional
-        setTimeout(async () => {
-            await conn.sendMessage(phoneNumber + '@s.whatsapp.net', {
-                [mediaMessage.mimetype.startsWith('image') ? 'image' : 'video']: mediaBuffer,
-                caption: messageText
-            });
-
-            // Informar que el mensaje programado ha sido enviado
-            await conn.sendMessage(m.chat, { text: `✅ Mensaje con archivo multimedia enviado a ${phoneNumber} con éxito a las ${new Date().toLocaleTimeString()}.` }, { quoted: m });
-        }, timeInMs);
-
-    } else {
-        // Programar solo el mensaje de texto si no hay multimedia
-        setTimeout(async () => {
-            await conn.sendMessage(phoneNumber + '@s.whatsapp.net', { text: messageText });
-
-            // Informar que el mensaje programado ha sido enviado
-            await conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${phoneNumber} con éxito a las ${new Date().toLocaleTimeString()}.` }, { quoted: m });
-        }, timeInMs);
-    }
-
-    // Confirmar la programación al usuario
+    // Confirmar que el mensaje fue programado
     conn.sendMessage(m.chat, { text: `🕒 Mensaje programado para enviarse a ${phoneNumber} en ${timeArg}.` }, { quoted: m });
+
+    // Programar el envío del mensaje
+    setTimeout(async () => {
+        // Enviar el mensaje al destinatario
+        await conn.sendMessage(phoneNumber + '@s.whatsapp.net', { text: messageText });
+
+        // Notificar al usuario que el mensaje fue enviado
+        await conn.sendMessage(m.chat, { text: `✅ Mensaje enviado a ${phoneNumber} con éxito a las ${new Date().toLocaleTimeString()}.` }, { quoted: m });
+
+    }, timeInMs);
 };
 
 handler.command = /^(msgtime)$/i;
