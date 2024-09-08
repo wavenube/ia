@@ -1,28 +1,19 @@
-let triviaSessions = {};
-let triviaScores = {};
+let triviaSessions = {}; // Asegúrate de usar el mismo nombre que en fun-trivia.js
 
 const handler = async (m, { conn, command }) => {
   let chatId = m.chat;
 
-  // Detener trivia y mostrar resultados
   if (command === "stoptrivia") {
     if (!triviaSessions[chatId]) {
       return conn.sendMessage(m.chat, { text: "No hay ninguna trivia activa en este chat." });
     }
 
-    let playerScores = triviaScores[chatId];
-    let resultMessage = "📝 Resultados de la trivia:\n\n";
-
-    for (let player in playerScores) {
-      resultMessage += `- ${player}: ${playerScores[player]} correctas\n`;
-    }
-
+    let triviaSession = triviaSessions[chatId];
+    let finalScore = triviaSession.score;
     delete triviaSessions[chatId];
-    delete triviaScores[chatId];
-
-    conn.sendMessage(m.chat, { text: resultMessage });
+    conn.sendMessage(m.chat, { text: `🎉 ¡Trivia terminada! Puntaje final: ${finalScore}/${questions.length}` });
   }
 };
 
-handler.command = /^stoptrivia$/i;
+handler.command = /^(stoptrivia)$/i;
 export default handler;
