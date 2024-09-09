@@ -1,13 +1,9 @@
-let handler = async (m, { conn }) => {
-  if (global.isPaused) {
-    return conn.sendMessage(m.chat, { text: '❌ El bot ya está en pausa.' });
-  }
+const pauseHandler = async (m, { conn, isOwner }) => {
+  if (!isOwner) return m.reply('❌ Solo los administradores pueden pausar el bot.');
   
-  global.isPaused = true;
-  conn.sendMessage(m.chat, { text: '⏸️ Bot pausado. No se ejecutarán más comandos hasta que se reanude con .start.' });
+  isPaused = true;
+  m.reply('⏸️ El bot ha sido pausado. Usa ".start" para reactivarlo.');
 };
 
-handler.command = ['pausa'];
-handler.rowner = true; // Solo el dueño del bot puede pausar
-
-export default handler;
+handler.command = /^pausa$/i;
+export default pauseHandler;
