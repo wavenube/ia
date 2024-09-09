@@ -286,9 +286,9 @@ export async function handler(chatUpdate) {
 
                 if (!isAccept)
                     continue
-                if (global.db.data.settings[conn.user.jid].private && !isOwner) return
-                m.plugin = name
+               m.plugin = name
                 if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
+                  if (db.data.settings[this.user.jid].private && db.data.settings[conns[0].user.jid].private && !isOwner) continue
                     let chat = global.db.data.chats[m.chat]
                     let user = global.db.data.users[m.sender]
                     if (name != 'owner-unbanchat.js' && chat?.isBanned)
