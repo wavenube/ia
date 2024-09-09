@@ -20,7 +20,7 @@ let handler = async (m, { conn, args, isOwner }) => {
     global.db.data.settings[conn.user.jid] = bot; // Guardar el estado del bot
 };
 
-handler.command = /^(now|non)$/i;
+handler.command = /^(now|off)$/i;
 handler.owner = true; // Solo el owner puede ejecutar este comando
 
 export default handler;
