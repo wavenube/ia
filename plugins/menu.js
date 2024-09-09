@@ -42,13 +42,24 @@ const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 ⏰ *Uptime:* ${uptime}
 ${readMore}
       
-🛠️ *Configuración y Administración:*
+🛠️ *Info General:*
 ☆ .blocklist  
 ☆ .owner  
 ☆ .runtime  
-☆ .script  
-☆ .enable <option>  
-☆ .disable <option>  
+☆ .enable
+☆ .infobot  
+☆ .stats
+☆ .ping
+
+🔒 *Moderación:*
+☆ .ban @user  
+☆ .banchat  
+☆ .unban @user  
+☆ .unbanchat  
+☆ .listban  
+☆ .hidetag
+
+🔒 *Config Grupo:*
 ☆ .Setdesc <text>  
 ☆ .setname <text>  
 ☆ .infogp  
@@ -60,18 +71,13 @@ ${readMore}
 ☆ .link  
 ☆ .setwelcome <text>  
 
-🔒 *Moderación:*
-☆ .ban @user  
-☆ .banchat  
-☆ .unban @user  
-☆ .unbanchat  
-☆ .listban  
-
-🛡️ *Registro y Verificación:*
+🛡️ *Registro y RPG:*
 ☆ .reg <name.age>  
 ☆ .mysn  
 ☆ .unreg <Num Serie>  
 ☆ .autoverificar  
+☆ .perfil 
+☆ .rpg < menu de juegos
 
 🎨 *Stickers y Multimedia:*
 ☆ .stiker (caption|reply media)  
@@ -79,36 +85,39 @@ ${readMore}
 ☆ .stikergif (caption|reply media)  
 ☆ .stikergif <url>  
 ☆ .qrcode  
-☆ .perfil  
+☆ .hornycard  
+☆ .simpcard   
+☆ .s  
+☆ .decorar
 
 💬 *Interacción y Diversión:*
 ☆ .bot (txt)  
 ☆ .gay  
-☆ .hornycard  
-☆ .simpcard  
+☆ .chatgpt  
+☆ .ping  
+☆ .quemusica  
+☆ .rpg  
+☆ .musicinfo  
+
+☆ .msgtime
+☆ .remind
+☆ .pixelar
+☆ .poll
+☆ .trivia
+☆ .stoptrivia
+
+🛠️ *Downloaders:*
 ☆ .yt  
 ☆ .letra  
 ☆ .cuevana  
 ☆ .play  
-☆ .chatgpt  
-☆ .infobot  
-☆ .ping  
-☆ .s  
 ☆ .hd  
 ☆ .read  
-☆ .quemusica  
-☆ .rpg  
 ☆ .ig  
-☆ .musicinfo  
-☆ .hentai  
-☆ (comandos +18 /nsfwloli y demás a probar)  
 ☆ .pinterest  
-☆ .hentaisearch  
-☆ .trivia
-☆ .msgtime
-☆ .remind
-☆ .decorar
-      
+
+☆ (comandos +18 /labiblia)  
+
 Made by ♡ ZephyrByte
           `.trim();
 
