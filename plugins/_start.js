@@ -1,13 +1,9 @@
-let handler = async (m, { conn }) => {
-  if (!global.isPaused) {
-    return conn.sendMessage(m.chat, { text: '✅ El bot ya está activo.' });
+async function commandHandler(m, command, args) {
+  // Si el bot está en pausa y el comando no es "start", no hacer nada
+  if (isPaused && command !== 'start') {
+    return m.reply('⚠️ El bot está en pausa. Usa ".start" para reactivarlo.');
   }
 
-  global.isPaused = false;
-  conn.sendMessage(m.chat, { text: '▶️ Bot reactivado. Los comandos vuelven a estar disponibles.' });
-};
-
-handler.command = ['start'];
-handler.rowner = true; // Solo el dueño del bot puede reanudar
-
-export default handler;
+  // Aquí va la lógica normal de manejo de comandos
+  // Ejecuta el comando correspondiente si no está en pausa o es "start"
+}
