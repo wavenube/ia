@@ -504,27 +504,6 @@ export async function participantsUpdate({ id, participants, action }) {
     }
 }
 
-// Middleware global para verificar si el bot está en modo privado
-conn.on('chat-update', async (m) => {
-    if (!m.message) return; // Ignorar si no hay mensaje
-
-    let chatId = m.chat;
-    let userId = m.sender;
-    let bot = global.db.data.settings[conn.user.jid] || {}; // Obtener configuraciones del bot
-
-    // Verificar si el bot está en modo privado
-    if (bot.private) {
-        let isOwner = global.owner.includes(userId); // Revisar si el usuario es el owner
-        if (!isOwner) {
-            conn.reply(chatId, '🚫 El bot está en modo privado. Solo el owner puede usarlo.', m);
-            return; // Detener ejecución de cualquier comando
-        }
-    }
-
-    // Aquí continúa la lógica normal del bot para procesar comandos
-});
-
-
 /**
  * Handle groups update
  * @param {import('@whiskeysockets/baileys').BaileysEventMap<unknown>['groups.update']} groupsUpdate 
