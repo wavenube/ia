@@ -43,40 +43,41 @@ const handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 ${readMore}
       
 *+18:*
+
 > hentai
 > boobs
->pack_
->pack2_
->pack3_
->videoxxx_
->videolesbixxx_
->tetas_
->booty_
->ecchi_
->furro_
->imagenlesbians_
->panties_
->pene_
->porno_
->randomxxx_
->pechos_
->yaoi_
->yaoi2_
->yuri_
->yuri2_
->trapito_
->hentai_
->nsfwloli_
->nsfworgy_
->nsfwfoot_
->nsfwass_
->nsfwbdsm_
->nsfwcum_
->nsfwero_
->nsfwfemdom_
->nsfwglass_
->hentaipdf *<texto>*_
->hentaisearch *<texto>*_
+> pack_
+> pack2_
+> pack3_
+> videoxxx_
+> videolesbixxx_
+> tetas_
+> booty_
+> ecchi_
+> furro_
+> imagenlesbians_
+> panties_
+> pene_
+> porno_
+> randomxxx_
+> pechos_
+> yaoi_
+> yaoi2_
+> yuri_
+> yuri2_
+> trapito_
+> hentai_
+> nsfwloli_
+> nsfworgy_
+> nsfwfoot_
+> nsfwass_
+> nsfwbdsm_
+> nsfwcum_
+> nsfwero_
+> nsfwfemdom_
+> nsfwglass_
+> hentaipdf *<texto>*_
+> hentaisearch *<texto>*_
 
 
 Made by ♡ ZephyrByte
