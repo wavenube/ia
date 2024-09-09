@@ -75,7 +75,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
 
     // Cambia el estado del bot a privado (solo accesible por el owner)
     case 'private':
-      if (!isROwner) {
+      if (!isOwner) {
           global.dfail('isowner', m, conn);
           throw false;
       }
