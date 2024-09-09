@@ -504,6 +504,31 @@ export async function participantsUpdate({ id, participants, action }) {
     }
 }
 
+// Este middleware se ejecuta antes de que cualquier comando sea procesado
+const beforeCommand = async (m, { conn, isOwner }) => {
+    let bot = global.db.data.settings[conn.user.jid] || {}; // Obtener las configuraciones del bot
+    
+    // Verificar si el bot está en modo privado y si el usuario no es el owner
+    if (bot.private && !isOwner) {
+        // Si el bot está en modo privado y no es el owner, bloquear comando
+        conn.reply(m.chat, '🚫 El bot está en modo privado y solo el owner puede usarlo.', m);
+        return false; // Detener la ejecución del comando
+    }
+    
+    return true; // Continuar con la ejecución si es el owner o el bot no está en modo privado
+};
+
+// En el archivo principal del bot, antes de procesar cada comando:
+conn.on('chat-update', async (m) => {
+    if (!m.message) return; // Ignorar si no hay mensaje
+
+    let canProceed = await beforeCommand(m, { conn, isOwner: m.isOwner });
+
+    if (!canProceed) return; // Si no puede proceder, se detiene todo
+
+    // Aquí va el resto del procesamiento del bot, donde maneja los comandos
+});
+
 /**
  * Handle groups update
  * @param {import('@whiskeysockets/baileys').BaileysEventMap<unknown>['groups.update']} groupsUpdate 
