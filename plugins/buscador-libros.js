@@ -6,7 +6,7 @@ let handler = async (m, { text }) => {
   await m.reply('Buscando libros...');
 
   try {
-    let res = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(text)}&key=893689092587`); // Asegúrate de colocar tu API Key de Google Books aquí.
+    let res = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(text)}&key=AIzaSyAXaW4Gxk8CnaSgKmGkq7-Epgg6rFLjx3o`); // Asegúrate de colocar tu API Key de Google Books aquí.
     const books = res.data.items;
 
     if (!books || books.length === 0) {
