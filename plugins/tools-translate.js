@@ -1,42 +1,38 @@
-import fetch from 'node-fetch';
 
-const handler = async (m, { args, usedPrefix, command }) => {
-  // Mensaje por defecto si no se pasan argumentos
-  const msg = `Uso correcto: ${usedPrefix + command} <idioma> <texto>\nEjemplo: ${usedPrefix + command} en Hola\nMás info: https://cloud.google.com/translate/docs/languages`;
-  
-  // Verifica si hay argumentos
-  if (!args || !args[0]) return m.reply(msg);
+import { translate } from '@vitalets/google-translate-api'
+const defaultLang = 'es'
+const tld = 'cn'
 
-  let lang = args[0]; // Primer argumento: el idioma
-  let text = args.slice(1).join(' '); // Resto de los argumentos: el texto a traducir
-  const defaultLang = 'es'; // Idioma por defecto
+let handler = async (m, { args, usedPrefix, command }) => {
+    let err = `
+📌 *${mssg.example} :*
 
-  // Si el primer argumento no es un código de 2 letras, usar el idioma por defecto
-  if ((args[0] || '').length !== 2) {
-    lang = defaultLang;
-    text = args.join(' ');
-  }
+*${usedPrefix + command}* <idioma> [texto]
+*${usedPrefix + command}* es Hello World
 
-  // Si no hay texto explícito, intenta traducir el texto citado
-  if (!text && m.quoted && m.quoted.text) text = m.quoted.text;
+≡ *${mssg.tradList}:* 
 
-  try {
-    // Intenta traducir con la API de lolhuman
-    const lol = await fetch(`https://api.lolhuman.xyz/api/translate/auto/${lang}?apikey=${lolkeysapi}&text=${text}`);
-    const loll = await lol.json();
+https://cloud.google.com/translate/docs/languages
+`.trim()
 
-    if (loll.status !== 200 || !loll.result.translated) {
-      throw new Error('Error en la respuesta de la API de lolhuman');
+    let lang = args[0]
+    let text = args.slice(1).join(' ')
+    if ((args[0] || '').length !== 2) {
+        lang = defaultLang
+        text = args.join(' ')
     }
+    if (!text && m.quoted && m.quoted.text) text = m.quoted.text
 
-    const result2 = loll.result.translated;
-    await m.reply(`Texto traducido: ${result2}`);
-  } catch (e) {
-    console.error(e);  // Mostrar el error en la consola para depuración
-    await m.reply('Error al traducir el texto. Verifica que el idioma sea correcto o intenta más tarde.');
-  }
-};
+    try {
+       let result = await translate(text, { to: lang, autoCorrect: true }).catch(_ => null) 
+       m.reply(result.text)
+    } catch (e) {
+        throw err
+    } 
 
-handler.command = /^(translate|traducir|trad)$/i;
+}
+handler.help = ['trad <leng> <text>']
+handler.tags = ['tools']
+handler.command = ['translate', 'tl', 'trad', 'tr', 'traducir']
 
-export default handler;
+export default handler
