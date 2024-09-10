@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment'; // Asegúrate de tener instalada la librería moment para manejar las fechas.
 
 let handler = async (m, { text }) => {
   const apiKey = '6095d5817e0045b798996bc22aa54bc4'; // Asegúrate de colocar tu API Key aquí.
@@ -15,7 +16,8 @@ let handler = async (m, { text }) => {
     }
 
     let newsList = articles.slice(0, 5).map((article, i) => {
-      return `*${i + 1}. ${article.title}*\n_${article.source.name}_\n${article.url}`;
+      const publishedDate = moment(article.publishedAt).format('DD/MM/YYYY HH:mm');
+      return `*${i + 1}. ${article.title}*\n_${article.source.name}_\nFecha: ${publishedDate}\n${article.url}`;
     }).join('\n\n');
 
     await m.reply(`Noticias sobre *${text}*:\n\n${newsList}`);
