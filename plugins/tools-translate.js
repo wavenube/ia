@@ -1,4 +1,3 @@
-import translate from '@vitalets/google-translate-api';
 import fetch from 'node-fetch';
 
 const handler = async (m, { args, usedPrefix, command }) => {
@@ -22,20 +21,19 @@ const handler = async (m, { args, usedPrefix, command }) => {
   if (!text && m.quoted && m.quoted.text) text = m.quoted.text;
 
   try {
-    // Intenta traducir con la API de Google
-    const result = await translate(`${text}`, { to: lang, autoCorrect: true });
-    await m.reply(`Texto traducido: ${result.text}`);
-  } catch {
-    try {
-      // Intenta traducir con la API de lolhuman si falla Google
-      const lol = await fetch(`https://api.lolhuman.xyz/api/translate/auto/${lang}?apikey=${lolkeysapi}&text=${text}`);
-      const loll = await lol.json();
-      const result2 = loll.result.translated;
-      await m.reply(`Texto traducido: ${result2}`);
-    } catch {
-      // Si todas las traducciones fallan
-      await m.reply('Error al traducir el texto. Verifica que el idioma sea correcto.');
+    // Intenta traducir con la API de lolhuman
+    const lol = await fetch(`https://api.lolhuman.xyz/api/translate/auto/${lang}?apikey=${lolkeysapi}&text=${text}`);
+    const loll = await lol.json();
+
+    if (loll.status !== 200 || !loll.result.translated) {
+      throw new Error('Error en la respuesta de la API de lolhuman');
     }
+
+    const result2 = loll.result.translated;
+    await m.reply(`Texto traducido: ${result2}`);
+  } catch (e) {
+    console.error(e);  // Mostrar el error en la consola para depuración
+    await m.reply('Error al traducir el texto. Verifica que el idioma sea correcto o intenta más tarde.');
   }
 };
 
