@@ -57,6 +57,8 @@ ${readMore}
 ☆ .decorar
 ☆ .crono
 ☆ .remind
+☆ .libro
+☆ .chatgpt
 
 Made by ♡ ZephyrByte
           `.trim();
