@@ -98,13 +98,27 @@ ${readMore}
 ☆ .quemusica  
 ☆ .rpg  
 ☆ .musicinfo  
-
 ☆ .msgtime
 ☆ .remind
 ☆ .pixelar
 ☆ .poll
 ☆ .trivia
 ☆ .stoptrivia
+
+🛠️ *Tools:*
+☆ .get
+☆ .hd
+☆ .news
+☆ .ip
+☆ .msgtime
+☆ .remind
+☆ .qrcode
+☆ .checkurl
+☆ .libro
+☆ .translate
+☆ .numinfo
+☆ .crono
+
 
 🛠️ *Downloaders:*
 ☆ .yt  
