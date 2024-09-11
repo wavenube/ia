@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import PhoneNumber from 'awesome-phonenumber';
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
   // Configuración de la imagen de perfil por defecto
@@ -19,24 +19,40 @@ const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
     pp = await conn.profilePictureUrl(who);
   } catch (e) {
     // En caso de error, se mantiene la imagen por defecto
-  } finally {
-    // Obtener datos del usuario desde la base de datos
-    const { name, limit, lastclaim, registered, regTime, age, premiumTime } = global.db.data.users[who];
-    const username = conn.getName(who);
-    const prem = global.prems.includes(who.split('@')[0]);
-    const sn = createHash('md5').update(who).digest('hex');
+    pp = 'https://telegra.ph/file/66c5ede2293ccf9e53efa.jpg'; // Imagen por defecto
+  }
+
+  // Obtener datos del usuario desde la base de datos
+  const { name, limit, registered, age, premiumTime } = global.db.data.users[who];
+  const username = conn.getName(who);
+  const prem = global.prems.includes(who.split('@')[0]);
+  const sn = createHash('md5').update(who).digest('hex');
+  
+  // Genera la URL para la API de "balcard"
+  const apiUrl = `https://deliriusapi-official.vercel.app/canvas/balcard?url=${encodeURIComponent(pp)}&background=https://telegra.ph/file/66c5ede2293ccf9e53efa.jpg&username=${encodeURIComponent(username)}&discriminator=${sn}&money=${limit}&xp=0&level=1`;
+
+  try {
+    // Enviar la solicitud a la API
+    let response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
     
+    // Convierte la respuesta en un buffer
+    let buffer = Buffer.from(response.data, 'binary');
+
     // Construir la cadena de perfil
-    const str = `Nombre: ${username} ${registered ? '(' + name + ') ': ''}
+    const str = `Nombre: ${username} ${registered ? '(' + name + ') ' : ''}
 Número: ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
 Enlace: wa.me/${who.split('@')[0]}${registered ? ' Edad: ' + age : ''}
 Límites: ${limit}
 Registro: ${registered ? 'Registrado' : 'No registrado'}
 Premium: ${premiumTime > 0 ? 'Sí' : (isPrems ? 'Premium' : 'No premium')}
 Hash: ${sn}`;
-    
-    // Enviar el mensaje con la imagen de perfil y la cadena de perfil
-    conn.sendMessage(m.chat, { image: { url: pp }, caption: str }, { quoted: m });
+
+    // Envía la imagen generada al chat
+    await conn.sendMessage(m.chat, { image: buffer, caption: str }, { quoted: m });
+
+  } catch (error) {
+    console.error(error);
+    m.reply('Ocurrió un error al generar la tarjeta de perfil.');
   }
 };
 
