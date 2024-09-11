@@ -2,18 +2,22 @@ import axios from 'axios';
 
 let handler = async (m, { conn, text }) => {
   // Verifica que el usuario haya ingresado el texto
-  if (!text) return m.reply('Por favor, ingrese un nombre de usuario y un texto. Ejemplo: .phub Sareth|Bienvenido a Delirius API 😈');
-  
-  // Separa el nombre de usuario del texto usando "|"
-  let [username, ...txt] = text.split('|');
-  
-  if (!username || !txt.length) return m.reply('Por favor, ingrese correctamente el nombre de usuario y el texto, separados por "|"');
+  if (!text) return m.reply('Por favor, ingrese el texto que desea usar. Ejemplo: .phub Bienvenido a Delirius API 😈');
 
-  let finalText = txt.join(' ').trim();
-  let imageUrl = 'https://telegra.ph/file/66c5ede2293ccf9e53efa.jpg'; // URL de la imagen fija
+  // Obtén el nombre del usuario que ejecuta el comando
+  let username = await conn.getName(m.sender);
+
+  // Obtén la foto de perfil del usuario
+  let userProfilePicture;
+  try {
+    userProfilePicture = await conn.profilePictureUrl(m.sender, 'image'); // Obtén la foto de perfil del usuario
+  } catch (e) {
+    // Si no tiene foto de perfil, usa una imagen por defecto
+    userProfilePicture = 'https://telegra.ph/file/66c5ede2293ccf9e53efa.jpg'; // Imagen por defecto si no tiene foto de perfil
+  }
 
   // Genera la URL con los parámetros
-  let apiUrl = `https://deliriusapi-official.vercel.app/canvas/phub?image=${encodeURIComponent(imageUrl)}&username=${encodeURIComponent(username)}&text=${encodeURIComponent(finalText)}`;
+  let apiUrl = `https://deliriusapi-official.vercel.app/canvas/phub?image=${encodeURIComponent(userProfilePicture)}&username=${encodeURIComponent(username)}&text=${encodeURIComponent(text)}`;
 
   try {
     // Enviar la solicitud a la API
