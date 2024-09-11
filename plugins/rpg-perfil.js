@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { createHash } from 'crypto';
+import PhoneNumber from 'awesome-phonenumber';
 
 const handler = async (m, { conn, usedPrefix }) => {
   // Identificar al usuario mencionado o al emisor del mensaje
@@ -6,7 +8,7 @@ const handler = async (m, { conn, usedPrefix }) => {
 
   // Verificar que el usuario esté registrado en la base de datos
   if (!(who in global.db.data.users)) {
-    throw 'El usuario no está registrado.';
+    return m.reply('El usuario no está registrado.');
   }
 
   try {
@@ -29,6 +31,11 @@ const handler = async (m, { conn, usedPrefix }) => {
 
     // Obtener la imagen de la API
     let response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
+
+    // Verifica si la respuesta es válida
+    if (response.status !== 200) {
+      throw new Error(`Error al obtener la imagen: ${response.statusText}`);
+    }
     
     // Convertir la respuesta en un buffer
     let buffer = Buffer.from(response.data, 'binary');
@@ -37,8 +44,8 @@ const handler = async (m, { conn, usedPrefix }) => {
     await conn.sendMessage(m.chat, { image: buffer, caption: `Perfil de ${username}` }, { quoted: m });
 
   } catch (error) {
-    console.error(error);
-    m.reply('Ocurrió un error al generar la tarjeta de perfil.');
+    console.error('Error al generar la imagen de perfil:', error);
+    m.reply(`Ocurrió un error al generar la tarjeta de perfil. Detalles: ${error.message}`);
   }
 };
 
