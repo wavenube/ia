@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 let handler = async (m, { conn, participants, usedPrefix, command }) => {
   let kickte = `🛸 Correct use of the command\n*${usedPrefix + command}* @tag`;
 
@@ -12,12 +14,22 @@ let handler = async (m, { conn, participants, usedPrefix, command }) => {
   // URL de la API para generar la imagen
   let apiUrl = `https://deliriusapi-official.vercel.app/canvas/delete?url=${pp}`;
 
-  // Enviar la imagen generada
-  await conn.sendFile(m.chat, apiUrl, 'delete.jpg', 'Este usuario será expulsado...', m);
+  // Hacer la petición a la API para generar la imagen
+  try {
+    let response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
+    let buffer = Buffer.from(response.data, 'binary');
 
-  // Expulsar al usuario
-  await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
-  m.reply(`✅ Usuario expulsado...`);
+    // Enviar la imagen generada
+    await conn.sendFile(m.chat, buffer, 'delete.jpg', 'Este usuario será expulsado...', m);
+
+    // Expulsar al usuario
+    await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
+    m.reply(`✅ Usuario expulsado...`);
+
+  } catch (error) {
+    console.error(error);
+    m.reply('Ocurrió un error al generar la imagen.');
+  }
 };
 
 handler.help = ['kick @user'];
