@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
   // Configuración de la imagen de perfil por defecto
-  let pp = 'https://telegra.ph/file/06cc652844ea19e8aed1c.jpg';
+  let pp = 'https://telegra.ph/file/66c5ede2293ccf9e53efa.jpg';
   
   // Identificar al usuario mencionado o al emisor del mensaje
   const who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender;
@@ -25,11 +25,10 @@ const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
   // Obtener datos del usuario desde la base de datos
   const { name, limit, registered, age, premiumTime } = global.db.data.users[who];
   const username = conn.getName(who);
-  const prem = global.prems.includes(who.split('@')[0]);
   const sn = createHash('md5').update(who).digest('hex');
   
-  // Genera la URL para la API de "balcard"
-  const apiUrl = `https://deliriusapi-official.vercel.app/canvas/balcard?url=${encodeURIComponent(pp)}&background=https://telegra.ph/file/66c5ede2293ccf9e53efa.jpg&username=${encodeURIComponent(username)}&discriminator=${sn}&money=${limit}&xp=0&level=1`;
+  // Genera la URL para la API de "balcard" con los datos del usuario
+  const apiUrl = `https://deliriusapi-official.vercel.app/canvas/balcard?url=${encodeURIComponent(pp)}&background=https://telegra.ph/file/66c5ede2293ccf9e53efa.jpg&username=${encodeURIComponent(username)}&discriminator=${sn}&money=${limit}&xp=1000&level=10`;
 
   try {
     // Enviar la solicitud a la API
@@ -38,17 +37,8 @@ const handler = async (m, { conn, usedPrefix, participants, isPrems }) => {
     // Convierte la respuesta en un buffer
     let buffer = Buffer.from(response.data, 'binary');
 
-    // Construir la cadena de perfil
-    const str = `Nombre: ${username} ${registered ? '(' + name + ') ' : ''}
-Número: ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
-Enlace: wa.me/${who.split('@')[0]}${registered ? ' Edad: ' + age : ''}
-Límites: ${limit}
-Registro: ${registered ? 'Registrado' : 'No registrado'}
-Premium: ${premiumTime > 0 ? 'Sí' : (isPrems ? 'Premium' : 'No premium')}
-Hash: ${sn}`;
-
-    // Envía la imagen generada al chat
-    await conn.sendMessage(m.chat, { image: buffer, caption: str }, { quoted: m });
+    // Envía la imagen generada al chat con el perfil del usuario
+    await conn.sendMessage(m.chat, { image: buffer, caption: `Perfil de ${username}` }, { quoted: m });
 
   } catch (error) {
     console.error(error);
