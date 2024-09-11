@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+let pendingKicks = {};
+
 let handler = async (m, { conn, participants, usedPrefix, command }) => {
   let kickte = `🛸 Correct use of the command\n*${usedPrefix + command}* @tag`;
 
@@ -29,28 +31,38 @@ let handler = async (m, { conn, participants, usedPrefix, command }) => {
     let buffer = Buffer.from(response.data, 'binary');
 
     // Envía la imagen generada al chat con un mensaje de confirmación
-    await conn.sendMessage(m.chat, { image: buffer, caption: `¿Expulsar a este usuario? Responde con *sí* o *no*` }, { quoted: m });
+    await conn.sendMessage(m.chat, { image: buffer, caption: `¿Expulsar a este usuario? Escribe *.si* para confirmar o *.no* para cancelar.` }, { quoted: m });
 
-    // Espera la respuesta del administrador para confirmar la expulsión
-    conn.on('chat-update', async (update) => {
-      if (update && update.messages && update.count) {
-        let reply = update.messages.all()[0];
-        if (reply.key.remoteJid === m.chat && reply.message.conversation) {
-          if (reply.message.conversation.toLowerCase() === 'sí' || reply.message.conversation.toLowerCase() === 'si') {
-            // Expulsa al usuario si la respuesta es "sí"
-            await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
-            await conn.reply(m.chat, `✅ Usuario expulsado...`, m);
-          } else if (reply.message.conversation.toLowerCase() === 'no') {
-            // Cancela la expulsión si la respuesta es "no"
-            await conn.reply(m.chat, `❌ Expulsión cancelada.`, m);
-          }
-        }
-      }
-    });
+    // Guarda el kick pendiente
+    pendingKicks[m.chat] = user;
 
   } catch (error) {
     console.error(error);
     m.reply('Hubo un error al generar la imagen de expulsión. Inténtalo de nuevo más tarde.');
+  }
+};
+
+// Manejador para el comando ".si"
+let siHandler = async (m, { conn }) => {
+  if (pendingKicks[m.chat]) {
+    let user = pendingKicks[m.chat];
+    // Expulsa al usuario si la respuesta es ".si"
+    await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
+    await conn.reply(m.chat, `✅ Usuario expulsado...`, m);
+    delete pendingKicks[m.chat]; // Limpia la acción pendiente
+  } else {
+    await conn.reply(m.chat, 'No hay ninguna expulsión pendiente.', m);
+  }
+};
+
+// Manejador para el comando ".no"
+let noHandler = async (m, { conn }) => {
+  if (pendingKicks[m.chat]) {
+    // Cancela la expulsión si la respuesta es ".no"
+    await conn.reply(m.chat, `❌ Expulsión cancelada.`, m);
+    delete pendingKicks[m.chat]; // Limpia la acción pendiente
+  } else {
+    await conn.reply(m.chat, 'No hay ninguna expulsión pendiente.', m);
   }
 };
 
@@ -62,3 +74,9 @@ handler.group = true;
 handler.botAdmin = true;
 
 export default handler;
+
+// Asocia los comandos ".si" y ".no" a sus respectivos manejadores
+export const confirmationHandlers = {
+  si: siHandler,
+  no: noHandler
+};
