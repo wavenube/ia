@@ -29,6 +29,8 @@ const handler = async (m, { conn, usedPrefix }) => {
     // Construir la URL de la API
     const apiUrl = `https://deliriusapi-official.vercel.app/canvas/balcard?url=${encodeURIComponent(userProfilePicture)}&background=https://telegra.ph/file/66c5ede2293ccf9e53efa.jpg&username=${encodeURIComponent(username)}&discriminator=${sn}&money=${limit}&xp=1000&level=10`;
 
+    console.log(`Solicitando imagen de perfil con URL: ${apiUrl}`); // Log para depuración
+
     // Obtener la imagen de la API
     let response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
 
@@ -44,7 +46,7 @@ const handler = async (m, { conn, usedPrefix }) => {
     await conn.sendMessage(m.chat, { image: buffer, caption: `Perfil de ${username}` }, { quoted: m });
 
   } catch (error) {
-    console.error('Error al generar la imagen de perfil:', error);
+    console.error('Error al generar la tarjeta de perfil:', error);
     m.reply(`Ocurrió un error al generar la tarjeta de perfil. Detalles: ${error.message}`);
   }
 };
