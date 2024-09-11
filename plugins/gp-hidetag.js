@@ -23,6 +23,6 @@ handler.tags = ['group']
 handler.command = ['hidetag', 'notify'] 
 handler.group = true
 handler.admin = true
-handler.rowner = true
+handler.isowner = true
 
 export default handler
