@@ -11,19 +11,21 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
   try {
     // Solicitar la información del anime a la API
     let response = await axios.get(apiUrl);
-    let anime = response.data;
 
-    if (!anime.title) {
+    // Verificar que la respuesta contenga datos válidos
+    if (!response.data || response.data.error || !response.data.title) {
       return m.reply('No se encontró información para el anime solicitado.');
     }
+
+    let anime = response.data;
 
     // Crear la cadena con la información del anime
     let info = `📺 *Título:* ${anime.title}
 📝 *Sinopsis:* ${anime.synopsis}
-🎭 *Género:* ${anime.genres.join(', ')}
-📆 *Fecha de emisión:* ${anime.aired}
-⭐ *Puntuación:* ${anime.score}
-🔗 *URL:* ${anime.url}`;
+🎭 *Géneros:* ${anime.genres ? anime.genres.join(', ') : 'Desconocido'}
+📆 *Fecha de emisión:* ${anime.aired || 'Desconocido'}
+⭐ *Puntuación:* ${anime.score || 'No disponible'}
+🔗 *URL:* ${anime.url || 'No disponible'}`;
 
     // Enviar la información en el chat
     await conn.sendMessage(m.chat, { text: info }, { quoted: m });
