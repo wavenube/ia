@@ -1,32 +1,39 @@
-import uploadFile from '../lib/uploadFile.js';
-import uploadImage from '../lib/uploadImage.js';
 import axios from 'axios';
 
-const handler = async (m) => {
-  const q = m.quoted ? m.quoted : m;
-  const mime = (q.msg || q).mimetype || '';
+const handler = async (m, { text }) => {
+  if (!text) throw 'Por favor, proporciona una URL para acortar.';
   
-  if (!mime) throw '*Debes responder a una imagen o video para convertirlo en un enlace.*';
-  
-  const media = await q.download();
-  const isTele = /image\/(png|jpe?g|gif)|video\/mp4/.test(mime);
-  const link = await (isTele ? uploadImage : uploadFile)(media);
-  
+  // Primera API (TinyURL)
+  let apiUrlTiny = `https://deliriusapi-official.vercel.app/shorten/tinyurl?url=${encodeURIComponent(text)}`;
+  let apiUrlGoogle = `https://deliriusapi-official.vercel.app/shorten/googleshort?url=${encodeURIComponent(text)}`;
+
   try {
-    // Enviar la solicitud a la API para acortar el enlace
-    const apiUrl = `https://deliriusapi-official.vercel.app/shorten/tinyurl?url=${encodeURIComponent(link)}`;
-    const response = await axios.get(apiUrl);
-    const shortUrl = response.data.result; // El enlace acortado está en 'result'
+    // Intentamos con la API de TinyURL
+    let response = await axios.get(apiUrlTiny);
+    let shortUrl = response.data.result;
+    if (!shortUrl) throw new Error('No se pudo acortar el enlace con TinyURL.');
     
-    // Enviar el enlace acortado como respuesta
-    m.reply(`*Aquí tienes tu enlace acortado:* ${shortUrl}`);
+    // Enviar el enlace acortado si fue exitoso
+    m.reply(`*Aquí está tu enlace acortado (TinyURL):* ${shortUrl}`);
   } catch (e) {
-    m.reply(`Ocurrió un error al acortar el enlace: ${e.message}`);
+    // Si falla la API de TinyURL, intentamos con Google Short
+    try {
+      let responseGoogle = await axios.get(apiUrlGoogle);
+      let shortUrlGoogle = responseGoogle.data.result;
+      
+      if (!shortUrlGoogle) throw new Error('No se pudo acortar el enlace con Google Short.');
+      
+      // Enviar el enlace acortado usando Google Short si fue exitoso
+      m.reply(`*Aquí está tu enlace acortado (Google Short):* ${shortUrlGoogle}`);
+    } catch (errorGoogle) {
+      // Si ambas fallan, mostrar error
+      m.reply('Ocurrió un error al intentar acortar el enlace con ambas APIs.');
+    }
   }
 };
 
-handler.help = ['tourl <reply image>'];
-handler.tags = ['sticker'];
-handler.command = /^(upload|tourl)$/i;
+handler.help = ['acortar <url>'];
+handler.tags = ['tools'];
+handler.command = /^(acortar|shorten|shorturl)$/i;
 
 export default handler;
