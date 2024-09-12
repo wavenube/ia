@@ -13,11 +13,11 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
     let response = await axios.get(apiUrl);
 
     // Verificar que la respuesta contenga datos válidos
-    if (!response.data || response.data.error || !response.data.title) {
+    if (!response.data || !response.data.status || !response.data.data) {
       return m.reply('No se encontró información para el anime solicitado.');
     }
 
-    let anime = response.data;
+    let anime = response.data.data;
 
     // Crear la cadena con la información del anime
     let info = `📺 *Título:* ${anime.title}
@@ -27,8 +27,8 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
 ⭐ *Puntuación:* ${anime.score || 'No disponible'}
 🔗 *URL:* ${anime.url || 'No disponible'}`;
 
-    // Enviar la información en el chat
-    await conn.sendMessage(m.chat, { text: info }, { quoted: m });
+    // Enviar la imagen del anime junto con la información
+    await conn.sendMessage(m.chat, { image: { url: anime.picture }, caption: info }, { quoted: m });
   } catch (e) {
     // Manejar el error si la solicitud falla
     m.reply(`Ocurrió un error al buscar la información del anime. Detalles: ${e.message}`);
