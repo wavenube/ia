@@ -1,73 +1,54 @@
-const { generateWAMessageFromContent, proto } = require('@whiskeysockets/baileys');
+import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys';
 
 const handler = async (m, { conn }) => {
-  const menuMessage = {
+  const buttons = [
+    {
+      buttonId: 'test_1',
+      buttonText: { displayText: 'Test de Alimentación' },
+      type: 1,
+    },
+    {
+      buttonId: 'test_2',
+      buttonText: { displayText: 'Test de Ejercicio' },
+      type: 1,
+    },
+  ];
+
+  const messageContent = {
     interactiveMessage: {
-      body: proto.Message.InteractiveMessage.Body.create({
-        text: 'Selecciona una opción:',
-      }),
-      footer: proto.Message.InteractiveMessage.Footer.create({
-        text: 'Tu bot',
-      }),
-      nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-        buttons: [
-          {
-            name: 'option1',
-            buttonParamsJson: JSON.stringify({
-              flow_token: 'your_flow_token_for_option_1',
-            }),
-            buttonText: 'Test de Alimentación',
-          },
-          {
-            name: 'option2',
-            buttonParamsJson: JSON.stringify({
-              flow_token: 'your_flow_token_for_option_2',
-            }),
-            buttonText: 'Test de Ejercicio',
-          },
-        ],
-      }),
+      message: {
+        interactiveMessage: proto.Message.InteractiveMessage.create({
+          body: proto.Message.InteractiveMessage.Body.create({
+            text: 'Elige una opción:',
+          }),
+          footer: proto.Message.InteractiveMessage.Footer.create({
+            text: 'Selecciona una opción',
+          }),
+          nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+            buttons,
+          }),
+        }),
+      },
     },
   };
 
-  let msg = await generateWAMessageFromContent(
-    m.chat,
-    { viewOnceMessage: { message: menuMessage } },
-    {}
-  );
-
+  const msg = await generateWAMessageFromContent(m.chat, messageContent, {});
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
 };
 
 const responseHandler = async (m, { conn }) => {
-  if (!m.message || !m.message.interactiveMessage) return;
+  const buttonId = m.message.interactiveMessage.buttonId;
 
-  const { buttonParamsJson } = m.message.interactiveMessage.nativeFlowMessage.buttons[0];
-  const { flow_token } = JSON.parse(buttonParamsJson);
-
-  switch (flow_token) {
-    case 'your_flow_token_for_option_1':
-      await sendNutritionTest(m.chat, conn);
-      break;
-    case 'your_flow_token_for_option_2':
-      await sendExerciseTest(m.chat, conn);
-      break;
-    default:
-      m.reply('Opción no válida.');
+  if (buttonId === 'test_1') {
+    // Aquí va la lógica para el Test de Alimentación
+    await conn.sendMessage(m.chat, { text: 'Inicia el Test de Alimentación' }, { quoted: m });
+  } else if (buttonId === 'test_2') {
+    // Aquí va la lógica para el Test de Ejercicio
+    await conn.sendMessage(m.chat, { text: 'Inicia el Test de Ejercicio' }, { quoted: m });
   }
 };
 
-const sendNutritionTest = async (chat, conn) => {
-  // Envía el test de nutrición
-  await conn.sendMessage(chat, { text: 'Aquí está tu test de alimentación...' });
-};
-
-const sendExerciseTest = async (chat, conn) => {
-  // Envía el test de ejercicio
-  await conn.sendMessage(chat, { text: 'Aquí está tu test de ejercicio...' });
-};
-
-module.exports = { handler, responseHandler };
+export { handler, responseHandler };
 
 module.exports = {
   help: ['test'],
