@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-const API_KEY = 'YOUR_API_KEY_HERE'; // Reemplaza con tu clave API de Stable Diffusion
+const API_KEY = 'Rk34BQDyYdzCVQaqZYeco2yGRthSxcWfoeYS29fNmcF8eD6ckvHJ2ChGL4Si'; // Reemplaza con tu clave API de Stable Diffusion
 
 const handler = async (m, { text, conn }) => {
   if (!text) return conn.reply(m.chat, 'Por favor, proporciona una descripción para generar la imagen.', m);
@@ -10,7 +10,7 @@ const handler = async (m, { text, conn }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Rk34BQDyYdzCVQaqZYeco2yGRthSxcWfoeYS29fNmcF8eD6ckvHJ2ChGL4Si}`
+        'Authorization': `Bearer ${API_KEY}`
       },
       body: JSON.stringify({
         prompt: text,
