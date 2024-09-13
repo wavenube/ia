@@ -1,11 +1,12 @@
 import fetch from 'node-fetch';
 
-const API_KEY = 'Rk34BQDyYdzCVQaqZYeco2yGRthSxcWfoeYS29fNmcF8eD6ckvHJ2ChGL4Si'; // Reemplaza con tu clave API de Stable Diffusion
+const API_KEY = 'tSEV06zXjzbNAWHcJzRrGqMzznplPCO9gweuIFMncKaJ5B3SdinqfEHuQhff'; // Reemplaza con tu clave API de Stable Diffusion
 
 const handler = async (m, { text, conn }) => {
   if (!text) return conn.reply(m.chat, 'Por favor, proporciona una descripción para generar la imagen.', m);
 
   try {
+    // Realiza la solicitud a la API
     const response = await fetch('https://stablediffusionapi.com/api/v3/text2img', {
       method: 'POST',
       headers: {
@@ -23,16 +24,18 @@ const handler = async (m, { text, conn }) => {
       })
     });
 
+    // Obtén la respuesta en formato JSON
     const data = await response.json();
 
-    // Imprimir la respuesta para verificar su estructura
+    // Imprime la respuesta para depuración
     console.log(data);
 
-    if (data.error) {
-      throw new Error(data.error);
+    // Maneja el error si existe
+    if (data.status === 'error') {
+      throw new Error(data.message || 'Error desconocido');
     }
 
-    // Verifica si 'output' y 'output[0]' existen en la respuesta
+    // Verifica si 'output' existe y contiene una URL
     if (!data.output || !data.output[0]) {
       throw new Error('No se encontró una URL de imagen en la respuesta.');
     }
