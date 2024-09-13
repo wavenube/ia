@@ -10,7 +10,7 @@ const handler = async (m, { text, conn }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
+        'Authorization': `Bearer ${Rk34BQDyYdzCVQaqZYeco2yGRthSxcWfoeYS29fNmcF8eD6ckvHJ2ChGL4Si}`
       },
       body: JSON.stringify({
         prompt: text,
