@@ -1,4 +1,5 @@
-import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'; // O la librería que uses para WhatsApp
+import pkg from '@whiskeysockets/baileys';
+const { generateWAMessageFromContent, proto } = pkg; // Extrae las propiedades necesarias
 
 const handler = async (m, { conn, text }) => {
   // Validación para asegurarse de que se envía el comando correctamente
