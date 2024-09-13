@@ -25,8 +25,16 @@ const handler = async (m, { text, conn }) => {
 
     const data = await response.json();
 
+    // Imprimir la respuesta para verificar su estructura
+    console.log(data);
+
     if (data.error) {
       throw new Error(data.error);
+    }
+
+    // Verifica si 'output' y 'output[0]' existen en la respuesta
+    if (!data.output || !data.output[0]) {
+      throw new Error('No se encontró una URL de imagen en la respuesta.');
     }
 
     const imageUrl = data.output[0]; // Suponiendo que `data.output` es un array de URLs de imágenes
