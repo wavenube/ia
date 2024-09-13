@@ -14,13 +14,20 @@ const handler = async (m, { text, conn }) => {
         'Authorization': `Bearer ${API_KEY}`
       },
       body: JSON.stringify({
+        key: API_KEY,
         prompt: text,
         negative_prompt: '',
-        width: 512,
-        height: 512,
-        samples: 1,
+        width: '512',
+        height: '512',
+        samples: '1',
+        num_inference_steps: '20',
+        safety_checker: 'no',
+        enhance_prompt: 'yes',
+        temp: 'yes',
         seed: null,
-        guidance_scale: 7.5
+        guidance_scale: 7.5,
+        webhook: null,
+        track_id: null
       })
     });
 
