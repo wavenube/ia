@@ -1,59 +1,63 @@
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 
-const handler = async (m, { text, conn }) => {
-  if (!/^https?:\/\//.test(text)) throw 'Invalid URL';
+const handler = async (m, { text, conn, args }) => {
+  if (!args[0]) return conn.reply(m.chat, 'Por favor, proporciona una URL válida.', m);
 
-  const _url = new URL(text);
+  // Enviar captura de pantalla de la URL
+  try {
+    const ss = await (await fetch(`https://image.thum.io/get/fullpage/${args[0]}`)).buffer();
+    await conn.sendFile(m.chat, ss, '', '', m);
+  } catch {
+    try {
+      const ss2 = `https://api.screenshotmachine.com/?key=c04d3a&url=${args[0]}&dimension=720x720`;
+      await conn.sendMessage(m.chat, { image: { url: ss2 } }, { quoted: m });
+    } catch {
+      try {
+        const ss3 = `https://api.lolhuman.xyz/api/SSWeb?apikey=${lolkeysapi}&url=${text}`;
+        await conn.sendMessage(m.chat, { image: { url: ss3 } }, { quoted: m });
+      } catch {
+        const ss4 = `https://api.lolhuman.xyz/api/SSWeb2?apikey=${lolkeysapi}&url=${text}`;
+        await conn.sendMessage(m.chat, { image: { url: ss4 } }, { quoted: m });
+      }
+    }
+  }
 
-  // APIFlash URL for taking a screenshot
-  const screenshotUrl = `https://api.apiflash.com/v1/urltoimage?access_key=d5d286e9336d45ef9cab64445bb06634&wait_until=page_loaded&url=${encodeURIComponent(text)}`;
-
-  // Fetch the screenshot image
-  const screenshotRes = await fetch(screenshotUrl);
-  const screenshotBuffer = await screenshotRes.buffer();
-
-  // Fetch the HTML content of the URL
+  // Extraer título, descripción y reseñas de Trustpilot
   const res = await fetch(text);
   if (res.status !== 200) throw `Failed to fetch ${text}`;
 
   const html = await res.text();
   const $ = cheerio.load(html);
 
-  // Extract the title and description
   const title = $('title').text() || 'No title found';
   const description = $('meta[name="description"]').attr('content') || $('meta[property="og:description"]').attr('content') || 'No description found';
 
-  // Trustpilot search using the extracted title
   const trustpilotSearchUrl = `https://www.trustpilot.com/search?query=${encodeURIComponent(title)}`;
   const trustpilotRes = await fetch(trustpilotSearchUrl);
   const trustpilotHtml = await trustpilotRes.text();
   const $$ = cheerio.load(trustpilotHtml);
 
   let trustpilotReviews = 'No reviews found on Trustpilot';
-
-  // Extract Trustpilot reviews
   const trustpilotLink = $$('a[href*="/review/"]').first().attr('href');
   if (trustpilotLink) {
     const reviewUrl = `https://www.trustpilot.com${trustpilotLink}`;
     trustpilotReviews = `Reviews found: [Trustpilot](${reviewUrl})`;
   }
 
-  // Construct the formatted response
+  // Respuesta formateada
   const formattedResponse = `
 🌐 *Title:* ${title}
 📝 *Description:* ${description}
 ⭐ *Trustpilot Reviews:* ${trustpilotReviews}
   `;
 
-  // Send the screenshot and the formatted response
-  await conn.sendFile(m.chat, screenshotBuffer, 'screenshot.jpg', 'Here is the screenshot', m);
+  // Enviar la información extraída
   m.reply(formattedResponse);
 };
 
 handler.help = ['fetch', 'get'].map(v => v + ' <url>');
 handler.tags = ['internet'];
 handler.command = /^(fetch|get)$/i;
-handler.rowner = false;
 
 export default handler;
