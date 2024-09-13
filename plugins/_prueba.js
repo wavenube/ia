@@ -54,9 +54,9 @@ const handler = async (m, { text, conn }) => {
   }
 };
 
-handler.help = ['fetch', 'get'].map(v => v + ' <url>');
+handler.help = ['si', 'get'].map(v => v + ' <url>');
 handler.tags = ['internet'];
-handler.command = /^(ssweb|get)$/i;
+handler.command = /^(si|get)$/i;
 handler.rowner = false;
 
 export default handler;
