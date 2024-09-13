@@ -1,30 +1,62 @@
-
 import fetch from 'node-fetch';
+import cheerio from 'cheerio';
 
-const handler = async (m, {conn, text, args}) => {   
-   if (!args[0]) return conn.reply(m.chat, 'Por favor, proporciona una URL válida.', m);  
-   
-   try {
-     const ss = await (await fetch(`https://image.thum.io/get/fullpage/${args[0]}`)).buffer();
-     conn.sendFile(m.chat, ss, '', '', m);
-   } catch { 
-     try {  
-       const ss2 = `https://api.screenshotmachine.com/?key=c04d3a&url=${args[0]}&dimension=720x720`;  
-       conn.sendMessage(m.chat, {image: {url: ss2}}, {quoted: m}); 
-     } catch {  
-       try { 
-         const ss3 =  `https://api.lolhuman.xyz/api/SSWeb?apikey=${lolkeysapi}&url=${text}`; 
-         conn.sendMessage(m.chat, {image: {url: ss3}}, {quoted: m}); 
-       } catch { 
-         const ss4 = `https://api.lolhuman.xyz/api/SSWeb2?apikey=${lolkeysapi}&url=${text}`;
-         conn.sendMessage(m.chat, {image: {url: ss4}}, {quoted: m});  
-       }
-     }
-   }
-}; 
+const handler = async (m, { text, conn }) => {
+  if (!/^https?:\/\//.test(text)) throw 'Invalid URL';
 
-handler.help = ["ss", "ssf"].map((v) => v + " <url>");   
-handler.tags = ["internet"];   
-handler.command = /^ss(web)?f?$/i;   
+  const _url = new URL(text);
+
+  // Método para captura de pantalla usando tu código anterior
+  const screenshotUrl = `https://image.thum.io/get/fullpage/${encodeURIComponent(text)}`;
+
+  try {
+    // Obtener la captura de pantalla
+    const screenshotBuffer = await (await fetch(screenshotUrl)).buffer();
+
+    // Fetch del contenido HTML de la URL
+    const res = await fetch(text);
+    if (res.status !== 200) throw `Failed to fetch ${text}`;
+
+    const html = await res.text();
+    const $ = cheerio.load(html);
+
+    // Extraer título y descripción
+    const title = $('title').text() || 'No title found';
+    const description = $('meta[name="description"]').attr('content') || $('meta[property="og:description"]').attr('content') || 'No description found';
+
+    // Búsqueda de Trustpilot usando el título
+    const trustpilotSearchUrl = `https://www.trustpilot.com/search?query=${encodeURIComponent(title)}`;
+    const trustpilotRes = await fetch(trustpilotSearchUrl);
+    const trustpilotHtml = await trustpilotRes.text();
+    const $$ = cheerio.load(trustpilotHtml);
+
+    let trustpilotReviews = 'No reviews found on Trustpilot';
+
+    // Extraer reseñas de Trustpilot
+    const trustpilotLink = $$('a[href*="/review/"]').first().attr('href');
+    if (trustpilotLink) {
+      const reviewUrl = `https://www.trustpilot.com${trustpilotLink}`;
+      trustpilotReviews = `Reviews found: [Trustpilot](${reviewUrl})`;
+    }
+
+    // Respuesta formateada
+    const formattedResponse = `
+🌐 *Title:* ${title}
+📝 *Description:* ${description}
+⭐ *Trustpilot Reviews:* ${trustpilotReviews}
+    `;
+
+    // Enviar la captura de pantalla y luego la información
+    await conn.sendFile(m.chat, screenshotBuffer, 'screenshot.jpg', 'Here is the screenshot', m);
+    m.reply(formattedResponse);
+  } catch (e) {
+    m.reply(`Error: ${e.message}`);
+  }
+};
+
+handler.help = ['fetch', 'get'].map(v => v + ' <url>');
+handler.tags = ['internet'];
+handler.command = /^(ssweb|get)$/i;
+handler.rowner = false;
 
 export default handler;
