@@ -1,59 +1,46 @@
-import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys';
+import fetch from 'node-fetch';
 
-const handler = async (m, { conn }) => {
-  const buttons = [
-    {
-      buttonId: 'test_1',
-      buttonText: { displayText: 'Test de Alimentación' },
-      type: 1,
-    },
-    {
-      buttonId: 'test_2',
-      buttonText: { displayText: 'Test de Ejercicio' },
-      type: 1,
-    },
-  ];
+const API_KEY = 'YOUR_API_KEY_HERE'; // Reemplaza con tu clave API de Stable Diffusion
 
-  const messageContent = {
-    interactiveMessage: {
-      message: {
-        interactiveMessage: proto.Message.InteractiveMessage.create({
-          body: proto.Message.InteractiveMessage.Body.create({
-            text: 'Elige una opción:',
-          }),
-          footer: proto.Message.InteractiveMessage.Footer.create({
-            text: 'Selecciona una opción',
-          }),
-          nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-            buttons,
-          }),
-        }),
+const handler = async (m, { text, conn }) => {
+  if (!text) return conn.reply(m.chat, 'Por favor, proporciona una descripción para generar la imagen.', m);
+
+  try {
+    const response = await fetch('https://stablediffusionapi.com/api/v3/text2img', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
       },
-    },
-  };
+      body: JSON.stringify({
+        prompt: text,
+        negative_prompt: '',
+        width: 512,
+        height: 512,
+        samples: 1,
+        seed: null,
+        guidance_scale: 7.5
+      })
+    });
 
-  const msg = await generateWAMessageFromContent(m.chat, messageContent, {});
-  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
-};
+    const data = await response.json();
 
-const responseHandler = async (m, { conn }) => {
-  const buttonId = m.message.interactiveMessage.buttonId;
+    if (data.error) {
+      throw new Error(data.error);
+    }
 
-  if (buttonId === 'test_1') {
-    // Aquí va la lógica para el Test de Alimentación
-    await conn.sendMessage(m.chat, { text: 'Inicia el Test de Alimentación' }, { quoted: m });
-  } else if (buttonId === 'test_2') {
-    // Aquí va la lógica para el Test de Ejercicio
-    await conn.sendMessage(m.chat, { text: 'Inicia el Test de Ejercicio' }, { quoted: m });
+    const imageUrl = data.output[0]; // Suponiendo que `data.output` es un array de URLs de imágenes
+
+    // Envía la imagen generada
+    await conn.sendMessage(m.chat, { image: { url: imageUrl } }, { quoted: m });
+  } catch (error) {
+    console.error(error);
+    conn.reply(m.chat, `Error al generar la imagen: ${error.message}`, m);
   }
 };
 
-export { handler, responseHandler };
+handler.help = ['generate'].map(v => v + ' <description>');
+handler.tags = ['fun'];
+handler.command = /^(generate)$/i;
 
-module.exports = {
-  help: ['test'],
-  tags: ['test'],
-  command: /^test$/i,
-  handler,
-  responseHandler,
-};
+export default handler;
