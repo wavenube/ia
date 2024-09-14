@@ -6,13 +6,12 @@ if (!fs.existsSync(dbFile)) {
   fs.writeFileSync(dbFile, JSON.stringify({}));
 }
 
-const handler = async (m, { text, quoted, conn }) => {
+const handler = async (m, { text, quoted, conn, mime }) => {
   if (!text) return conn.reply(m.chat, 'Por favor, proporciona una contraseña para tu caja fuerte.', m);
-  if (!quoted) return conn.reply(m.chat, 'Debes responder a un archivo o mensaje para guardarlo.', m);
+  if (!quoted || !quoted.message) return conn.reply(m.chat, 'Debes responder a un archivo o mensaje para guardarlo.', m);
 
   const user = m.sender; // Número del usuario
   const password = text.trim(); // Contraseña proporcionada
-  const message = quoted.message; // El mensaje que se está guardando (archivo, imagen, video, etc.)
 
   // Leer la base de datos de usuarios
   let boxStorage = JSON.parse(fs.readFileSync(dbFile));
@@ -30,10 +29,26 @@ const handler = async (m, { text, quoted, conn }) => {
     return conn.reply(m.chat, 'Contraseña incorrecta. No puedes guardar en esta caja fuerte.', m);
   }
 
-  // Guardar el mensaje en la caja fuerte del usuario
+  // Verificar si es un archivo de imagen, video o documento
+  let content = null;
+  let type = null;
+  if (mime.startsWith('image/')) {
+    content = await conn.downloadMediaMessage(quoted); // Descargar imagen
+    type = 'image';
+  } else if (mime.startsWith('video/')) {
+    content = await conn.downloadMediaMessage(quoted); // Descargar video
+    type = 'video';
+  } else if (mime.startsWith('application/')) {
+    content = await conn.downloadMediaMessage(quoted); // Descargar documento
+    type = 'document';
+  } else {
+    return conn.reply(m.chat, 'El archivo no es soportado. Solo se permiten imágenes, videos y documentos.', m);
+  }
+
+  // Guardar el archivo en la caja fuerte del usuario
   boxStorage[user].contents.push({
-    type: Object.keys(message)[0], // Tipo de archivo (ej. imageMessage, videoMessage, etc.)
-    content: message[Object.keys(message)[0]] // El contenido del archivo o mensaje
+    type: type,
+    content: content // El archivo descargado (imagen, video, documento)
   });
 
   // Guardar la información actualizada en el archivo JSON
