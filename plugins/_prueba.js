@@ -1,44 +1,36 @@
+import { File } from 'megajs'; // Importa la clase File para manejar descargas
 
-import { Storage } from 'megajs';
-import fs from 'fs';
-
-const handler = async (m, { conn, text }) => {
-  if (!text) return conn.reply(m.chat, 'Por favor, proporciona una URL válida de MEGA.', m);
+const handler = async (m, { text, conn }) => {
+  if (!text) return conn.reply(m.chat, 'Por favor, proporciona una URL de MEGA válida.', m);
 
   try {
-    // Crear la instancia de almacenamiento de MEGA con el enlace del archivo
-    const file = Storage.fromURL(text);
+    // Inicializa el archivo a partir de la URL proporcionada
+    const file = File.fromURL(text);
 
-    // Extrae el nombre del archivo
-    const filename = file.name;
+    // Obtén información del archivo (nombre, tamaño, etc.)
+    const info = await file.loadAttributes();
+    const fileName = info.name;
 
-    // Descarga el archivo a un buffer
-    file.loadAttributes((err) => {
-      if (err) throw err;
+    // Descargar el archivo como stream
+    const stream = file.download();
 
-      const fileStream = file.download();
-      const writeStream = fs.createWriteStream(`/tmp/${filename}`);
+    // Convertir el stream a un buffer para enviarlo por WhatsApp
+    let chunks = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
 
-      fileStream.pipe(writeStream);
-
-      writeStream.on('finish', () => {
-        // Una vez descargado, envía el archivo al chat
-        conn.sendMessage(m.chat, { document: fs.readFileSync(`/tmp/${filename}`), fileName: filename }, { quoted: m });
-        fs.unlinkSync(`/tmp/${filename}`); // Eliminar el archivo temporal después de enviar
-      });
-
-      writeStream.on('error', (err) => {
-        throw new Error('Error al escribir el archivo en el sistema: ' + err.message);
-      });
-    });
+    // Enviar el archivo descargado a través de WhatsApp
+    await conn.sendMessage(m.chat, { document: buffer, mimetype: 'application/octet-stream', fileName: fileName }, { quoted: m });
   } catch (error) {
     console.error(error);
     conn.reply(m.chat, `Error al descargar el archivo: ${error.message}`, m);
   }
 };
 
-handler.help = ['mega <url>'];
-handler.tags = ['tools'];
-handler.command = /^mega$/i;
+handler.help = ['mega'].map(v => v + ' <url>');
+handler.tags = ['downloader'];
+handler.command = /^(mega)$/i;
 
 export default handler;
