@@ -29,14 +29,12 @@ const handler = async (m, { text, conn }) => {
 
   // Enviar todos los archivos guardados al usuario
   for (let item of userContents) {
-    if (item.type === 'imageMessage') {
-      await conn.sendMessage(m.chat, { image: { url: item.content.url }, caption: 'Imagen guardada en tu caja fuerte.' });
-    } else if (item.type === 'videoMessage') {
-      await conn.sendMessage(m.chat, { video: { url: item.content.url }, caption: 'Video guardado en tu caja fuerte.' });
-    } else if (item.type === 'documentMessage') {
-      await conn.sendMessage(m.chat, { document: { url: item.content.url }, caption: 'Documento guardado en tu caja fuerte.' });
-    } else {
-      await conn.sendMessage(m.chat, { text: 'Contenido guardado: ' + item.content.conversation });
+    if (item.type === 'image') {
+      await conn.sendMessage(m.chat, { image: item.content, caption: 'Imagen guardada en tu caja fuerte.' });
+    } else if (item.type === 'video') {
+      await conn.sendMessage(m.chat, { video: item.content, caption: 'Video guardado en tu caja fuerte.' });
+    } else if (item.type === 'document') {
+      await conn.sendMessage(m.chat, { document: item.content, caption: 'Documento guardado en tu caja fuerte.' });
     }
   }
 };
