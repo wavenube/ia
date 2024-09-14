@@ -11,6 +11,21 @@ const handler = async (m, { text, conn }) => {
     const info = await file.loadAttributes();
     const fileName = info.name;
 
+    // Asegúrate de que se trate de un archivo de video
+    const extension = fileName.split('.').pop().toLowerCase();
+    let mimeType;
+
+    // Definir el MIME según la extensión
+    if (extension === 'mp4') {
+      mimeType = 'video/mp4';
+    } else if (extension === 'mkv') {
+      mimeType = 'video/x-matroska';
+    } else if (extension === 'avi') {
+      mimeType = 'video/x-msvideo';
+    } else {
+      mimeType = 'application/octet-stream'; // Genérico si no es un video conocido
+    }
+
     // Descargar el archivo como stream
     const stream = file.download();
 
@@ -22,7 +37,12 @@ const handler = async (m, { text, conn }) => {
     const buffer = Buffer.concat(chunks);
 
     // Enviar el archivo descargado a través de WhatsApp
-    await conn.sendMessage(m.chat, { document: buffer, mimetype: 'application/octet-stream', fileName: fileName }, { quoted: m });
+    await conn.sendMessage(m.chat, { 
+      document: buffer, 
+      mimetype: mimeType, 
+      fileName: fileName 
+    }, { quoted: m });
+    
   } catch (error) {
     console.error(error);
     conn.reply(m.chat, `Error al descargar el archivo: ${error.message}`, m);
