@@ -8,7 +8,7 @@ if (!fs.existsSync(dbFile)) {
 
 const handler = async (m, { text, quoted, conn, mime }) => {
   if (!text) return conn.reply(m.chat, 'Por favor, proporciona una contraseña para tu caja fuerte.', m);
-  if (!quoted || !quoted.message) return conn.reply(m.chat, 'Debes responder a un archivo o mensaje para guardarlo.', m);
+  if (!quoted) return conn.reply(m.chat, 'Debes responder a un archivo o mensaje multimedia para guardarlo.', m);
 
   const user = m.sender; // Número del usuario
   const password = text.trim(); // Contraseña proporcionada
@@ -29,32 +29,46 @@ const handler = async (m, { text, quoted, conn, mime }) => {
     return conn.reply(m.chat, 'Contraseña incorrecta. No puedes guardar en esta caja fuerte.', m);
   }
 
-  // Verificar si es un archivo de imagen, video o documento
+  // Verificar si es un archivo multimedia
+  if (!quoted.message.imageMessage && !quoted.message.videoMessage && !quoted.message.documentMessage) {
+    return conn.reply(m.chat, 'El archivo que intentas guardar no es una imagen, video o documento válido.', m);
+  }
+
   let content = null;
   let type = null;
-  if (mime.startsWith('image/')) {
+
+  // Si es imagen
+  if (quoted.message.imageMessage) {
     content = await conn.downloadMediaMessage(quoted); // Descargar imagen
     type = 'image';
-  } else if (mime.startsWith('video/')) {
+  }
+
+  // Si es video
+  if (quoted.message.videoMessage) {
     content = await conn.downloadMediaMessage(quoted); // Descargar video
     type = 'video';
-  } else if (mime.startsWith('application/')) {
+  }
+
+  // Si es documento
+  if (quoted.message.documentMessage) {
     content = await conn.downloadMediaMessage(quoted); // Descargar documento
     type = 'document';
-  } else {
-    return conn.reply(m.chat, 'El archivo no es soportado. Solo se permiten imágenes, videos y documentos.', m);
   }
 
   // Guardar el archivo en la caja fuerte del usuario
-  boxStorage[user].contents.push({
-    type: type,
-    content: content // El archivo descargado (imagen, video, documento)
-  });
+  if (content) {
+    boxStorage[user].contents.push({
+      type: type,
+      content: content // El archivo descargado (imagen, video, documento)
+    });
 
-  // Guardar la información actualizada en el archivo JSON
-  fs.writeFileSync(dbFile, JSON.stringify(boxStorage, null, 2));
+    // Guardar la información actualizada en el archivo JSON
+    fs.writeFileSync(dbFile, JSON.stringify(boxStorage, null, 2));
 
-  conn.reply(m.chat, 'Archivo guardado correctamente en tu caja fuerte.', m);
+    conn.reply(m.chat, 'Archivo guardado correctamente en tu caja fuerte.', m);
+  } else {
+    conn.reply(m.chat, 'Error al descargar el archivo. Por favor, intenta de nuevo.', m);
+  }
 };
 
 handler.command = /^(box)$/i;
