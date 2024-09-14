@@ -13,7 +13,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
       async function luminsesi(q, username, logic) {
         try {
-          const response = await axios.post("https://lumin-ai.xyz/", {
+          const response = await axios.post("https://luminai.my.id/", {
             content: q,
             user: username,
             prompt: logic,
