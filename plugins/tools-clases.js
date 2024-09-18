@@ -10,7 +10,7 @@ let handler = async (m, { conn }) => {
     }
 
     // Enviar la imagen
-    await conn.sendMessage(m.chat, { image: { url: imagePath }, caption: 'Aquí está la imagen de tus clases.' }, { quoted: m });
+    await conn.sendMessage(m.chat, { image: { url: imagePath }, caption: 'Aquí está el horario de tus clases :3' }, { quoted: m });
 };
 
 // Definición de ayuda, etiquetas y el patrón del comando
