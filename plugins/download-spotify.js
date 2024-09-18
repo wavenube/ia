@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 // Función para descargar música de Spotify
 async function spotifyDownloader(url) {
@@ -46,9 +46,9 @@ const handler = async (message, { client, args }) => {
     }
 };
 
-// Añadir la estructura que mencionaste:
+// Añadir la estructura de ayuda:
 handler.help = ['spotify']; // Añadir a la lista de comandos de ayuda
 handler.tags = ['tools'];  // Categoría del comando
 handler.command = /^(spotify)$/i; // Comando regex
 
-module.exports = handler; // Exportar el módulo correctamente
+export default handler; // Exportar el módulo correctamente
