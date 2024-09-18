@@ -16,6 +16,6 @@ let handler = async (m, { conn }) => {
 // Definición de ayuda, etiquetas y el patrón del comando
 handler.help = ['clases'];
 handler.tags = ['tools'];
-handler.command = /^\.clases$/i;  // Ajuste aquí: el comando debe ser .clases
+handler.command = /^clases$/i;  // Ajuste aquí: el comando debe ser .clases
 
 module.exports = handler;
