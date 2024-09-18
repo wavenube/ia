@@ -23,26 +23,27 @@ async function spotifyDownloader(url) {
 }
 
 // Comando .spotify para descargar canciones
-const handler = async (message, { client, args }) => {
-    if (args.length === 0) {
-        await client.sendMessage(message.chatId, 'Por favor, proporciona una URL válida de Spotify.');
+const handler = async (message, { conn, text }) => {
+    if (!text) {
+        await conn.sendMessage(message.chat, 'Por favor, proporciona una URL válida de Spotify.', { quoted: message });
         return;
     }
 
-    const spotifyUrl = args[0]; // La URL de Spotify es el primer argumento
+    const spotifyUrl = text; // La URL de Spotify es el texto del mensaje
 
     // Descargar la canción usando la API
     const songInfo = await spotifyDownloader(spotifyUrl);
 
     if (songInfo) {
         // Enviar el título de la canción y el enlace de descarga
-        await client.sendMessage(
-            message.chatId,
-            `🎵 *Título*: ${songInfo.title}\n🔗 *Enlace de descarga*: ${songInfo.downloadUrl}`
+        await conn.sendMessage(
+            message.chat,
+            `🎵 *Título*: ${songInfo.title}\n🔗 *Enlace de descarga*: ${songInfo.downloadUrl}`,
+            { quoted: message }
         );
     } else {
         // Enviar mensaje de error si no se pudo descargar
-        await client.sendMessage(message.chatId, 'Hubo un error al intentar descargar la canción de Spotify. Intenta de nuevo más tarde.');
+        await conn.sendMessage(message.chat, 'Hubo un error al intentar descargar la canción de Spotify. Intenta de nuevo más tarde.', { quoted: message });
     }
 };
 
