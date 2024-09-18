@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 let handler = async (m, { conn }) => {
     // Ruta de la imagen
@@ -18,4 +18,6 @@ handler.help = ['clases'];
 handler.tags = ['tools'];
 handler.command = /^(clases)$/i;  // Ajuste aquí: el comando debe ser .clases
 
-module.exports = handler;
+export default handler;
+
+
