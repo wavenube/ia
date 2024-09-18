@@ -7,7 +7,6 @@ async function spotifyDownloader(url) {
     try {
         const response = await axios.get(apiUrl);
 
-        // Validar que la respuesta contiene la URL de descarga
         if (response.data && response.data.downloadUrl) {
             return {
                 title: response.data.title,
@@ -25,7 +24,7 @@ async function spotifyDownloader(url) {
 // Comando .spotify para descargar canciones
 const handler = async (message, { conn, text }) => {
     if (!text) {
-        await conn.sendMessage(message.chat, 'Por favor, proporciona una URL válida de Spotify.', { quoted: message });
+        await conn.sendMessage(message.key.remoteJid, { text: 'Por favor, proporciona una URL válida de Spotify.' });
         return;
     }
 
@@ -36,14 +35,12 @@ const handler = async (message, { conn, text }) => {
 
     if (songInfo) {
         // Enviar el título de la canción y el enlace de descarga
-        await conn.sendMessage(
-            message.chat,
-            `🎵 *Título*: ${songInfo.title}\n🔗 *Enlace de descarga*: ${songInfo.downloadUrl}`,
-            { quoted: message }
-        );
+        await conn.sendMessage(message.key.remoteJid, { 
+            text: `🎵 *Título*: ${songInfo.title}\n🔗 *Enlace de descarga*: ${songInfo.downloadUrl}` 
+        });
     } else {
         // Enviar mensaje de error si no se pudo descargar
-        await conn.sendMessage(message.chat, 'Hubo un error al intentar descargar la canción de Spotify. Intenta de nuevo más tarde.', { quoted: message });
+        await conn.sendMessage(message.key.remoteJid, { text: 'Hubo un error al intentar descargar la canción de Spotify. Intenta de nuevo más tarde.' });
     }
 };
 
