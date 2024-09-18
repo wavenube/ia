@@ -12,5 +12,8 @@ const handler = async (m, { conn }) => {
     await conn.sendMessage(m.chat, { image: { url: imagePath }, caption: 'Aquí está la imagen solicitada.' }, { quoted: m });
 };
 
-handler.command = /^(clases)$/i;
-export default handler;
+handler.help = ['clases']; // Añadir a la lista de comandos de ayuda
+handler.tags = ['tools'];  // Categoría del comando
+handler.command = /^(clases)$/i; // Comando regex
+
+module.exports = handler; // Exportar el módulo correctamente
