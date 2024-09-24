@@ -144,7 +144,7 @@ async function clearTmp() {
 setInterval(async () => {
 	var a = await clearTmp()
 	console.log(chalk.cyan(`🚀 Bot Boosted and Temp Directory is Cleared 🔥`))
-}, 180000) //3 muntos
+}, 14400000) //3 muntos
 
 async function connectionUpdate(update) {
   const {connection, lastDisconnect, isNewLogin} = update;
