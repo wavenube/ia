@@ -53,6 +53,16 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
       }
       chat.antidelete = isEnable;
       break;
+
+       case 'anticrash':
+      if (m.isGroup) {
+        if (!(isAdmin || isOwner)) {
+          global.dfail('admin', m, conn);
+          throw false;
+        }
+      }
+      chat.anticrash = isEnable;
+      break;
       
     case 'antilink':
       if (m.isGroup) {
@@ -118,6 +128,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
 ▢ antilink
 ▢ detect 
 ▢ modohorny
+▢ anticrash
 └─────────────
 ┌─⊷ *OWNER*
 ▢ public/private
