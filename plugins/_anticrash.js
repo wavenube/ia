@@ -1,5 +1,5 @@
 // Definir un límite máximo de caracteres permitido
-const MAX_CHAR_LIMIT = 5000; // Puedes ajustar este valor
+const MAX_CHAR_LIMIT = 1000; // Puedes ajustar este valor
 
 export async function before(m, { conn, isAdmin, isBotAdmin }) {
     if (m.isBaileys && m.fromMe)
