@@ -1,64 +1,34 @@
-import * as fs from 'fs';
+// Patrón para detectar posibles crashes (mensajes maliciosos)
+const crashRegex = /(@[0-9A-Za-z]{18,25}@g\.us){5,}/i;
 
-let handler = async (m, { conn, isAdmin, isBotAdmin, command }) => {
-    try {
-        // Si no es el comando .anticrash, no hacer nada
-        if (command !== 'anticrash') return;
+export async function before(m, { conn, isAdmin, isBotAdmin }) {
+    if (m.isBaileys && m.fromMe)
+        return !0;
+    if (!m.isGroup) return !1;
 
-        // Detectar si el mensaje es sospechoso
-        const isCrash = detectCrash(m.text);
-        
-        if (isCrash) {
-            // Si el bot no es administrador, no puede hacer nada
-            if (!isBotAdmin) {
-                return conn.sendMessage(m.chat, { text: 'No soy administrador, no puedo hacer nada.' });
+    let chat = global.db.data.chats[m.chat];  // Acceder a los datos del chat
+    let bot = global.db.data.settings[this.user.jid] || {}; // Obtener configuraciones específicas del bot
+
+    // Verificar si el anticrash está activado en el grupo
+    if (chat.anticrash) {
+        const isCrash = crashRegex.exec(m.text);  // Detectar si el mensaje contiene el patrón de crash
+
+        // Si se detecta un mensaje sospechoso y el remitente no es administrador
+        if (isCrash && !isAdmin) {
+            if (isBotAdmin) {
+                // Eliminar el mensaje sospechoso
+                await conn.sendMessage(m.chat, { delete: m.key });
+                
+                // Expulsar al usuario que envió el crash
+                await conn.groupParticipantsUpdate(m.chat, [m.sender], 'remove');
+
+                // Notificar a los miembros del grupo
+                await conn.reply(m.chat, `Se eliminó a @${m.sender.split('@')[0]} por enviar un mensaje sospechoso (posible crash).`, null, { mentions: [m.sender] });
+            } else {
+                // Si el bot no es administrador, notificar que no puede actuar
+                await conn.reply(m.chat, `Detecté un mensaje sospechoso de @${m.sender.split('@')[0]}, pero no soy administrador, por lo que no puedo eliminar al usuario.`, null, { mentions: [m.sender] });
             }
-
-            // Si el mensaje es de un administrador, el bot no lo eliminará
-            if (isAdmin) {
-                return conn.sendMessage(m.chat, { text: `@${m.sender.split('@')[0]} es administrador, no puedo eliminar el mensaje.`, mentions: [m.sender] });
-            }
-
-            // Eliminar el mensaje de crash
-            await conn.sendMessage(m.chat, { delete: { remoteJid: m.chat, fromMe: false, id: m.key.id, participant: m.key.participant } });
-
-            // Eliminar al usuario que envió el crash
-            await conn.groupParticipantsUpdate(m.chat, [m.sender], 'remove');
-
-            // Enviar una notificación de que el usuario fue eliminado
-            conn.sendMessage(m.chat, { text: `Se eliminó a @${m.sender.split('@')[0]} por enviar un mensaje sospechoso (crash).`, mentions: [m.sender] });
         }
-    } catch (e) {
-        console.error(e);
-        conn.sendMessage(m.chat, { text: 'Hubo un error al procesar el mensaje.' });
     }
-};
-
-// Función para detectar si un mensaje es un crash
-function detectCrash(text) {
-    if (!text) return false;
-
-    // Si el mensaje tiene más de 5000 caracteres, ya es sospechoso
-    if (text.length > 5000) return true;
-
-    // Patrones comunes de crash:
-    const crashPatterns = [
-        /@120363161387074194@g.us/g, // Patrones de múltiples menciones a grupos repetidos
-        /(\S+@\S+\.\S+){10,}/g, // Muchos correos o referencias repetidas
-        /(wa\.me\/\d+){10,}/g, // Múltiples links wa.me
-    ];
-
-    // Verificar si el texto contiene alguno de los patrones sospechosos
-    for (let pattern of crashPatterns) {
-        if (pattern.test(text)) return true;
-    }
-
-    return false;
+    return !0; // Continuar con el flujo normal
 }
-
-// Detalles del comando
-handler.help = ['anticrash'];
-handler.tags = ['admin'];
-handler.command = /^(anticrash)$/i; // El comando puede ser ejecutado solo como .anticrash
-
-export default handler;
