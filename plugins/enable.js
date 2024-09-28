@@ -45,14 +45,15 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
       break;
 
       case 'anticrash':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      chat.anticrash = isEnable;
-      break;
+  if (m.isGroup) {
+    if (!(isAdmin || isOwner)) {
+      global.dfail('admin', m, conn);
+      throw false;
+    }
+  }
+  chat.anticrash = isEnable; // Activar o desactivar anticrash
+  break;
+
       
     case 'antidelete':
       if (m.isGroup) {
